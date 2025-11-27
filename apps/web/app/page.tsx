@@ -81,57 +81,68 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Step 1 */}
             <div className="relative">
-              <div className="absolute top-0 left-0 w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
-                1
-              </div>
-              <div className="pt-16 space-y-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <FileSpreadsheet className="h-6 w-6 text-primary" />
+              <div className="space-y-4">
+                {/* Number and Icon Container - Row on mobile, Col on desktop, Left aligned */}
+                <div className="flex flex-row items-center space-x-4 space-y-0 md:flex-col md:items-start md:space-y-2 md:space-x-0">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    1
+                  </div>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <FileSpreadsheet className="h-6 w-6 text-primary" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground">
+
+                <h3 className="text-xl font-semibold text-foreground text-left">
                   Importe sua Planilha
                 </h3>
-                <p className="text-muted-foreground">
-                  Faça upload do seu arquivo Excel ou CSV com os dados dos clientes.
-                  Organize em projetos e gerencie tudo em um só lugar.
+                <p className="text-muted-foreground text-left">
+                  Faça upload do seu arquivo Excel ou CSV com os dados dos
+                  clientes. Organize em projetos e gerencie tudo em um só lugar.
                 </p>
               </div>
             </div>
 
             {/* Step 2 */}
             <div className="relative">
-              <div className="absolute top-0 left-0 w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
-                2
-              </div>
-              <div className="pt-16 space-y-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <MousePointer className="h-6 w-6 text-primary" />
+              <div className="space-y-4">
+                {/* Number and Icon Container - Row on mobile, Col on desktop, Left aligned */}
+                <div className="flex flex-row items-center space-x-4 space-y-0 md:flex-col md:items-start md:space-y-2 md:space-x-0">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    2
+                  </div>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <MousePointer className="h-6 w-6 text-primary" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground">
+                <h3 className="text-xl font-semibold text-foreground text-left">
                   Mapeie os Campos
                 </h3>
-                <p className="text-muted-foreground">
-                  Use nossa extensão para mapear os campos do formulário com as colunas
-                  da sua planilha. A IA sugere mapeamentos automaticamente.
+                <p className="text-muted-foreground text-left">
+                  Use nossa extensão para mapear os campos do formulário com as
+                  colunas da sua planilha. A IA sugere mapeamentos
+                  automaticamente.
                 </p>
               </div>
             </div>
 
             {/* Step 3 */}
             <div className="relative">
-              <div className="absolute top-0 left-0 w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg">
-                3
-              </div>
-              <div className="pt-16 space-y-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Zap className="h-6 w-6 text-primary" />
+              <div className="space-y-4">
+                {/* Number and Icon Container - Row on mobile, Col on desktop, Left aligned */}
+                <div className="flex flex-row items-center space-x-4 space-y-0 md:flex-col md:items-start md:space-y-2 md:space-x-0">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    3
+                  </div>
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Zap className="h-6 w-6 text-primary" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground">
+                <h3 className="text-xl font-semibold text-foreground text-left">
                   Preencha Automaticamente
                 </h3>
-                <p className="text-muted-foreground">
-                  Clique em "Preencher" e veja a mágica acontecer. A extensão preenche
-                  o formulário instantaneamente com os dados corretos.
+                <p className="text-muted-foreground text-left">
+                  Clique em "Preencher" e veja a mágica acontecer. A extensão
+                  preenche o formulário instantaneamente com os dados corretos.
                 </p>
               </div>
             </div>
