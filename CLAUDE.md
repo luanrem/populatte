@@ -318,13 +318,14 @@ Components in `apps/web` are organized by responsibility:
 
 ```
 components/
+├── page-placeholder.tsx # Reusable placeholder for pages under construction
 ├── theme/              # Theme-related components
 │   ├── theme-provider.tsx   # next-themes wrapper
 │   └── mode-toggle.tsx      # Light/dark mode toggle button
 ├── layout/             # Layout components
 │   ├── app-header.tsx       # Main application header
 │   └── app-sidebar.tsx      # Main application sidebar
-└── ui/                 # shadcn/ui components (auto-generated)
+└── ui/                 # shadcn/ui components ONLY (auto-generated)
     ├── button.tsx
     ├── sidebar.tsx
     ├── dialog.tsx
@@ -334,8 +335,9 @@ components/
 **Rules:**
 - **`components/theme/`** - Only theme-related components (providers, toggles, theme utilities)
 - **`components/layout/`** - Layout components (header, sidebar, footer, navigation)
-- **`components/ui/`** - shadcn/ui components only (managed by shadcn CLI)
-- **Custom components** - If creating app-specific components, create appropriate subdirectories (e.g., `components/forms/`, `components/data/`)
+- **`components/ui/`** - **EXCLUSIVELY for shadcn/ui components** (managed by shadcn CLI, never create custom components here)
+- **`components/` (root)** - Simple reusable components that don't fit in other categories (e.g., page-placeholder.tsx)
+- **Custom components** - For specific features, create appropriate subdirectories (e.g., `components/forms/`, `components/data/`)
 
 **Import Examples:**
 ```typescript
@@ -347,7 +349,10 @@ import { ModeToggle } from "@/components/theme/mode-toggle";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 
-// UI components
+// Root components
+import { PagePlaceholder } from "@/components/page-placeholder";
+
+// UI components (shadcn only)
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 ```
@@ -438,3 +443,4 @@ If the codebase structure is unclear:
 2. Check `IDEA.md` for product vision and context
 3. Examine `turbo.json` for task orchestration
 4. Review shared package `package.json` files to understand dependency relationships
+- a folder @apps/web/components/ui/ fica exclusiva dos componentes do shadcn ou componentes de ui básica que formos criar

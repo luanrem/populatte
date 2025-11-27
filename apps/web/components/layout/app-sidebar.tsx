@@ -1,10 +1,12 @@
 "use client"
 
 import {
-  Home,
-  FileSpreadsheet,
+  LayoutDashboard,
   FolderKanban,
-  Settings,
+  Map,
+  Users,
+  CreditCard,
+  GraduationCap,
   Palette,
 } from "lucide-react"
 
@@ -21,29 +23,39 @@ import {
 
 const items = [
   {
-    title: "Home",
-    url: "/",
-    icon: Home,
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
   },
   {
-    title: "Projects",
+    title: "Projetos",
     url: "/projects",
     icon: FolderKanban,
   },
   {
-    title: "Excel Data",
-    url: "/data",
-    icon: FileSpreadsheet,
+    title: "Mapeamentos",
+    url: "/mappings",
+    icon: Map,
   },
   {
-    title: "Colors",
+    title: "Equipe",
+    url: "/team",
+    icon: Users,
+  },
+  {
+    title: "Assinatura",
+    url: "/billing",
+    icon: CreditCard,
+  },
+  {
+    title: "Tutorial",
+    url: "/onboarding",
+    icon: GraduationCap,
+  },
+  {
+    title: "Cores",
     url: "/colors",
     icon: Palette,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
   },
 ]
 
