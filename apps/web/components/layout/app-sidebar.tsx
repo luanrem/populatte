@@ -8,11 +8,15 @@ import {
   CreditCard,
   GraduationCap,
   Palette,
+  LogOut,
 } from "lucide-react"
+import { useUser, useClerk } from "@clerk/nextjs"
+import Image from "next/image"
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -60,6 +64,9 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const { user } = useUser()
+  const { signOut } = useClerk()
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -84,6 +91,52 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {user && (
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <div className="flex flex-col gap-3 p-3">
+                {/* User Info */}
+                <div className="flex items-center gap-3">
+                  <div className="relative h-10 w-10 rounded-full overflow-hidden flex-shrink-0">
+                    {user.imageUrl ? (
+                      <Image
+                        src={user.imageUrl}
+                        alt={user.fullName || "User"}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+                        {user.firstName?.[0] || user.emailAddresses[0].emailAddress[0].toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <span className="text-sm font-semibold truncate">
+                      {user.fullName || user.firstName || "User"}
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {user.emailAddresses[0]?.emailAddress}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Sign Out Button */}
+                <SidebarMenuButton
+                  onClick={() => signOut()}
+                  className="w-full justify-start"
+                  tooltip="Sair"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Sair</span>
+                </SidebarMenuButton>
+              </div>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
     </Sidebar>
   )
 }

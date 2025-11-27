@@ -1,3 +1,4 @@
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { ModeToggle } from "@/components/theme/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -15,7 +16,15 @@ export function AppHeader({ title }: AppHeaderProps) {
             {title}
           </h1>
         </div>
-        <ModeToggle />
+        <div className="flex items-center gap-3">
+          <SignedOut>
+            <SignInButton mode="modal" />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <ModeToggle />
+        </div>
       </div>
     </header>
   );
