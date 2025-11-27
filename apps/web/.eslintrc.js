@@ -10,5 +10,6 @@ module.exports = {
     'next.config.js',
     'tailwind.config.ts',
     'postcss.config.js',
+    'components.json',
   ],
 };

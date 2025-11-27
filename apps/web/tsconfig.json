@@ -1,5 +1,5 @@
 {
-  "extends": "@populatte/tsconfig/next.json",
+  "extends": "../../packages/tsconfig/next.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
