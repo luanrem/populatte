@@ -1,4 +1,7 @@
+import { SignInButton, SignUpButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { AppHeader } from "@/components/layout/app-header";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -13,9 +16,25 @@ export default function HomePage() {
           <p className="text-xl text-muted-foreground text-center max-w-2xl">
             Transform your Excel data into automated form filling with just a few clicks.
           </p>
-          <p className="text-muted-foreground text-center">
-            Use the sidebar to navigate through the application.
-          </p>
+
+          <SignedOut>
+            <div className="flex gap-4 mt-4">
+              <SignInButton mode="redirect">
+                <Button size="lg">Entrar</Button>
+              </SignInButton>
+              <SignUpButton mode="redirect">
+                <Button size="lg" variant="outline">
+                  Criar Conta
+                </Button>
+              </SignUpButton>
+            </div>
+          </SignedOut>
+
+          <SignedIn>
+            <Link href="/dashboard">
+              <Button size="lg">Ir para Dashboard</Button>
+            </Link>
+          </SignedIn>
         </div>
       </div>
     </main>
