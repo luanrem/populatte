@@ -227,6 +227,131 @@ When adding code, ask: "Does this violate SOLID?" If a class does multiple thing
 - Prefer explicit types over inference in function signatures
 - Never use `any` - this is enforced by ESLint
 
+## UI Components (shadcn/ui)
+
+**Default Component Library**: This project uses [shadcn/ui](https://ui.shadcn.com) for all UI components in the web application (`apps/web`).
+
+### Critical Rule: Check shadcn/ui First
+
+**Before creating any custom UI component, ALWAYS check if shadcn/ui has an existing component that solves the same problem.**
+
+Examples:
+- Need a button? → Use `@/components/ui/button`
+- Need a dialog/modal? → Use `@/components/ui/dialog`
+- Need a form input? → Use `@/components/ui/input`
+- Need a dropdown? → Use `@/components/ui/dropdown-menu`
+- Need a card? → Use `@/components/ui/card`
+- Need tabs? → Use `@/components/ui/tabs`
+
+### Adding shadcn/ui Components
+
+```bash
+# Always run from apps/web directory
+cd apps/web
+
+# Add specific component
+pnpm dlx shadcn@latest add [component-name]
+
+# Examples:
+pnpm dlx shadcn@latest add button
+pnpm dlx shadcn@latest add dialog
+pnpm dlx shadcn@latest add form
+```
+
+Components are added to `apps/web/components/ui/` and are fully customizable.
+
+### Why shadcn/ui?
+
+1. **Type-safe** - Full TypeScript support
+2. **Customizable** - Components live in your codebase, not node_modules
+3. **Accessible** - Built with Radix UI primitives (ARIA compliant)
+4. **Consistent** - All components follow the same design system
+5. **Themeable** - Integrated with Tailwind CSS and CSS variables
+
+### Component Usage Pattern
+
+```typescript
+// ✅ CORRECT: Use shadcn/ui component
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+
+export function MyComponent() {
+  return (
+    <Dialog>
+      <DialogContent>
+        <DialogHeader>Title</DialogHeader>
+        <Button>Click me</Button>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ❌ WRONG: Don't create custom button from scratch
+export function MyComponent() {
+  return (
+    <button className="px-4 py-2 bg-blue-500...">
+      Click me
+    </button>
+  );
+}
+```
+
+### When to Create Custom Components
+
+Only create custom components when:
+1. shadcn/ui doesn't have an equivalent component
+2. You need a highly specialized component unique to Populatte (e.g., ExcelColumnMapper, FormFieldSelector)
+3. You're composing multiple shadcn components into a reusable pattern
+
+Even in these cases, **use shadcn/ui components as building blocks**.
+
+### Theme Integration
+
+All shadcn/ui components automatically respect the theme system:
+- Light/dark mode is handled by `next-themes` (see `components/theme/theme-provider.tsx`)
+- Color variables are defined in `app/globals.css`
+- Use the `ModeToggle` component to switch themes
+
+### Component Organization
+
+Components in `apps/web` are organized by responsibility:
+
+```
+components/
+├── theme/              # Theme-related components
+│   ├── theme-provider.tsx   # next-themes wrapper
+│   └── mode-toggle.tsx      # Light/dark mode toggle button
+├── layout/             # Layout components
+│   ├── app-header.tsx       # Main application header
+│   └── app-sidebar.tsx      # Main application sidebar
+└── ui/                 # shadcn/ui components (auto-generated)
+    ├── button.tsx
+    ├── sidebar.tsx
+    ├── dialog.tsx
+    └── ...
+```
+
+**Rules:**
+- **`components/theme/`** - Only theme-related components (providers, toggles, theme utilities)
+- **`components/layout/`** - Layout components (header, sidebar, footer, navigation)
+- **`components/ui/`** - shadcn/ui components only (managed by shadcn CLI)
+- **Custom components** - If creating app-specific components, create appropriate subdirectories (e.g., `components/forms/`, `components/data/`)
+
+**Import Examples:**
+```typescript
+// Theme components
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { ModeToggle } from "@/components/theme/mode-toggle";
+
+// Layout components
+import { AppHeader } from "@/components/layout/app-header";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+
+// UI components
+import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
+```
+
 ## Common Patterns
 
 ### Import Organization (Enforced by ESLint)
