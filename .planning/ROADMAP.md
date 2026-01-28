@@ -10,7 +10,7 @@ This roadmap delivers request-time user synchronization for Populatte. The journ
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Prerequisites** - Clerk JWT Template and database upsert pattern
+- [x] **Phase 1: Prerequisites** - Clerk JWT Template and database upsert pattern
 - [ ] **Phase 2: Backend Sync** - Guard-based user sync with full User entity attachment
 - [ ] **Phase 3: Frontend Client** - Type-safe API client with token injection
 
@@ -27,7 +27,7 @@ This roadmap delivers request-time user synchronization for Populatte. The journ
 **Plans**: 1 plan
 
 Plans:
-- [ ] 01-01-PLAN.md — Extend schema, implement upsert, add env validation, configure Clerk JWT
+- [x] 01-01-PLAN.md — Extend schema, implement upsert, add env validation, configure Clerk JWT
 
 ### Phase 2: Backend Sync
 **Goal**: Authenticated requests have full User entity attached; controllers never manually fetch users
@@ -67,7 +67,7 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Prerequisites | 0/1 | Planned | - |
+| 1. Prerequisites | 1/1 | ✓ Complete | 2026-01-28 |
 | 2. Backend Sync | 0/3 | Not started | - |
 | 3. Frontend Client | 0/2 | Not started | - |
 

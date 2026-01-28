@@ -9,8 +9,8 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Configuration
 
-- [ ] **CFG-01**: Clerk JWT Template configured in Dashboard with email, firstName, lastName, imageUrl claims
-- [ ] **CFG-02**: Database repository uses upsert pattern (INSERT ON CONFLICT DO UPDATE) for atomic user sync
+- [x] **CFG-01**: Clerk JWT Template configured in Dashboard with email, firstName, lastName, imageUrl claims
+- [x] **CFG-02**: Database repository uses upsert pattern (INSERT ON CONFLICT DO UPDATE) for atomic user sync
 
 ### Backend Infrastructure
 
@@ -61,8 +61,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CFG-01 | Phase 1 | Pending |
-| CFG-02 | Phase 1 | Pending |
+| CFG-01 | Phase 1 | Complete |
+| CFG-02 | Phase 1 | Complete |
 | AUTH-01 | Phase 2 | Pending |
 | AUTH-02 | Phase 2 | Pending |
 | AUTH-03 | Phase 2 | Pending |
