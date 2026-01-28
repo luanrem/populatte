@@ -2,11 +2,11 @@
 
 ## What This Is
 
-A robust authentication and user synchronization flow between Clerk, the NestJS backend, and the Next.js frontend for Populatte. This milestone transforms the existing webhook-only user sync into a request-time sync mechanism, ensuring users are always available in the local database when making authenticated API calls, while providing a type-safe API client for the frontend.
+A robust authentication and user synchronization flow between Clerk, the NestJS backend, and the Next.js frontend for Populatte. Request-time sync ensures users are always available in the local database when making authenticated API calls, with a type-safe API client on the frontend that handles token management, retry logic, and runtime response validation.
 
 ## Core Value
 
-**Every authenticated request must have access to the local database user entity — not just the Clerk ID.** Controllers should never have to manually fetch users; the auth infrastructure handles it transparently.
+**Every authenticated request must have access to the local database user entity — not just the Clerk ID.** Controllers never manually fetch users; the auth infrastructure handles it transparently.
 
 ## Requirements
 
@@ -18,16 +18,17 @@ A robust authentication and user synchronization flow between Clerk, the NestJS 
 - ✓ Drizzle schema with users table (clerkId, email, name, imageUrl) — existing
 - ✓ Clean Architecture layers (Core/Infrastructure/Presentation) — existing
 - ✓ Clerk integration on frontend (ClerkProvider, middleware) — existing
+- ✓ Auth guard performs request-time user sync (create if not found, update metadata) — v1.0
+- ✓ Auth guard attaches local User entity to request (not just clerkId) — v1.0
+- ✓ ClerkService extracts full user claims from JWT (email, name, imageUrl) — v1.0
+- ✓ CurrentUser decorator returns local User entity — v1.0
+- ✓ API client with automatic Clerk token injection — v1.0
+- ✓ 401 error handling with token refresh + retry — v1.0
+- ✓ Type-safe API response handling with Zod schemas — v1.0
 
 ### Active
 
-- [ ] Auth guard performs request-time user sync (create if not found, update metadata)
-- [ ] Auth guard attaches local User entity to request (not just clerkId)
-- [ ] ClerkService extracts full user claims from JWT (email, name, imageUrl)
-- [ ] CurrentUser decorator returns local User entity
-- [ ] API client with automatic Clerk token injection
-- [ ] 401 error handling with token refresh + retry
-- [ ] Type-safe API response handling
+(None — next milestone requirements TBD via `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -36,28 +37,26 @@ A robust authentication and user synchronization flow between Clerk, the NestJS 
 - Session management UI — handled by Clerk components
 - API rate limiting — separate infrastructure concern
 - Webhook changes — existing webhook flow remains intact
+- Request-scoped caching for sync — deferred to optimization milestone
+- SkipUserSync decorator — deferred to optimization milestone
+- Selective sync with lastSyncedAt — deferred to optimization milestone
+- Request queueing during token refresh — deferred to frontend enhancement milestone
 
 ## Context
 
-**Technical Environment:**
-- Monorepo with Turborepo + NPM Workspaces
-- Backend: NestJS 11 with Clean Architecture (Core/Infrastructure/Presentation)
-- Frontend: Next.js 16 with App Router
-- Database: PostgreSQL via Drizzle ORM
-- Auth: Clerk (external) with local user mirror
+**Shipped v1.0** with 4,244 LOC TypeScript across 65 files.
+Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4.
 
-**Current Implementation:**
-- ClerkAuthGuard validates token but only attaches `clerkId` to request
-- Controllers must manually call `userRepository.findByClerkId()` (brittle)
-- If user authenticates before webhook arrives, they get 404 (race condition)
-- ClerkService discards JWT claims (email/name/imageUrl not extracted)
-- No standardized API client on frontend — each component would fetch differently
+**Architecture patterns established:**
+- Compare-first sync: Guard fetches stored user, compares fields, writes only on mismatch
+- Guard syncs, controller consumes: Zero-database-lookup controller pattern
+- Dual sync paths: Guard (request-time) vs SyncUserUseCase (webhook)
+- Dual API clients: Client-side (useApiClient with 401 retry) vs Server-side (createServerApiClient)
+- Factory pattern for endpoints: `createUserEndpoints(fetchFn)` composable with any fetch implementation
+- Smart retry: No 4xx retry, exponential backoff for 5xx/network errors
 
-**Architecture Decisions Already Made:**
-- Drizzle ORM (not Prisma) for database access
-- Clean Architecture with repository pattern
-- Dependency injection via NestJS DI container
-- Clerk for authentication (not rolling our own)
+**Known tech debt:**
+- Clerk JWT Dashboard config needs human re-verification if template changes (low severity)
 
 ## Constraints
 
@@ -71,11 +70,21 @@ A robust authentication and user synchronization flow between Clerk, the NestJS 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Request-time sync creates users | Eliminates race condition where user authenticates before webhook | — Pending |
-| Sync on every request (not just first) | Keeps user metadata fresh (email/name changes propagate quickly) | — Pending |
-| Fetch wrapper over Axios | Simpler, no extra dependency, aligns with Next.js patterns | — Pending |
-| Token refresh + retry on 401 | Better UX than immediate redirect; handles token expiry gracefully | — Pending |
-| Guard attaches full User entity | Controllers shouldn't need to know about Clerk; only work with internal User | — Pending |
+| Request-time sync creates users | Eliminates race condition where user authenticates before webhook | ✓ Good |
+| Sync on every request (compare-first) | Keeps user metadata fresh, skips write if unchanged | ✓ Good |
+| Guard attaches full User entity | Controllers work with internal User, not Clerk concepts | ✓ Good |
+| Fetch wrapper over Axios | Simpler, no extra dependency, aligns with Next.js patterns | ✓ Good |
+| Token refresh + retry on 401 | Better UX than immediate redirect; handles token expiry gracefully | ✓ Good |
+| Separate client/server fetch wrappers | Different token acquisition, env vars, retry strategies | ✓ Good |
+| Clerk skipCache (not forceRefresh) | Correct Clerk API for forcing fresh tokens | ✓ Good |
+| Guard calls upsert directly (not SyncUserUseCase) | Compare-first optimization is different from webhook's unconditional upsert | ✓ Good |
+| DATABASE_URL replaces SUPABASE_URL | Consistency across drizzle.config, database.config, env validation | ✓ Good |
+| Partial unique index on clerkId | Allows re-creation of soft-deleted users with same clerkId | ✓ Good |
+| HealthModule marked @Global() | Cross-module SyncFailureIndicator injection without circular deps | ✓ Good |
+| Zod safeParse for runtime validation | Explicit error handling with detailed logging | ✓ Good |
+| Factory pattern for endpoints | Composable with any fetch implementation (hook or non-hook) | ✓ Good |
+| Smart retry in QueryClient | No 4xx retry, exponential backoff for 5xx/network | ✓ Good |
+| useState for stable QueryClient | Prevents cache loss on re-render | ✓ Good |
 
 ---
-*Last updated: 2026-01-28 after initialization*
+*Last updated: 2026-01-28 after v1.0 milestone*
