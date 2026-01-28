@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-28)
 
 ## Current Position
 
-Phase: 2 of 3 (Backend Sync) ✓ Complete
-Plan: 2 of 2 in current phase
-Status: Phase complete — ready for Phase 3
-Last activity: 2026-01-28 - Phase 2 verified and complete
+Phase: 3 of 3 (Frontend Client) In Progress
+Plan: 1 of 2 in current phase
+Status: In progress — 03-01 complete
+Last activity: 2026-01-28 - Completed 03-01-PLAN.md
 
-Progress: [██████░░░░] 60%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 2min 12s
-- Total execution time: 6min 24s
+- Total plans completed: 4
+- Average duration: 5min 24s
+- Total execution time: 18min 39s
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [██████░░░░] 60%
 |-------|-------|-------|----------|
 | 1. Prerequisites | 1/1 | - | - |
 | 2. Backend Sync | 2/2 | 4min 24s | 2min 12s |
-| 3. Frontend Client | 0/2 | - | - |
+| 3. Frontend Client | 1/2 | 12min 15s | 12min 15s |
 
 **Recent Trend:**
-- Last 5 plans: 01-01, 02-01, 02-02
-- Trend: Consistent ~2min per plan
+- Last 5 plans: 01-01, 02-01, 02-02, 03-01
+- Trend: Longer for infrastructure setup (03-01 included dependency installation)
 
 *Updated after each plan completion*
 
@@ -55,6 +55,10 @@ Recent decisions affecting current work:
 - Guard calls userRepository.upsert() directly (not SyncUserUseCase - different optimization pattern)
 - Compare-first optimization: fetch stored user, compare profile fields, skip write if unchanged
 - Sync failures return 503 ServiceUnavailableException (temporary infrastructure issue, not auth failure)
+- Dual fetch wrapper pattern (client/server) - different token acquisition, env vars, retry strategies
+- Clerk skipCache for token refresh (not forceRefresh) - correct Clerk API
+- Pure function error handlers (not class) - stateless classification is simpler
+- No 401 retry on server - tokens are fresh per-request
 
 ### Pending Todos
 
@@ -66,6 +70,6 @@ None - Phase 1 blocker resolved in 02-01 (SyncUserUseCase now uses upsert)
 
 ## Session Continuity
 
-Last session: 2026-01-28
-Stopped at: Phase 2 complete, ready for Phase 3
+Last session: 2026-01-28 18:10
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
