@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
 import { verifyToken } from '@clerk/backend';
 
@@ -6,7 +6,7 @@ import { clerkConfig } from '../config/clerk.config';
 
 export interface ClerkTokenPayload {
   sub: string;
-  email?: string;
+  email: string;
   firstName?: string;
   lastName?: string;
   imageUrl?: string;
@@ -14,6 +14,8 @@ export interface ClerkTokenPayload {
 
 @Injectable()
 export class ClerkService {
+  private readonly logger = new Logger(ClerkService.name);
+
   public constructor(
     @Inject(clerkConfig.KEY)
     private readonly config: ConfigType<typeof clerkConfig>,
@@ -33,8 +35,13 @@ export class ClerkService {
 
       return {
         sub: result.sub,
+        email: result.email as string,
+        firstName: result.firstName as string | undefined,
+        lastName: result.lastName as string | undefined,
+        imageUrl: result.imageUrl as string | undefined,
       };
-    } catch {
+    } catch (error) {
+      this.logger.warn('Token verification failed', error);
       return null;
     }
   }
