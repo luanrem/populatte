@@ -5,6 +5,9 @@ import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { QueryProvider } from "@/lib/query/provider";
+import { Toaster } from "@/components/ui/sonner";
+import { GlobalLoadingIndicator } from "@/components/error/global-loading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,15 +41,19 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SignedIn>
-              <SidebarProvider>
-                <AppSidebar />
+            <QueryProvider>
+              <GlobalLoadingIndicator />
+              <SignedIn>
+                <SidebarProvider>
+                  <AppSidebar />
+                  {children}
+                </SidebarProvider>
+              </SignedIn>
+              <SignedOut>
                 {children}
-              </SidebarProvider>
-            </SignedIn>
-            <SignedOut>
-              {children}
-            </SignedOut>
+              </SignedOut>
+              <Toaster richColors />
+            </QueryProvider>
           </ThemeProvider>
         </body>
       </html>
