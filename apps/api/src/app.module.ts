@@ -9,6 +9,7 @@ import {
 } from './infrastructure/config';
 import { AuthModule } from './infrastructure/auth/auth.module';
 import { DrizzleModule } from './infrastructure/database/drizzle/drizzle.module';
+import { HealthModule } from './infrastructure/health/health.module';
 import { WebhookController, UserController } from './presentation/controllers';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -26,6 +27,7 @@ import { AppService } from './app.service';
     }),
     DrizzleModule,
     AuthModule,
+    HealthModule,
   ],
   controllers: [AppController, WebhookController, UserController],
   providers: [AppService, SyncUserUseCase, DeleteUserUseCase],
