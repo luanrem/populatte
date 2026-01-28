@@ -2,21 +2,30 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  Logger,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { ClerkService } from '../clerk.service';
+import { User } from '../../../core/entities/user.entity';
+import { UserRepository } from '../../../core/repositories/user.repository';
+import { SyncFailureIndicator } from '../../health/sync-failure.indicator';
+import { ClerkService, ClerkTokenPayload } from '../clerk.service';
 
 export interface AuthenticatedRequest extends Request {
-  user: {
-    clerkId: string;
-  };
+  user: User;
 }
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
-  public constructor(private readonly clerkService: ClerkService) {}
+  private readonly logger = new Logger(ClerkAuthGuard.name);
+
+  public constructor(
+    private readonly clerkService: ClerkService,
+    private readonly userRepository: UserRepository,
+    private readonly syncFailureIndicator: SyncFailureIndicator,
+  ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
@@ -32,11 +41,51 @@ export class ClerkAuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
-    (request as AuthenticatedRequest).user = {
-      clerkId: payload.sub,
-    };
+    if (!payload.email) {
+      throw new UnauthorizedException('Missing required claim: email');
+    }
 
-    return true;
+    try {
+      const user = await this.syncUser(payload);
+      this.syncFailureIndicator.recordSyncAttempt(true);
+      (request as AuthenticatedRequest).user = user;
+      return true;
+    } catch (error) {
+      this.syncFailureIndicator.recordSyncAttempt(false);
+      this.logger.error('User sync failed during authentication', error);
+      throw new ServiceUnavailableException(
+        'Authentication service temporarily unavailable',
+      );
+    }
+  }
+
+  private async syncUser(payload: ClerkTokenPayload): Promise<User> {
+    const storedUser = await this.userRepository.findByClerkId(payload.sub);
+    const needsSync = !storedUser || this.hasChanges(storedUser, payload);
+
+    if (needsSync) {
+      this.logger.log(
+        `User ${payload.sub} ${storedUser ? 'updated' : 'created'} via request sync`,
+      );
+      return this.userRepository.upsert({
+        clerkId: payload.sub,
+        email: payload.email,
+        firstName: payload.firstName ?? null,
+        lastName: payload.lastName ?? null,
+        imageUrl: payload.imageUrl ?? null,
+      });
+    }
+
+    return storedUser;
+  }
+
+  private hasChanges(user: User, payload: ClerkTokenPayload): boolean {
+    return (
+      user.email !== payload.email ||
+      user.firstName !== (payload.firstName ?? null) ||
+      user.lastName !== (payload.lastName ?? null) ||
+      user.imageUrl !== (payload.imageUrl ?? null)
+    );
   }
 
   private extractTokenFromHeader(request: Request): string | null {
