@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 import {
   CreateUserData,
   UpdateUserData,
+  UpsertUserData,
   User,
 } from '../../../../core/entities/user.entity';
 import { UserRepository } from '../../../../core/repositories/user.repository';
@@ -89,5 +90,44 @@ export class DrizzleUserRepository extends UserRepository {
       .getClient()
       .delete(users)
       .where(eq(users.clerkId, clerkId));
+  }
+
+  public async upsert(data: UpsertUserData): Promise<User> {
+    const result = await this.drizzle
+      .getClient()
+      .insert(users)
+      .values({
+        clerkId: data.clerkId,
+        email: data.email,
+        firstName: data.firstName ?? null,
+        lastName: data.lastName ?? null,
+        imageUrl: data.imageUrl ?? null,
+        source: 'clerk_sync',
+        lastSyncedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: users.clerkId,
+        set: {
+          email: sql`EXCLUDED.email`,
+          firstName: sql`EXCLUDED.first_name`,
+          lastName: sql`EXCLUDED.last_name`,
+          imageUrl: sql`EXCLUDED.image_url`,
+          updatedAt: sql`NOW()`,
+          lastSyncedAt: sql`NOW()`,
+        },
+        setWhere: sql`
+          ${users.email} IS DISTINCT FROM EXCLUDED.email OR
+          ${users.firstName} IS DISTINCT FROM EXCLUDED.first_name OR
+          ${users.lastName} IS DISTINCT FROM EXCLUDED.last_name OR
+          ${users.imageUrl} IS DISTINCT FROM EXCLUDED.image_url
+        `,
+      })
+      .returning();
+
+    const row = result[0];
+    if (!row) {
+      throw new Error('Upsert failed: no row returned');
+    }
+    return UserMapper.toDomain(row);
   }
 }

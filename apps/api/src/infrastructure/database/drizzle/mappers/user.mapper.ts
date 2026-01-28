@@ -10,6 +10,9 @@ export class UserMapper {
       firstName: row.firstName,
       lastName: row.lastName,
       imageUrl: row.imageUrl,
+      lastSyncedAt: row.lastSyncedAt,
+      deletedAt: row.deletedAt,
+      source: row.source,
       createdAt: row.createdAt ?? new Date(),
       updatedAt: row.updatedAt ?? new Date(),
     };
