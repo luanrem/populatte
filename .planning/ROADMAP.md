@@ -39,12 +39,11 @@ Plans:
   3. Request object contains full User entity (not just clerkId)
   4. CurrentUser decorator returns User entity with correct TypeScript types
   5. Sync failures return 503 with generic message (no leaked internals)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Extend ClerkService to extract full JWT claims
-- [ ] 02-02: Enhance ClerkAuthGuard with sync logic and error handling
-- [ ] 02-03: Update types and CurrentUser decorator
+- [ ] 02-01-PLAN.md — Extend ClerkService claims, fix SyncUserUseCase upsert, create health module
+- [ ] 02-02-PLAN.md — Enhance ClerkAuthGuard with sync logic, update types/decorator/controller
 
 ### Phase 3: Frontend Client
 **Goal**: Frontend has type-safe API client with automatic authentication
