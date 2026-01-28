@@ -53,11 +53,11 @@ Plans:
   1. API client automatically injects Clerk Bearer token into requests
   2. 401 responses trigger token refresh and single retry before redirect
   3. API responses are parsed with Zod schemas for type safety
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Build fetch wrapper with token injection and retry logic
-- [ ] 03-02: Add Zod schema integration for type-safe responses
+- [ ] 03-01-PLAN.md — Fetch wrapper with token injection, 401 retry, error types, and dependency install
+- [ ] 03-02-PLAN.md — Zod validation, TanStack Query hooks, error UX, and layout integration
 
 ## Progress
 
