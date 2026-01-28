@@ -14,12 +14,12 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Backend Infrastructure
 
-- [ ] **AUTH-01**: Auth guard performs request-time user sync (creates user if not found, updates if exists)
-- [ ] **AUTH-02**: Auth guard attaches full User entity to request object (not just clerkId)
-- [ ] **AUTH-03**: ClerkService extracts email, firstName, lastName, imageUrl from JWT claims
-- [ ] **AUTH-04**: User repository handles concurrent requests atomically via upsert pattern
-- [ ] **AUTH-05**: CurrentUser decorator returns full User entity with correct TypeScript types
-- [ ] **AUTH-06**: AuthenticatedRequest interface updated to use User entity type
+- [x] **AUTH-01**: Auth guard performs request-time user sync (creates user if not found, updates if exists)
+- [x] **AUTH-02**: Auth guard attaches full User entity to request object (not just clerkId)
+- [x] **AUTH-03**: ClerkService extracts email, firstName, lastName, imageUrl from JWT claims
+- [x] **AUTH-04**: User repository handles concurrent requests atomically via upsert pattern
+- [x] **AUTH-05**: CurrentUser decorator returns full User entity with correct TypeScript types
+- [x] **AUTH-06**: AuthenticatedRequest interface updated to use User entity type
 
 ### Frontend API Client
 
@@ -63,12 +63,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | CFG-01 | Phase 1 | Complete |
 | CFG-02 | Phase 1 | Complete |
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
-| AUTH-04 | Phase 2 | Pending |
-| AUTH-05 | Phase 2 | Pending |
-| AUTH-06 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | Complete |
+| AUTH-02 | Phase 2 | Complete |
+| AUTH-03 | Phase 2 | Complete |
+| AUTH-04 | Phase 2 | Complete |
+| AUTH-05 | Phase 2 | Complete |
+| AUTH-06 | Phase 2 | Complete |
 | API-01 | Phase 3 | Pending |
 | API-02 | Phase 3 | Pending |
 | API-03 | Phase 3 | Pending |
