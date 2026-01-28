@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-01-28)
 ## Current Position
 
 Phase: 2 of 3 (Backend Sync)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-01-28 - Phase 1 completed
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-01-28 - Completed 02-01-PLAN.md
 
-Progress: [███░░░░░░░] 33%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 2
 - Average duration: -
 - Total execution time: -
 
@@ -28,11 +28,11 @@ Progress: [███░░░░░░░] 33%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Prerequisites | 1/1 | - | - |
-| 2. Backend Sync | 0/3 | - | - |
+| 2. Backend Sync | 1/3 | 2min | 2min |
 | 3. Frontend Client | 0/2 | - | - |
 
 **Recent Trend:**
-- Last 5 plans: 01-01
+- Last 5 plans: 01-01, 02-01
 - Trend: Not enough data
 
 *Updated after each plan completion*
@@ -47,8 +47,11 @@ Recent decisions affecting current work:
 - Guard-based sync (not interceptor) - keeps authentication concerns cohesive
 - Fetch wrapper over Axios - simpler, aligns with Next.js patterns
 - DATABASE_URL replaces SUPABASE_URL for database config consistency
-- Upsert method wiring deferred to Phase 2 (SyncUserUseCase will be reworked with guard sync logic)
 - Soft delete uses partial unique index pattern on clerkId
+- ClerkService email field required (not optional) - Clerk JWT template guarantees it
+- SyncUserUseCase scoped to webhook flow only - guard handles request-time sync separately
+- HealthModule marked @Global() for cross-module SyncFailureIndicator injection
+- Health endpoint is public (no auth) for monitoring infrastructure access
 
 ### Pending Todos
 
@@ -56,10 +59,10 @@ None yet.
 
 ### Blockers/Concerns
 
-- Verifier found SyncUserUseCase still uses find+update/create instead of upsert() — must be addressed in Phase 2
+None - Phase 1 blocker resolved in 02-01 (SyncUserUseCase now uses upsert)
 
 ## Session Continuity
 
-Last session: 2026-01-28
-Stopped at: Phase 1 complete, ready for Phase 2 planning
+Last session: 2026-01-28 19:03 UTC
+Stopped at: Completed 02-01-PLAN.md
 Resume file: None
