@@ -23,9 +23,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Frontend API Client
 
-- [ ] **API-01**: Fetch wrapper automatically injects Clerk Bearer token into all API requests
-- [ ] **API-02**: 401 responses trigger token refresh and single retry before redirect to sign-in
-- [ ] **API-03**: API client provides type-safe response parsing with Zod schemas
+- [x] **API-01**: Fetch wrapper automatically injects Clerk Bearer token into all API requests
+- [x] **API-02**: 401 responses trigger token refresh and single retry before redirect to sign-in
+- [x] **API-03**: API client provides type-safe response parsing with Zod schemas
 
 ## v2 Requirements
 
@@ -69,9 +69,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04 | Phase 2 | Complete |
 | AUTH-05 | Phase 2 | Complete |
 | AUTH-06 | Phase 2 | Complete |
-| API-01 | Phase 3 | Pending |
-| API-02 | Phase 3 | Pending |
-| API-03 | Phase 3 | Pending |
+| API-01 | Phase 3 | Complete |
+| API-02 | Phase 3 | Complete |
+| API-03 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 11 total

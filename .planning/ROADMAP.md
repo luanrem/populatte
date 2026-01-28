@@ -12,7 +12,7 @@ This roadmap delivers request-time user synchronization for Populatte. The journ
 
 - [x] **Phase 1: Prerequisites** - Clerk JWT Template and database upsert pattern
 - [x] **Phase 2: Backend Sync** - Guard-based user sync with full User entity attachment
-- [ ] **Phase 3: Frontend Client** - Type-safe API client with token injection
+- [x] **Phase 3: Frontend Client** - Type-safe API client with token injection
 
 ## Phase Details
 
@@ -56,8 +56,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Fetch wrapper with token injection, 401 retry, error types, and dependency install
-- [ ] 03-02-PLAN.md — Zod validation, TanStack Query hooks, error UX, and layout integration
+- [x] 03-01-PLAN.md — Fetch wrapper with token injection, 401 retry, error types, and dependency install
+- [x] 03-02-PLAN.md — Zod validation, TanStack Query hooks, error UX, and layout integration
 
 ## Progress
 
@@ -68,7 +68,7 @@ Phases execute in numeric order: 1 -> 2 -> 3
 |-------|----------------|--------|-----------|
 | 1. Prerequisites | 1/1 | ✓ Complete | 2026-01-28 |
 | 2. Backend Sync | 2/2 | ✓ Complete | 2026-01-28 |
-| 3. Frontend Client | 0/2 | Not started | - |
+| 3. Frontend Client | 2/2 | ✓ Complete | 2026-01-28 |
 
 ---
 *Roadmap created: 2026-01-28*
