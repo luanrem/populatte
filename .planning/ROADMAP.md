@@ -24,10 +24,10 @@ This roadmap delivers request-time user synchronization for Populatte. The journ
   1. Clerk JWT tokens include email, firstName, lastName, and imageUrl claims
   2. Database upsert for users uses INSERT ON CONFLICT DO UPDATE pattern
   3. Concurrent requests for same user do not create duplicates
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 01-01: Configure Clerk JWT Template and verify upsert pattern
+- [ ] 01-01-PLAN.md — Extend schema, implement upsert, add env validation, configure Clerk JWT
 
 ### Phase 2: Backend Sync
 **Goal**: Authenticated requests have full User entity attached; controllers never manually fetch users
@@ -67,7 +67,7 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Prerequisites | 0/1 | Not started | - |
+| 1. Prerequisites | 0/1 | Planned | - |
 | 2. Backend Sync | 0/3 | Not started | - |
 | 3. Frontend Client | 0/2 | Not started | - |
 
