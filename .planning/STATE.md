@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Transform tedious manual data entry into automated form population.
-**Current focus:** v2.0 Data Ingestion Engine -- Phase 1 (Domain Foundation and Database Schema)
+**Current focus:** v2.0 Data Ingestion Engine -- Phase 2 (Parsing and Ingestion Logic)
 
 ## Current Position
 
 Phase: 1 of 4 (Domain Foundation and Database Schema)
-Plan: 1 of 2 (Core layer entities and repository contracts)
-Status: In progress
-Last activity: 2026-01-29 -- Completed 01-01-PLAN.md
+Plan: 2 of 2 (Infrastructure persistence layer)
+Status: Phase complete
+Last activity: 2026-01-29 -- Completed 01-02-PLAN.md
 
-Progress: [█░░░░░░░░░] ~17% (1/6 plans)
+Progress: [██░░░░░░░░] ~33% (2/6 plans)
 
 ## Performance Metrics
 
@@ -24,8 +24,9 @@ Progress: [█░░░░░░░░░] ~17% (1/6 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 1
+- Plans completed: 2
 - 01-01: 1m 25s (2 tasks)
+- 01-02: 3m 01s (2 tasks)
 
 *Updated after each plan completion*
 
@@ -43,6 +44,9 @@ Recent decisions affecting current work:
 - Batch entity includes `deletedBy` field for audit trail on soft deletes (01-01)
 - RowRepository.createMany returns Promise<void> -- avoid .returning() overhead per Pitfall 16 (01-01)
 - New enums use SCREAMING_SNAKE_CASE values for ingestion domain (01-01)
+- pgEnum values use SCREAMING_SNAKE_CASE matching domain entity enum values for runtime cast safety (01-02)
+- createMany chunks at 5,000 rows per INSERT to stay within PostgreSQL 65,534 parameter limit (01-02)
+- No .returning() on bulk inserts to avoid overhead (01-02)
 
 ### Pending Todos
 
@@ -55,6 +59,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-29T14:03:08Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-01-29T14:10:45Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
