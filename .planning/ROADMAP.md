@@ -41,11 +41,11 @@ This milestone adds a robust Excel file ingestion pipeline to the existing NestJ
 - Pitfall 16 (returning overhead): Omit `.returning()` on bulk row inserts
 - Pitfall 19 (inconsistent JSONB schemas): Store column list as metadata on the `batches` table
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Core layer entities (Batch, Row) and abstract repository contracts
+- [ ] 01-02-PLAN.md — Drizzle schemas, mappers, repository implementations, DrizzleModule registration, migration
 
 ---
 
