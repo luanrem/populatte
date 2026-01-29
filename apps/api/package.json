@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "@clerk/backend": "^2.29.3",
+    "@nestjs-cls/transactional": "^3.2.0",
+    "@nestjs-cls/transactional-adapter-drizzle-orm": "^1.2.3",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -32,10 +34,13 @@
     "@nestjs/terminus": "^11.0.0",
     "drizzle-orm": "^0.45.1",
     "joi": "^18.0.2",
+    "nestjs-cls": "^6.2.0",
     "pg": "^8.17.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "svix": "^1.84.1"
+    "svix": "^1.84.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
