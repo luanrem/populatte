@@ -44,7 +44,7 @@ This milestone adds a robust Excel file ingestion pipeline to the existing NestJ
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Core layer entities (Batch, Row) and abstract repository contracts
+- [x] 01-01-PLAN.md — Core layer entities (Batch, Row) and abstract repository contracts
 - [ ] 01-02-PLAN.md — Drizzle schemas, mappers, repository implementations, DrizzleModule registration, migration
 
 ---

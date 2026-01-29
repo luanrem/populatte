@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 1 of 4 (Domain Foundation and Database Schema)
-Plan: Not yet planned
-Status: Ready to plan
-Last activity: 2026-01-29 -- Roadmap created (4 phases, 10 requirements mapped)
+Plan: 1 of 2 (Core layer entities and repository contracts)
+Status: In progress
+Last activity: 2026-01-29 -- Completed 01-01-PLAN.md
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] ~17% (1/6 plans)
 
 ## Performance Metrics
 
@@ -22,6 +22,10 @@ Progress: [░░░░░░░░░░] 0%
 - Total plans completed: 5
 - Average duration: 4min 54s
 - Total execution time: 21min 50s
+
+**v2.0 velocity:**
+- Plans completed: 1
+- 01-01: 1m 25s (2 tasks)
 
 *Updated after each plan completion*
 
@@ -36,6 +40,9 @@ Recent decisions affecting current work:
 - Cell-address keys for profile mode (simplest lossless flattening; Key-Value heuristic deferred)
 - Atomic batch transactions (all-or-nothing insert prevents partial data corruption)
 - SheetJS from CDN only (npm registry version has Prototype Pollution vulnerability)
+- Batch entity includes `deletedBy` field for audit trail on soft deletes (01-01)
+- RowRepository.createMany returns Promise<void> -- avoid .returning() overhead per Pitfall 16 (01-01)
+- New enums use SCREAMING_SNAKE_CASE values for ingestion domain (01-01)
 
 ### Pending Todos
 
@@ -48,6 +55,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-29
-Stopped at: Roadmap created, ready to plan Phase 1
+Last session: 2026-01-29T14:03:08Z
+Stopped at: Completed 01-01-PLAN.md
 Resume file: None
