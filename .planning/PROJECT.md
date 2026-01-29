@@ -1,12 +1,22 @@
-# End-to-End Authentication & User Synchronization
+# Populatte
 
 ## What This Is
 
-A robust authentication and user synchronization flow between Clerk, the NestJS backend, and the Next.js frontend for Populatte. Request-time sync ensures users are always available in the local database when making authenticated API calls, with a type-safe API client on the frontend that handles token management, retry logic, and runtime response validation.
+A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, and data ingestion. The Next.js dashboard manages projects and uploads. The Chrome extension maps Excel columns to form fields and auto-populates web forms.
 
 ## Core Value
 
-**Every authenticated request must have access to the local database user entity — not just the Clerk ID.** Controllers never manually fetch users; the auth infrastructure handles it transparently.
+**Transform tedious manual data entry into automated form population.** Upload Excel, map columns to fields, populate forms in one click.
+
+## Current Milestone: v2.0 Data Ingestion Engine
+
+**Goal:** Create a robust API to ingest unstructured Excel files and normalize them into standardized JSONB format in PostgreSQL, using the Strategy Pattern to support multiple ingestion modes.
+
+**Target features:**
+- File upload with Multer (max 5MB/file, max 50 files/request)
+- Strategy Pattern: `ListModeStrategy` (one file, many rows) and `ProfileModeStrategy` (many files, one entity per file)
+- Atomic batch operations with database transactions
+- JSONB normalized data storage with source traceability
 
 ## Requirements
 
@@ -25,10 +35,20 @@ A robust authentication and user synchronization flow between Clerk, the NestJS 
 - ✓ API client with automatic Clerk token injection — v1.0
 - ✓ 401 error handling with token refresh + retry — v1.0
 - ✓ Type-safe API response handling with Zod schemas — v1.0
+- ✓ Project CRUD (create, list, get, update, soft-delete) — v1.0
 
 ### Active
 
-(None — next milestone requirements TBD via `/gsd:new-milestone`)
+- [ ] Batch creation with file upload (POST /projects/:projectId/batches)
+- [ ] ListModeStrategy: Parse single Excel file into N rows with headers as keys
+- [ ] ProfileModeStrategy: Parse N Excel files into N rows with cell-address keys
+- [ ] Strategy selection via request body parameter
+- [ ] Atomic batch insert with database transactions (full rollback on failure)
+- [ ] JSONB normalized data storage in `rows` table
+- [ ] Source filename traceability on every row
+- [ ] File validation: max 5MB per file, max 50 files per request
+- [ ] Input validation: list_mode rejects >1 file, profile_mode accepts 1..N
+- [ ] Drizzle schema for `batches` and `rows` tables with proper relationships
 
 ### Out of Scope
 
@@ -36,11 +56,12 @@ A robust authentication and user synchronization flow between Clerk, the NestJS 
 - Roles/permissions system — future milestone
 - Session management UI — handled by Clerk components
 - API rate limiting — separate infrastructure concern
-- Webhook changes — existing webhook flow remains intact
-- Request-scoped caching for sync — deferred to optimization milestone
-- SkipUserSync decorator — deferred to optimization milestone
-- Selective sync with lastSyncedAt — deferred to optimization milestone
-- Request queueing during token refresh — deferred to frontend enhancement milestone
+- Frontend upload UI — v2.0 is backend-only (API first)
+- PDF ingestion strategy — future extension via Strategy Pattern
+- Notion ingestion strategy — future extension via Strategy Pattern
+- Key-Value heuristic detection for profile mode — deferred, cell-address keys for MVP
+- Streaming/chunked upload for large files — deferred to optimization milestone
+- Row-level error reporting (partial success) — entire batch is atomic for MVP
 
 ## Context
 
@@ -55,6 +76,12 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 - Factory pattern for endpoints: `createUserEndpoints(fetchFn)` composable with any fetch implementation
 - Smart retry: No 4xx retry, exponential backoff for 5xx/network errors
 
+**v2.0 adds:**
+- Strategy Pattern for extensible ingestion (ListMode, ProfileMode, future: PDF, Notion)
+- Database transactions for atomic batch operations
+- File upload handling with Multer
+- Excel parsing with SheetJS (xlsx)
+
 **Known tech debt:**
 - Clerk JWT Dashboard config needs human re-verification if template changes (low severity)
 
@@ -64,7 +91,10 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 - **Strict TypeScript**: No `any`, `noUncheckedIndexedAccess` enabled, explicit return types
 - **Language**: All code, comments, and documentation in English
 - **Existing Structure**: Must fit within established Clean Architecture layers
-- **No Breaking Changes**: Webhook flow must continue working alongside request-time sync
+- **No Breaking Changes**: Existing auth, user sync, and project CRUD must remain intact
+- **Backend Only**: v2.0 is API-first; no frontend changes in this milestone
+- **Strategy Pattern**: Ingestion must use strategy interface, no `if/else` blocks in service
+- **Atomic Operations**: Batch inserts wrapped in database transactions
 
 ## Key Decisions
 
@@ -85,6 +115,10 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Factory pattern for endpoints | Composable with any fetch implementation (hook or non-hook) | ✓ Good |
 | Smart retry in QueryClient | No 4xx retry, exponential backoff for 5xx/network | ✓ Good |
 | useState for stable QueryClient | Prevents cache loss on re-render | ✓ Good |
+| Strategy Pattern for ingestion | Open/Closed principle: add new strategies without modifying service | — Pending |
+| Cell-address keys for profile mode | Simplest lossless flattening; Key-Value heuristic deferred | — Pending |
+| Atomic batch transactions | All-or-nothing insert prevents partial data corruption | — Pending |
+| SheetJS (xlsx) for Excel parsing | Lightweight, widely used, handles .xlsx format | — Pending |
 
 ---
-*Last updated: 2026-01-28 after v1.0 milestone*
+*Last updated: 2026-01-29 after v2.0 milestone initialization*
