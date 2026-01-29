@@ -12,13 +12,19 @@ This milestone adds a robust Excel file ingestion pipeline to the existing NestJ
 ## Phases
 
 **Phase Numbering:**
-- Integer phases (1, 2, 3, 4): Planned milestone work
+- Integer phases (1, 2, 3...): Planned milestone work
 - Decimal phases (e.g., 2.1): Urgent insertions if needed
 
 - [x] **Phase 1: Domain Foundation and Database Schema** - Core entities, repository interfaces, Drizzle schema, and repository implementations
 - [x] **Phase 2: Transaction Support and Excel Parsing Strategies** - CLS-based transaction infrastructure and SheetJS-powered ListMode/ProfileMode strategies
-- [ ] **Phase 3: Ingestion Service and Use Case** - Strategy context service, ingestion module, and transactional use case orchestration
-- [ ] **Phase 4: Presentation Layer** - Controller with Multer file upload, Zod DTO validation, and file security validation
+- [ ] **Phase 3: Ingestion Service** - Strategy selection and parse-then-persist orchestration
+- [ ] **Phase 4: Ingestion Module** - NestJS module wiring for strategies and ingestion service
+- [ ] **Phase 5: CreateBatch Use Case** - Transactional use case with project ownership validation
+- [ ] **Phase 6: Transaction Rollback Test** - Integration test proving atomic rollback behavior
+- [ ] **Phase 7: Batch Endpoint** - Controller with Multer file upload and ClerkAuthGuard
+- [ ] **Phase 8: Upload Size Limits** - Multer size/count enforcement with early rejection
+- [ ] **Phase 9: File Content Validation** - Magic-byte inspection for Excel file verification
+- [ ] **Phase 10: Batch DTO Validation** - Zod v4 schema for mode field and controller delegation
 
 ## Phase Details
 
@@ -84,53 +90,165 @@ Plans:
 
 ---
 
-### Phase 3: Ingestion Service and Use Case
+### Phase 3: Ingestion Service
 
-**Goal**: The full ingestion pipeline is wired end-to-end -- strategy selection, file parsing, batch creation, and row persistence all execute within an atomic transaction
+**Goal**: `IngestionService` selects the correct parsing strategy based on mode and coordinates the parse-then-persist flow without any `if/else` parsing logic
 **Depends on**: Phase 2
-**Requirements**: REQ-04, REQ-05
-**Research flag**: Standard patterns -- follows existing service/module/use-case patterns in the codebase.
+**Requirements**: REQ-04
+**Research flag**: Standard patterns -- follows existing service patterns in the codebase.
 
 **Success Criteria** (what must be TRUE):
   1. `IngestionService` selects the correct strategy based on a mode parameter (`list_mode` or `profile_mode`) and coordinates parsing followed by persistence, without any `if/else` parsing logic in the service itself
-  2. `IngestionModule` provides both strategies and the ingestion service, exports `IngestionService` for use case injection
-  3. `CreateBatchUseCase` validates project ownership, calls `IngestionService`, and the entire operation (batch insert + all row inserts) either fully commits or fully rolls back via `@Transactional()`
-  4. An integration test demonstrates that a failed row insert rolls back the batch insert (no orphaned batches)
 
 **Pitfall mitigations**:
-- Pitfall 12 (DI token overwrite): Verify both strategies are independently injectable in `IngestionModule`
+- Pitfall 12 (DI token overwrite): Verify both strategies are independently injectable
 - Anti-pattern avoidance: Strategies return `ParsedRow[]` only -- persistence handled by `IngestionService`, not strategies
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — IngestionService with strategy selection and parse-persist orchestration
 
 ---
 
-### Phase 4: Presentation Layer
+### Phase 4: Ingestion Module
 
-**Goal**: The API endpoint accepts multipart file uploads with full input validation and security checks, producing a batch creation response
+**Goal**: `IngestionModule` wires strategies and ingestion service for NestJS dependency injection
 **Depends on**: Phase 3
-**Requirements**: REQ-01, REQ-08
+**Requirements**: REQ-04
+**Research flag**: Standard patterns -- follows existing module patterns in the codebase.
+
+**Success Criteria** (what must be TRUE):
+  1. `IngestionModule` provides both strategies and the ingestion service, exports `IngestionService` for use case injection
+
+**Pitfall mitigations**:
+- Pitfall 12 (DI token overwrite): Use Symbol-based tokens for strategy injection (consistent with ExcelModule)
+
+**Plans**: 1 plan
+
+Plans:
+- [ ] 04-01-PLAN.md — IngestionModule setup with ExcelModule import and service export
+
+---
+
+### Phase 5: CreateBatch Use Case
+
+**Goal**: Transactional use case validates project ownership, orchestrates ingestion, and guarantees atomic commit/rollback of batch + rows
+**Depends on**: Phase 4
+**Requirements**: REQ-05
+**Research flag**: Standard patterns -- follows existing use case patterns with @Transactional() from Phase 2.
+
+**Success Criteria** (what must be TRUE):
+  1. `CreateBatchUseCase` validates project ownership, calls `IngestionService`, and the entire operation (batch insert + all row inserts) either fully commits or fully rolls back via `@Transactional()`
+
+**Pitfall mitigations**:
+- Transaction boundary: Ensure `@Transactional()` wraps the full execute() method so batch and row inserts share the same transaction
+
+**Plans**: 1 plan
+
+Plans:
+- [ ] 05-01-PLAN.md — CreateBatchUseCase with ownership validation and transactional orchestration
+
+---
+
+### Phase 6: Transaction Rollback Test
+
+**Goal**: Integration test proves that a failed row insert rolls back the batch insert, preventing orphaned batches
+**Depends on**: Phase 5
+**Requirements**: REQ-05
+**Research flag**: Standard patterns -- NestJS testing module with database setup.
+
+**Success Criteria** (what must be TRUE):
+  1. An integration test demonstrates that a failed row insert rolls back the batch insert (no orphaned batches)
+
+**Pitfall mitigations**:
+- Test isolation: Each test should use a clean transaction that rolls back after assertion
+
+**Plans**: 1 plan
+
+Plans:
+- [ ] 06-01-PLAN.md — Integration test for atomic rollback behavior
+
+---
+
+### Phase 7: Batch Endpoint
+
+**Goal**: HTTP endpoint accepts multipart file uploads with authentication, delegating to the use case
+**Depends on**: Phase 5
+**Requirements**: REQ-01
 **Research flag**: Standard patterns -- NestJS controller with Multer interceptor is well-documented.
 
 **Success Criteria** (what must be TRUE):
   1. `POST /projects/:projectId/batches` accepts `multipart/form-data` with a `mode` field and `files` array, protected by `ClerkAuthGuard`, and returns `{ batchId, rowCount }` on success
-  2. Multer enforces max 5MB per file and max 50 files per request at the interceptor level; oversized files are rejected with a clear 413 error before any parsing occurs
-  3. File content is validated via magic-byte inspection (ZIP PK signature `0x504B0304`) after Multer processes the buffer but before SheetJS parses it; non-Excel files are rejected with a 400 error
-  4. `CreateBatchDto` uses a Zod v4 schema to validate the `mode` field, and the controller delegates to `CreateBatchUseCase` without containing any parsing or persistence logic
+
+**Pitfall mitigations**:
+- Controller should delegate entirely to use case -- no parsing or persistence logic in controller
+
+**Plans**: 1 plan
+
+Plans:
+- [ ] 07-01-PLAN.md — BatchController with Multer interceptor and ClerkAuthGuard
+
+---
+
+### Phase 8: Upload Size Limits
+
+**Goal**: Multer enforces file size and count limits at the interceptor level, rejecting oversized uploads before any parsing
+**Depends on**: Phase 7
+**Requirements**: REQ-08
+**Research flag**: Standard patterns -- Multer limits configuration.
+
+**Success Criteria** (what must be TRUE):
+  1. Multer enforces max 5MB per file and max 50 files per request at the interceptor level; oversized files are rejected with a clear 413 error before any parsing occurs
+
+**Pitfall mitigations**:
+- Pitfall 4 (memory exhaustion): Set Multer `limits` defensively
+- Pitfall 15 (full upload before rejection): Content-Length middleware for early rejection of oversized requests
+
+**Plans**: 1 plan
+
+Plans:
+- [ ] 08-01-PLAN.md — Multer limits configuration and Content-Length middleware
+
+---
+
+### Phase 9: File Content Validation
+
+**Goal**: Magic-byte inspection validates that uploaded files are genuine Excel/ZIP archives before SheetJS processes them
+**Depends on**: Phase 7
+**Requirements**: REQ-08
+**Research flag**: Standard patterns -- buffer inspection for file type validation.
+
+**Success Criteria** (what must be TRUE):
+  1. File content is validated via magic-byte inspection (ZIP PK signature `0x504B0304`) after Multer processes the buffer but before SheetJS parses it; non-Excel files are rejected with a 400 error
 
 **Pitfall mitigations**:
 - Pitfall 3 (MIME bypass): Validate ZIP magic bytes on buffer, never trust `file.mimetype` alone
-- Pitfall 4 (memory exhaustion): Set Multer `limits` defensively; consider sequential file processing within a request
-- Pitfall 15 (full upload before rejection): Content-Length middleware for early rejection of oversized requests
-- Pitfall 17 (Zod v4): Use v4 API exclusively (`error.issues`, top-level `z.uuid()`)
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 09-01-PLAN.md — Magic-byte validation pipe/guard for Excel file verification
+
+---
+
+### Phase 10: Batch DTO Validation
+
+**Goal**: Zod v4 schema validates the mode field and the controller delegates to use case without containing business logic
+**Depends on**: Phase 7
+**Requirements**: REQ-01
+**Research flag**: Standard patterns -- follows existing Zod DTO patterns in the codebase.
+
+**Success Criteria** (what must be TRUE):
+  1. `CreateBatchDto` uses a Zod v4 schema to validate the `mode` field, and the controller delegates to `CreateBatchUseCase` without containing any parsing or persistence logic
+
+**Pitfall mitigations**:
+- Pitfall 17 (Zod v4): Use v4 API exclusively (`error.issues`, top-level `z.uuid()`)
+
+**Plans**: 1 plan
+
+Plans:
+- [ ] 10-01-PLAN.md — CreateBatchDto Zod schema and controller delegation wiring
 
 ---
 
@@ -138,14 +256,14 @@ Plans:
 
 | Requirement | Description | Phase |
 |-------------|-------------|-------|
-| REQ-01 | Batch creation with file upload (POST /projects/:projectId/batches) | Phase 4 |
+| REQ-01 | Batch creation with file upload (POST /projects/:projectId/batches) | Phase 7 + Phase 10 |
 | REQ-02 | ListModeStrategy: Parse single Excel file into N rows with headers as keys | Phase 2 |
 | REQ-03 | ProfileModeStrategy: Parse N Excel files into N rows with cell-address keys | Phase 2 |
-| REQ-04 | Strategy selection via request body parameter | Phase 3 |
-| REQ-05 | Atomic batch insert with database transactions (full rollback on failure) | Phase 2 (infrastructure) + Phase 3 (wiring) |
+| REQ-04 | Strategy selection via request body parameter | Phase 3 + Phase 4 |
+| REQ-05 | Atomic batch insert with database transactions (full rollback on failure) | Phase 2 (infrastructure) + Phase 5 (wiring) + Phase 6 (test) |
 | REQ-06 | JSONB normalized data storage in `rows` table | Phase 1 |
 | REQ-07 | Source filename traceability on every row | Phase 1 |
-| REQ-08 | File validation: max 5MB per file, max 50 files per request | Phase 4 |
+| REQ-08 | File validation: max 5MB per file, max 50 files per request | Phase 8 + Phase 9 |
 | REQ-09 | Input validation: list_mode rejects >1 file, profile_mode accepts 1..N | Phase 2 |
 | REQ-10 | Drizzle schema for `batches` and `rows` tables with proper relationships | Phase 1 |
 
@@ -153,11 +271,17 @@ Plans:
 
 ## Progress
 
-**Execution Order:** 1 -> 2 -> 3 -> 4
+**Execution Order:** 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8/9/10 (8, 9, 10 are independent)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 1. Domain Foundation and Database Schema | 2/2 | Complete | 2026-01-29 |
 | 2. Transaction Support and Excel Parsing Strategies | 2/2 | Complete | 2026-01-29 |
-| 3. Ingestion Service and Use Case | 0/TBD | Not started | - |
-| 4. Presentation Layer | 0/TBD | Not started | - |
+| 3. Ingestion Service | 0/1 | Not started | - |
+| 4. Ingestion Module | 0/1 | Not started | - |
+| 5. CreateBatch Use Case | 0/1 | Not started | - |
+| 6. Transaction Rollback Test | 0/1 | Not started | - |
+| 7. Batch Endpoint | 0/1 | Not started | - |
+| 8. Upload Size Limits | 0/1 | Not started | - |
+| 9. File Content Validation | 0/1 | Not started | - |
+| 10. Batch DTO Validation | 0/1 | Not started | - |
