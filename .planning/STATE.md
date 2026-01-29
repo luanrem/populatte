@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Transform tedious manual data entry into automated form population.
-**Current focus:** v2.0 Data Ingestion Engine -- Phase 1 complete, ready for Phase 2
+**Current focus:** v2.0 Data Ingestion Engine -- Phase 2 complete, ready for Phase 3 (Ingestion Use Case)
 
 ## Current Position
 
 Phase: 2 of 4 (Transaction Support and Excel Parsing)
-Plan: 1 of 2
-Status: Plan 02-01 complete
-Last activity: 2026-01-29 -- Completed 02-01-PLAN.md (transaction + Excel infrastructure)
+Plan: 2 of 2
+Status: Phase 2 complete - Ready for Phase 3
+Last activity: 2026-01-29 -- Completed 02-02-PLAN.md (Excel parsing strategies)
 
-Progress: [███░░░░░░░] ~50% (3/6 plans)
+Progress: [████░░░░░░] ~67% (4/6 plans)
 
 ## Performance Metrics
 
@@ -24,10 +24,12 @@ Progress: [███░░░░░░░] ~50% (3/6 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 3
+- Plans completed: 4
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
+- 02-02: 2m 46s (2 tasks)
+- Average duration: 2m 40s
 
 *Updated after each plan completion*
 
@@ -52,6 +54,10 @@ Recent decisions affecting current work:
 - ParsedRow includes sourceFileName as top-level field for traceability (02-01)
 - CellAccessHelper uses type assertions for strict TypeScript compatibility (02-01)
 - ExcelFileInput interface for strategy contract (buffer + originalName) (02-01)
+- ListModeStrategy uses sheet_to_json with defval: null and raw: false for header-based parsing (02-02)
+- ProfileModeStrategy uses manual cell iteration with cell-address keys for lossless flattening (02-02)
+- Each sheet becomes separate ParsedRow in ProfileMode (simplest approach) (02-02)
+- ExcelModule not in AppModule yet - deferred to Phase 3 IngestionModule (02-02)
 
 ### Pending Todos
 
@@ -59,12 +65,14 @@ None.
 
 ### Blockers/Concerns
 
-None. Both Phase 2 concerns resolved:
+None. Phase 2 complete. All concerns resolved:
 - SheetJS CDN + pnpm lockfile validated as stable (02-01)
 - @nestjs-cls/transactional Drizzle adapter configured successfully with Symbol token (02-01)
+- ListModeStrategy and ProfileModeStrategy both working with strict TypeScript (02-02)
+- ExcelModule ready for Phase 3 IngestionModule consumption (02-02)
 
 ## Session Continuity
 
-Last session: 2026-01-29 17:21 UTC
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-01-29 17:28 UTC
+Stopped at: Completed 02-02-PLAN.md (Phase 2 complete)
 Resume file: None
