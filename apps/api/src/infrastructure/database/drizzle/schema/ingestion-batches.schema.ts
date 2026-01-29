@@ -12,7 +12,7 @@ import { projects } from './projects.schema';
 import { users } from './users.schema';
 
 export const batchStatusEnum = pgEnum('batch_status', [
-  'PENDING_REVIEW',
+  'PROCESSING',
   'COMPLETED',
   'FAILED',
 ]);
@@ -33,7 +33,7 @@ export const ingestionBatches = pgTable(
       .notNull()
       .references(() => users.id),
     mode: batchModeEnum('mode').notNull(),
-    status: batchStatusEnum('status').notNull().default('PENDING_REVIEW'),
+    status: batchStatusEnum('status').notNull().default('PROCESSING'),
     fileCount: integer('file_count').notNull(),
     rowCount: integer('row_count').notNull(),
     columnMetadata: jsonb('column_metadata').notNull().default('[]'),

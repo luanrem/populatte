@@ -15,6 +15,13 @@
       "when": 1769695715244,
       "tag": "0001_illegal_network",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769714249345,
+      "tag": "0002_rare_rawhide_kid",
+      "breakpoints": true
     }
   ]
 }

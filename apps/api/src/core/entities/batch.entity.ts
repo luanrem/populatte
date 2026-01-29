@@ -1,5 +1,5 @@
 export enum BatchStatus {
-  PendingReview = 'PENDING_REVIEW',
+  Processing = 'PROCESSING',
   Completed = 'COMPLETED',
   Failed = 'FAILED',
 }
