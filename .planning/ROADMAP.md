@@ -76,11 +76,11 @@ Plans:
 - Pitfall 14 (empty sheets): Validate parsed row count > 0 before returning
 - Pitfall 18 (ESM/CJS): Use `import * as XLSX from 'xlsx'`, only use `.read(buffer)` never `.readFile()`
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Transaction infrastructure (CLS + Drizzle adapter), SheetJS CDN install, shared Excel types/helpers/strategy interface
+- [ ] 02-02-PLAN.md — ListModeStrategy, ProfileModeStrategy implementations, ExcelModule registration
 
 ---
 
@@ -158,6 +158,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
 | 1. Domain Foundation and Database Schema | 2/2 | Complete | 2026-01-29 |
-| 2. Transaction Support and Excel Parsing Strategies | 0/TBD | Not started | - |
+| 2. Transaction Support and Excel Parsing Strategies | 0/2 | Not started | - |
 | 3. Ingestion Service and Use Case | 0/TBD | Not started | - |
 | 4. Presentation Layer | 0/TBD | Not started | - |
