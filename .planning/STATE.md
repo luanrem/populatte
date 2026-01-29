@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 2 of 4 (Transaction Support and Excel Parsing) -- COMPLETE
-Plan: 2 of 2
-Status: Phase complete, verified (5/5 must-haves passed)
-Last activity: 2026-01-29 -- Phase 2 execution complete, goal verified
+Phase: 3 of 10 (Ingestion Service) -- IN PROGRESS
+Plan: 1 of 2
+Status: Plan 03-01 complete (IngestionService orchestration layer)
+Last activity: 2026-01-29 -- Completed 03-01-PLAN.md
 
-Progress: [████░░░░░░] ~67% (4/6 plans)
+Progress: [████░░░░░░] ~42% (5/12 plans)
 
 ## Performance Metrics
 
@@ -24,12 +24,13 @@ Progress: [████░░░░░░] ~67% (4/6 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 4
+- Plans completed: 5
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
 - 02-02: 2m 46s (2 tasks)
-- Average duration: 2m 40s
+- 03-01: 1m 10s (1 task)
+- Average duration: 2m 26s
 
 *Updated after each plan completion*
 
@@ -58,6 +59,14 @@ Recent decisions affecting current work:
 - ProfileModeStrategy uses manual cell iteration with cell-address keys for lossless flattening (02-02)
 - Each sheet becomes separate ParsedRow in ProfileMode (simplest approach) (02-02)
 - ExcelModule not in AppModule yet - deferred to Phase 3 IngestionModule (02-02)
+- IngestionService uses if/else for strategy selection instead of Map (only 2 strategies in MVP) (03-01)
+- All rows default to RowStatus.Valid during ingestion (validation is future phase) (03-01)
+- buildColumnMetadata uses key as both originalHeader and normalizedKey (normalization deferred) (03-01)
+- No transaction management in IngestionService - @Transactional belongs at use case layer (03-01)
+
+### Roadmap Evolution
+
+- Phases 3-4 restructured into Phases 3-10 (1 success criterion per phase) for smaller context windows
 
 ### Pending Todos
 
@@ -65,14 +74,14 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 2 complete. All concerns resolved:
-- SheetJS CDN + pnpm lockfile validated as stable (02-01)
-- @nestjs-cls/transactional Drizzle adapter configured successfully with Symbol token (02-01)
-- ListModeStrategy and ProfileModeStrategy both working with strict TypeScript (02-02)
-- ExcelModule ready for Phase 3 IngestionModule consumption (02-02)
+None. Plan 03-01 complete:
+- IngestionService orchestration layer ready for IngestionModule registration (03-02)
+- Strategy injection via Symbol tokens working correctly
+- Abstract repository injection ready for DrizzleModule (@Global) resolution
+- TypeScript strict compilation passing
 
 ## Session Continuity
 
-Last session: 2026-01-29 17:28 UTC
-Stopped at: Completed 02-02-PLAN.md (Phase 2 complete)
+Last session: 2026-01-29 23:55 UTC
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
