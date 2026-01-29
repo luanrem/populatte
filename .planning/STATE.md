@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Transform tedious manual data entry into automated form population.
-**Current focus:** v2.0 Data Ingestion Engine -- Phase 4 complete, ready for Phase 5
+**Current focus:** v2.0 Data Ingestion Engine -- Phase 5 complete, ready for Phase 6
 
 ## Current Position
 
-Phase: 4 of 10 (Ingestion Module) -- COMPLETE
+Phase: 5 of 10 (CreateBatch Use Case) -- COMPLETE
 Plan: 1 of 1
-Status: Phase complete, verified (4/4 must-haves passed)
-Last activity: 2026-01-29 -- Phase 4 execution complete, goal verified
+Status: Phase complete, verified (all success criteria met)
+Last activity: 2026-01-29 -- Phase 5 execution complete, CreateBatchUseCase with transactional orchestration
 
-Progress: [█████░░░░░] ~50% (6/12 plans)
+Progress: [██████░░░░] ~58% (7/12 plans)
 
 ## Performance Metrics
 
@@ -24,14 +24,15 @@ Progress: [█████░░░░░] ~50% (6/12 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 6
+- Plans completed: 7
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
 - 02-02: 2m 46s (2 tasks)
 - 03-01: 1m 10s (1 task)
 - 04-01: 54s (1 task)
-- Average duration: 2m 11s
+- 05-01: 3m 32s (2 tasks)
+- Average duration: 2m 19s
 
 *Updated after each plan completion*
 
@@ -67,6 +68,11 @@ Recent decisions affecting current work:
 - IngestionModule imports ExcelModule to access strategy tokens (04-01)
 - BatchRepository and RowRepository not in IngestionModule imports - DrizzleModule is @Global() (04-01)
 - IngestionModule positioned after TransactionModule in AppModule imports (04-01)
+- findByIdOnly queries without userId/deletedAt filters to enable separate error messages (05-01)
+- @Transactional() on execute() method wraps all operations in single CLS-scoped transaction (05-01)
+- BatchStatus.Processing replaces PendingReview for active ingestion lifecycle state (05-01)
+- No try/catch around IngestionService.ingest() - @Transactional auto-rollbacks on exception (05-01)
+- Use case layer registers in domain module (IngestionModule) for dependency injection (05-01)
 
 ### Roadmap Evolution
 
@@ -78,15 +84,16 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 4 complete. All concerns resolved:
-- IngestionModule created and registered in AppModule
-- ExcelModule properly imported for strategy token access
-- IngestionService exported for use case layer injection
-- TypeScript strict compilation passing
-- Ready for Phase 5 CreateBatchUseCase
+None. Phase 5 complete. All concerns resolved:
+- CreateBatchUseCase with @Transactional orchestration complete
+- Ownership validation produces correct 404/403 error codes
+- Security audit logging functional
+- BatchStatus aligned to PROCESSING/COMPLETED/FAILED lifecycle
+- Pre-existing TypeScript error in list-mode.strategy.ts (unrelated to this phase)
+- Ready for Phase 6 Integration Tests
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 04-01-PLAN.md
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
