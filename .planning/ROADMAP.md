@@ -18,7 +18,7 @@ This milestone adds a robust Excel file ingestion pipeline to the existing NestJ
 - [x] **Phase 1: Domain Foundation and Database Schema** - Core entities, repository interfaces, Drizzle schema, and repository implementations
 - [x] **Phase 2: Transaction Support and Excel Parsing Strategies** - CLS-based transaction infrastructure and SheetJS-powered ListMode/ProfileMode strategies
 - [x] **Phase 3: Ingestion Service** - Strategy selection and parse-then-persist orchestration
-- [ ] **Phase 4: Ingestion Module** - NestJS module wiring for strategies and ingestion service
+- [x] **Phase 4: Ingestion Module** - NestJS module wiring for strategies and ingestion service
 - [ ] **Phase 5: CreateBatch Use Case** - Transactional use case with project ownership validation
 - [ ] **Phase 6: Transaction Rollback Test** - Integration test proving atomic rollback behavior
 - [ ] **Phase 7: Batch Endpoint** - Controller with Multer file upload and ClerkAuthGuard
@@ -127,7 +127,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md — IngestionModule setup with ExcelModule import and service export
+- [x] 04-01-PLAN.md — IngestionModule setup with ExcelModule import and service export
 
 ---
 
@@ -278,7 +278,7 @@ Plans:
 | 1. Domain Foundation and Database Schema | 2/2 | Complete | 2026-01-29 |
 | 2. Transaction Support and Excel Parsing Strategies | 2/2 | Complete | 2026-01-29 |
 | 3. Ingestion Service | 1/1 | Complete | 2026-01-29 |
-| 4. Ingestion Module | 0/1 | Not started | - |
+| 4. Ingestion Module | 1/1 | Complete | 2026-01-29 |
 | 5. CreateBatch Use Case | 0/1 | Not started | - |
 | 6. Transaction Rollback Test | 0/1 | Not started | - |
 | 7. Batch Endpoint | 0/1 | Not started | - |
