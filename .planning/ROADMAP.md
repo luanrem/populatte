@@ -167,7 +167,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 06-01-PLAN.md — Integration test for atomic rollback behavior
+- [ ] 06-01-PLAN.md — Integration test with happy-path and rollback-path scenarios for CreateBatchUseCase
 
 ---
 
