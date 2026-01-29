@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Transform tedious manual data entry into automated form population.
-**Current focus:** v2.0 Data Ingestion Engine -- Phase 5 complete, ready for Phase 6
+**Current focus:** v2.0 Data Ingestion Engine -- Phase 6 complete, ready for Phase 7
 
 ## Current Position
 
-Phase: 5 of 10 (CreateBatch Use Case) -- COMPLETE
+Phase: 6 of 10 (Transaction Rollback Test) -- COMPLETE
 Plan: 1 of 1
 Status: Phase complete, verified (all success criteria met)
-Last activity: 2026-01-29 -- Phase 5 execution complete, CreateBatchUseCase with transactional orchestration
+Last activity: 2026-01-29 -- Completed 06-01-PLAN.md
 
-Progress: [██████░░░░] ~58% (7/12 plans)
+Progress: [███████░░░] ~67% (8/12 plans)
 
 ## Performance Metrics
 
@@ -24,7 +24,7 @@ Progress: [██████░░░░] ~58% (7/12 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 7
+- Plans completed: 8
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
@@ -32,7 +32,8 @@ Progress: [██████░░░░] ~58% (7/12 plans)
 - 03-01: 1m 10s (1 task)
 - 04-01: 54s (1 task)
 - 05-01: 3m 32s (2 tasks)
-- Average duration: 2m 19s
+- 06-01: 1m 21s (1 task)
+- Average duration: 2m 12s
 
 *Updated after each plan completion*
 
@@ -73,6 +74,9 @@ Recent decisions affecting current work:
 - BatchStatus.Processing replaces PendingReview for active ingestion lifecycle state (05-01)
 - No try/catch around IngestionService.ingest() - @Transactional auto-rollbacks on exception (05-01)
 - Use case layer registers in domain module (IngestionModule) for dependency injection (05-01)
+- Mock @Transactional decorator with pass-through for test isolation (06-01)
+- Jest config with roots array discovers both src/ (unit) and test/ (integration) directories (06-01)
+- beforeAll for NestJS module creation, beforeEach for mock reset (performance + isolation) (06-01)
 
 ### Roadmap Evolution
 
@@ -84,16 +88,16 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 5 complete. All concerns resolved:
-- CreateBatchUseCase with @Transactional orchestration complete
-- Ownership validation produces correct 404/403 error codes
-- Security audit logging functional
-- BatchStatus aligned to PROCESSING/COMPLETED/FAILED lifecycle
+None. Phase 6 complete. All concerns resolved:
+- Integration test validates atomic rollback behavior
+- Error propagation path verified
+- Happy-path and rollback-path tests both passing
+- No regressions in existing tests
 - Pre-existing TypeScript error in list-mode.strategy.ts (unrelated to this phase)
-- Ready for Phase 6 Integration Tests
+- Ready for Phase 7 (HTTP Controller)
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 05-01-PLAN.md
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
