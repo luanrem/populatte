@@ -9,6 +9,7 @@ import {
 } from './infrastructure/config';
 import { AuthModule } from './infrastructure/auth/auth.module';
 import { DrizzleModule } from './infrastructure/database/drizzle/drizzle.module';
+import { IngestionModule } from './infrastructure/excel/ingestion.module';
 import { TransactionModule } from './infrastructure/transaction/transaction.module';
 import { HealthModule } from './infrastructure/health/health.module';
 import { ProjectModule } from './infrastructure/project/project.module';
@@ -29,6 +30,7 @@ import { AppService } from './app.service';
     }),
     DrizzleModule,
     TransactionModule,
+    IngestionModule,
     AuthModule,
     HealthModule,
     ProjectModule,
