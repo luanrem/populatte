@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Transform tedious manual data entry into automated form population.
-**Current focus:** v2.0 Data Ingestion Engine -- Phase 3 complete and verified, ready for Phase 4
+**Current focus:** v2.0 Data Ingestion Engine -- Phase 4 complete, ready for Phase 5
 
 ## Current Position
 
-Phase: 3 of 10 (Ingestion Service) -- COMPLETE
+Phase: 4 of 10 (Ingestion Module) -- COMPLETE
 Plan: 1 of 1
-Status: Phase complete, verified (10/10 must-haves passed)
-Last activity: 2026-01-29 -- Phase 3 execution complete, goal verified
+Status: Phase complete
+Last activity: 2026-01-29 -- Completed 04-01-PLAN.md
 
-Progress: [████░░░░░░] ~42% (5/12 plans)
+Progress: [█████░░░░░] ~50% (6/12 plans)
 
 ## Performance Metrics
 
@@ -24,13 +24,14 @@ Progress: [████░░░░░░] ~42% (5/12 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 5
+- Plans completed: 6
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
 - 02-02: 2m 46s (2 tasks)
 - 03-01: 1m 10s (1 task)
-- Average duration: 2m 26s
+- 04-01: 54s (1 task)
+- Average duration: 2m 11s
 
 *Updated after each plan completion*
 
@@ -63,6 +64,9 @@ Recent decisions affecting current work:
 - All rows default to RowStatus.Valid during ingestion (validation is future phase) (03-01)
 - buildColumnMetadata uses key as both originalHeader and normalizedKey (normalization deferred) (03-01)
 - No transaction management in IngestionService - @Transactional belongs at use case layer (03-01)
+- IngestionModule imports ExcelModule to access strategy tokens (04-01)
+- BatchRepository and RowRepository not in IngestionModule imports - DrizzleModule is @Global() (04-01)
+- IngestionModule positioned after TransactionModule in AppModule imports (04-01)
 
 ### Roadmap Evolution
 
@@ -74,15 +78,15 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 3 complete. All concerns resolved:
-- IngestionService orchestration layer verified (10/10 must-haves passed)
-- Strategy selection via getStrategy() confirmed for both BatchMode values
-- Abstract repository injection from Core layer working correctly
+None. Phase 4 complete. All concerns resolved:
+- IngestionModule created and registered in AppModule
+- ExcelModule properly imported for strategy token access
+- IngestionService exported for use case layer injection
 - TypeScript strict compilation passing
-- Ready for Phase 4 IngestionModule registration
+- Ready for Phase 5 CreateBatchUseCase
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed Phase 3 (Ingestion Service) -- verified
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
