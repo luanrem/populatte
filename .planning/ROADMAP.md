@@ -15,7 +15,7 @@ This milestone adds a robust Excel file ingestion pipeline to the existing NestJ
 - Integer phases (1, 2, 3, 4): Planned milestone work
 - Decimal phases (e.g., 2.1): Urgent insertions if needed
 
-- [ ] **Phase 1: Domain Foundation and Database Schema** - Core entities, repository interfaces, Drizzle schema, and repository implementations
+- [x] **Phase 1: Domain Foundation and Database Schema** - Core entities, repository interfaces, Drizzle schema, and repository implementations
 - [ ] **Phase 2: Transaction Support and Excel Parsing Strategies** - CLS-based transaction infrastructure and SheetJS-powered ListMode/ProfileMode strategies
 - [ ] **Phase 3: Ingestion Service and Use Case** - Strategy context service, ingestion module, and transactional use case orchestration
 - [ ] **Phase 4: Presentation Layer** - Controller with Multer file upload, Zod DTO validation, and file security validation
@@ -45,7 +45,7 @@ This milestone adds a robust Excel file ingestion pipeline to the existing NestJ
 
 Plans:
 - [x] 01-01-PLAN.md — Core layer entities (Batch, Row) and abstract repository contracts
-- [ ] 01-02-PLAN.md — Drizzle schemas, mappers, repository implementations, DrizzleModule registration, migration
+- [x] 01-02-PLAN.md — Drizzle schemas, mappers, repository implementations, DrizzleModule registration, migration
 
 ---
 
@@ -157,7 +157,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|---------------|--------|-----------|
-| 1. Domain Foundation and Database Schema | 0/TBD | Not started | - |
+| 1. Domain Foundation and Database Schema | 2/2 | Complete | 2026-01-29 |
 | 2. Transaction Support and Excel Parsing Strategies | 0/TBD | Not started | - |
 | 3. Ingestion Service and Use Case | 0/TBD | Not started | - |
 | 4. Presentation Layer | 0/TBD | Not started | - |
