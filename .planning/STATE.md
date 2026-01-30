@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 9 of 10 (File Content Validation) -- COMPLETE
+Phase: 10 of 10 (Batch DTO Validation) -- COMPLETE
 Plan: 1 of 1
 Status: Phase complete, verified (all success criteria met)
-Last activity: 2026-01-29 -- Completed 09-01-PLAN.md
+Last activity: 2026-01-29 -- Completed 10-01-PLAN.md
 
-Progress: [█████████░] ~92% (11/12 plans)
+Progress: [██████████] 100% (12/12 plans)
 
 ## Performance Metrics
 
@@ -24,7 +24,7 @@ Progress: [█████████░] ~92% (11/12 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 11
+- Plans completed: 12
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
@@ -36,7 +36,8 @@ Progress: [█████████░] ~92% (11/12 plans)
 - 07-01: 5m 20s (2 tasks)
 - 08-01: 3m 18s (2 tasks)
 - 09-01: 2m 31s (2 tasks)
-- Average duration: 2m 36s
+- 10-01: 2m 18s (1 task)
+- Average duration: 2m 34s
 
 *Updated after each plan completion*
 
@@ -93,6 +94,8 @@ Recent decisions affecting current work:
 - No individual filenames in error response for security (server-side logging only) (09-01)
 - UTF-8 text heuristic for CSV validation (>95% printable ASCII in first 512 bytes) (09-01)
 - Server-side logging includes detected bytes as hex for spoofed file diagnosis (09-01)
+- Zod v4 message parameter for custom enum errors (simpler than errorMap function) (10-01)
+- safeParse pattern for manual Zod validation (type-safe, no unsafe assertions) (10-01)
 
 ### Roadmap Evolution
 
@@ -104,19 +107,16 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 9 complete. All concerns resolved:
-- File content validation via magic-byte inspection prevents MIME-type spoofing
-- ZIP signature (0x504B0304) for .xlsx, OLE2 (0xD0CF11E0A1B11AE1) for .xls
-- CSV validation via UTF-8 text heuristic (>95% printable ASCII)
-- Fail-fast validation rejects entire batch on first invalid file
-- HTTP 422 with INVALID_FILE_TYPE error code
-- Server-side logging with filename, mimetype, size, and detected bytes
-- No filenames exposed in error response (security)
+None. Phase 10 complete. All v2.0 Data Ingestion Engine phases complete:
+- Batch DTO validation enhanced with custom error messages
+- safeParse pattern established for manual Zod validation
+- Controller remains thin and maintainable
 - TypeScript compilation and linting pass
-- Ready for Phase 10 (Frontend Batch Upload UI)
+- All tests pass
+- Ready for future phases (Frontend Batch Upload UI, etc.)
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 09-01-PLAN.md
+Stopped at: Completed 10-01-PLAN.md
 Resume file: None
