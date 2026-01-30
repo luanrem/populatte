@@ -1,5 +1,31 @@
 # Project Milestones: Populatte
 
+## v2.1 Batch Read Layer (Shipped: 2026-01-30)
+
+**Delivered:** Read endpoints for batch metadata and paginated row data, closing the read cycle so the dashboard can display ingested Excel data for user validation.
+
+**Phases completed:** 11-12 (2 plans total)
+
+**Key accomplishments:**
+- PaginatedResult<T> generic type with Promise.all two-query pattern for optimal performance
+- Paginated repository methods with comprehensive soft-delete filtering across all read queries
+- Three GET endpoints (batch list, batch detail, paginated rows) with 404/403 ownership validation
+- countByBatchId repository method for efficient totalRows computation
+- Zod-validated pagination (limit 1-100, offset >=0) with strict validation (400 on invalid, no silent fallback)
+- Defense-in-depth cross-project access prevention (batch.projectId === projectId)
+
+**Stats:**
+- 15 files created/modified
+- 435 lines of TypeScript
+- 2 phases, 2 plans, 4 tasks
+- 1 day (2026-01-30, single session)
+
+**Git range:** `feat(11-01)` → `docs(12)`
+
+**What's next:** Next milestone TBD — `/gsd:new-milestone` to define scope
+
+---
+
 ## v2.0 Data Ingestion Engine (Shipped: 2026-01-29)
 
 **Delivered:** Robust Excel file ingestion pipeline with Strategy Pattern parsing, atomic database transactions, and multi-layer file validation for the NestJS backend.

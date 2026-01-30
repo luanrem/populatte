@@ -36,18 +36,18 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - ✓ File validation: max 5MB per file, max 50 files per request — v2.0
 - ✓ Input validation: list_mode rejects >1 file, profile_mode accepts 1..N — v2.0
 - ✓ Drizzle schema for `batches` and `rows` tables with proper relationships — v2.0
+- ✓ Batch detail retrieval (metadata, columnMetadata, mode, totalRows) via GET endpoint — v2.1
+- ✓ Batch list with pagination and totalRows per batch — v2.1
+- ✓ Paginated row listing ordered by sourceRowIndex — v2.1
+- ✓ Ownership validation on read endpoints consistent with write path (404/403) — v2.1
+- ✓ Standard pagination response shape (items, total, limit, offset) — v2.1
+- ✓ Soft-delete filtering on all read queries (batches, rows, projects) — v2.1
+- ✓ PaginatedResult<T> generic type for consistent pagination — v2.1
+- ✓ Zod-validated pagination params (limit 1-100, offset >=0) with 400 on invalid — v2.1
 
 ### Active
 
-#### Current Milestone: v2.1 Batch Read Layer
-
-**Goal:** Close the read cycle — let the dashboard display batch metadata and paginated row data so users can validate extracted Excel data before automation.
-
-**Target features:**
-- Batch detail retrieval (metadata, columnMetadata, mode)
-- Paginated row listing ordered by sourceRowIndex
-- Ownership validation consistent with write path (404/403)
-- Standard pagination response shape (items, total, limit, offset)
+No active requirements. Next milestone not yet defined.
 
 ### Out of Scope
 
@@ -63,7 +63,7 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ## Context
 
-**Shipped v2.0** with 7,503+ LOC TypeScript across 116+ files (cumulative).
+**Shipped v2.1** with 8,505+ LOC TypeScript across 130+ files (cumulative).
 Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3.
 
 **Architecture patterns established:**
@@ -78,6 +78,11 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 - Chunked bulk inserts (5,000 rows/INSERT) for PostgreSQL parameter limit compliance
 - Magic-byte file validation (ZIP/OLE2/CSV) before parser execution
 - Symbol-based DI tokens for strategy injection (prevents provider collisions)
+- Two-query pagination pattern with Promise.all for paginated results
+- Shared conditions variable between data and count queries (prevents inconsistency)
+- Tiebreaker sorting for deterministic pagination (sourceRowIndex ASC, id ASC)
+- Ownership validation pattern: findByIdOnly → deletedAt check → userId match → 403 with security log
+- Defense-in-depth: verify child resource belongs to parent (batch.projectId === projectId)
 
 **Known tech debt:**
 - Clerk JWT Dashboard config needs human re-verification if template changes (low severity)
@@ -85,6 +90,7 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 - Pre-existing TypeScript error in list-mode.strategy.ts (Object.entries type issue)
 - ContentLengthMiddleware cannot log userId (runs before auth guard — architectural trade-off)
 - FilesInterceptor limits hardcoded (NestJS decorator limitation, documented as intentional)
+- ListBatchesUseCase N+1 query pattern (max 101 queries at limit=100, MVP-acceptable with Promise.all)
 
 ## Constraints
 
@@ -124,6 +130,14 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Magic-byte file validation | Prevents MIME-type spoofing; no ESM compatibility issues | ✓ Good |
 | Content-Length middleware for early rejection | Prevents Multer buffering oversized requests into memory | ✓ Good |
 | safeParse for multipart DTO validation | Type-safe Zod validation without unsafe assertions in controller | ✓ Good |
+| PaginatedResult<T> with items + total only | Use case layer composes full response; repository stays focused on data access | ✓ Good |
+| Batches sorted DESC, rows ASC with tiebreaker | Newest batches first; deterministic row pagination via sourceRowIndex + id | ✓ Good |
+| Shared conditions variable in pagination | Prevents inconsistency between data and count queries | ✓ Good |
+| countByBatchId as dedicated method | Efficient row counting without pagination hack | ✓ Good |
+| N+1 queries in ListBatchesUseCase | MVP trade-off: parallelized with Promise.all, max 101 queries at limit=100 | ✓ Good |
+| Zod coercion for pagination query params | Type-safe validation with strict limits (1-100) and 400 on invalid input | ✓ Good |
+| Route ordering in BatchController | @Get() → @Get(':batchId') → @Get(':batchId/rows') prevents NestJS path conflicts | ✓ Good |
+| Defense-in-depth on batch endpoints | Verify batch.projectId === projectId prevents cross-project access | ✓ Good |
 
 ---
-*Last updated: 2026-01-29 after v2.1 milestone start*
+*Last updated: 2026-01-30 after v2.1 milestone complete*
