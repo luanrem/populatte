@@ -94,6 +94,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 17-02-PLAN.md (Repository aggregation and endpoint)
+Stopped at: Phase 17 complete — verified (8/8 must-haves passed)
 Resume file: None
-Next step: Phase 17 complete — ready for Phase 18
+Next step: /gsd:discuss-phase 18

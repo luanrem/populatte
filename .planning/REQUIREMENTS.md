@@ -86,14 +86,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| API-01 | Phase 17 | Pending |
-| API-02 | Phase 17 | Pending |
-| API-05 | Phase 17 | Pending |
-| API-06 | Phase 17 | Pending |
-| TYPE-01 | Phase 17 | Pending |
-| TYPE-02 | Phase 17 | Pending |
-| TYPE-03 | Phase 17 | Pending |
-| TYPE-04 | Phase 17 | Pending |
+| API-01 | Phase 17 | Complete |
+| API-02 | Phase 17 | Complete |
+| API-05 | Phase 17 | Complete |
+| API-06 | Phase 17 | Complete |
+| TYPE-01 | Phase 17 | Complete |
+| TYPE-02 | Phase 17 | Complete |
+| TYPE-03 | Phase 17 | Complete |
+| TYPE-04 | Phase 17 | Complete |
 | API-03 | Phase 18 | Pending |
 | API-04 | Phase 18 | Pending |
 | UI-01 | Phase 19 | Pending |

@@ -153,7 +153,7 @@ Plans:
 
 **Milestone Goal:** Column-oriented data exploration to prepare Excel-to-form field mapping
 
-#### Phase 17: Backend Field Stats with Type Inference
+#### Phase 17: Backend Field Stats with Type Inference ✓
 **Goal**: Field-level analytics endpoint with presence, uniqueness, and type detection
 **Depends on**: Phase 16
 **Requirements**: API-01, API-02, API-05, API-06, TYPE-01, TYPE-02, TYPE-03, TYPE-04
@@ -165,8 +165,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 17-01-PLAN.md — TDD TypeInferenceService with Brazilian locale support
-- [ ] 17-02-PLAN.md — Repository aggregation, GetFieldStatsUseCase, and REST endpoint
+- [x] 17-01-PLAN.md — TDD TypeInferenceService with Brazilian locale support
+- [x] 17-02-PLAN.md — Repository aggregation, GetFieldStatsUseCase, and REST endpoint
 
 #### Phase 18: Backend Field Values Endpoint
 **Goal**: Paginated distinct values retrieval for specific fields
@@ -234,7 +234,7 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 14. Upload Modal UI | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 15. Batch Grid UI | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 16. Batch Detail Data Table | v2.2 | 1/1 | Complete | 2026-01-30 |
-| 17. Backend Field Stats | v2.3 | 0/2 | Not started | - |
+| 17. Backend Field Stats | v2.3 | 2/2 | Complete | 2026-01-30 |
 | 18. Backend Field Values | v2.3 | 0/TBD | Not started | - |
 | 19. Frontend Field Inventory | v2.3 | 0/TBD | Not started | - |
 | 20. View Values Side Sheet | v2.3 | 0/TBD | Not started | - |
