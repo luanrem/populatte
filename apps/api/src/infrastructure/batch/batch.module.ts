@@ -1,10 +1,23 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 
 import { BatchController } from '../../presentation/controllers/batch.controller';
 import { IngestionModule } from '../excel/ingestion.module';
+import { ContentLengthMiddleware } from '../upload/middleware/content-length.middleware';
 
 @Module({
   imports: [IngestionModule],
   controllers: [BatchController],
 })
-export class BatchModule {}
+export class BatchModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(ContentLengthMiddleware).forRoutes({
+      path: 'projects/:projectId/batches',
+      method: RequestMethod.POST,
+    });
+  }
+}
