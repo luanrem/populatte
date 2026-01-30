@@ -1,4 +1,5 @@
 export enum RowStatus {
+  Draft = 'DRAFT',
   Valid = 'VALID',
   Warning = 'WARNING',
   Error = 'ERROR',

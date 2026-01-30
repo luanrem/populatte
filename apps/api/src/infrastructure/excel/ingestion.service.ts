@@ -95,7 +95,7 @@ export class IngestionService {
     const rowData: CreateRowData[] = parseResult.rows.map((row) => ({
       batchId: batch.id,
       data: row.data,
-      status: RowStatus.Valid,
+      status: RowStatus.Draft,
       validationMessages: [],
       sourceFileName: row.sourceFileName,
       sourceSheetName: row.sheetName,

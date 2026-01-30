@@ -26,7 +26,7 @@ export class DrizzleRowRepository extends RowRepository {
       const values: IngestionRowInsert[] = chunk.map((row) => ({
         batchId: row.batchId,
         data: row.data,
-        status: (row.status ?? RowStatus.Valid) as IngestionRowInsert['status'],
+        status: (row.status ?? RowStatus.Draft) as IngestionRowInsert['status'],
         validationMessages: row.validationMessages ?? [],
         sourceFileName: row.sourceFileName,
         sourceSheetName: row.sourceSheetName,

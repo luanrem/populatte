@@ -12,6 +12,7 @@ import {
 import { ingestionBatches } from './ingestion-batches.schema';
 
 export const rowStatusEnum = pgEnum('row_status', [
+  'DRAFT',
   'VALID',
   'WARNING',
   'ERROR',
@@ -25,7 +26,7 @@ export const ingestionRows = pgTable(
       .notNull()
       .references(() => ingestionBatches.id),
     data: jsonb('data').notNull(),
-    status: rowStatusEnum('status').notNull().default('VALID'),
+    status: rowStatusEnum('status').notNull().default('DRAFT'),
     validationMessages: jsonb('validation_messages').notNull().default('[]'),
     sourceFileName: text('source_file_name').notNull(),
     sourceSheetName: text('source_sheet_name').notNull(),
