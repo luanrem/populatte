@@ -4,6 +4,7 @@ import { Calendar, FileSpreadsheet, Rows } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -89,23 +90,31 @@ export function BatchDetailHeader({
 
       <Card>
         <CardContent className="p-6">
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-4">
             <FileSpreadsheet className="h-5 w-5 text-muted-foreground" />
-            {batch.name ?? "Sem nome"}
-          </h2>
-          <div className="flex flex-wrap items-center gap-4">
-            <Badge className={mode.className}>{mode.text}</Badge>
-            <Badge className={status.className}>{status.text}</Badge>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <span>{formatter.format(new Date(batch.createdAt))}</span>
+            <h2 className="text-xl font-semibold">
+              {batch.name ?? "Sem nome"}
+            </h2>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Badge className={status.className}>{status.text}</Badge>
+              <Badge className={mode.className}>{mode.text}</Badge>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Rows className="h-4 w-4" />
-              <span>
-                {batch.totalRows}{" "}
-                {batch.totalRows === 1 ? "registro" : "registros"}
-              </span>
+            <Separator orientation="vertical" className="h-4" />
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5" />
+                <span>{formatter.format(new Date(batch.createdAt))}</span>
+              </div>
+              <span>·</span>
+              <div className="flex items-center gap-1.5">
+                <Rows className="h-3.5 w-3.5" />
+                <span>
+                  {batch.totalRows}{" "}
+                  {batch.totalRows === 1 ? "registro" : "registros"}
+                </span>
+              </div>
             </div>
           </div>
         </CardContent>
