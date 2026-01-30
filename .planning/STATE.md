@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 Phase: 16 of 16 (all milestones complete)
 Plan: N/A
 Status: v2.2 milestone archived, ready for next milestone
-Last activity: 2026-01-30 -- Completed quick task 004: Fix empty data table and column metadata
+Last activity: 2026-01-30 -- Completed quick task 005: Add filename support to batches database
 
 Progress: [██████████████] 100% (all milestones shipped)
 
@@ -69,10 +69,11 @@ None.
 | 002 | Optimize project listing performance | 2026-01-30 | bf4f521 | [002-optimize-project-listing-performance](./quick/002-optimize-project-listing-performance/) |
 | 003 | Fix file upload field name mismatch | 2026-01-30 | a736bdf | [003-fix-file-upload-field-name-mismatch](./quick/003-fix-file-upload-field-name-mismatch/) |
 | 004 | Fix empty data table and column metadata | 2026-01-30 | 4def578 | [004-fix-empty-data-table-and-column-metadata](./quick/004-fix-empty-data-table-and-column-metadata/) |
+| 005 | Add filename support to batches database | 2026-01-30 | 40bd54f | [005-add-filename-support-to-batches-database](./quick/005-add-filename-support-to-batches-database/) |
 
 ## Session Continuity
 
-Last session: 2026-01-30T21:50:41Z
-Stopped at: Completed quick task 004 (Fix empty data table and column metadata)
+Last session: 2026-01-30T22:02:48Z
+Stopped at: Completed quick task 005 (Add filename support to batches database)
 Resume file: None
 Next step: /gsd:new-milestone
