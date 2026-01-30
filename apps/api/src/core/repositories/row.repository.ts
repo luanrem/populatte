@@ -15,4 +15,6 @@ export abstract class RowRepository {
   ): Promise<PaginatedResult<Row>>;
 
   public abstract countByBatchId(batchId: string): Promise<number>;
+
+  public abstract getSampleRows(batchId: string, limit: number): Promise<Row[]>;
 }

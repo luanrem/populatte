@@ -1,6 +1,12 @@
 import { Batch, CreateBatchData } from '../entities/batch.entity';
 import { PaginatedResult } from '../entities/pagination.types';
 
+export interface FieldAggregation {
+  fieldName: string;
+  presenceCount: number;
+  uniqueCount: number;
+}
+
 export abstract class BatchRepository {
   public abstract create(data: CreateBatchData): Promise<Batch>;
   public abstract findById(id: string): Promise<Batch | null>;
@@ -16,4 +22,8 @@ export abstract class BatchRepository {
   ): Promise<PaginatedResult<Batch>>;
 
   public abstract softDelete(id: string, deletedBy: string): Promise<void>;
+
+  public abstract getFieldAggregations(
+    batchId: string,
+  ): Promise<FieldAggregation[]>;
 }

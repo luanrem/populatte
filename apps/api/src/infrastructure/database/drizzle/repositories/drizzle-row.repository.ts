@@ -100,4 +100,21 @@ export class DrizzleRowRepository extends RowRepository {
 
     return result[0]?.count ?? 0;
   }
+
+  public async getSampleRows(batchId: string, limit: number): Promise<Row[]> {
+    const result = await this.drizzle
+      .getClient()
+      .select()
+      .from(ingestionRows)
+      .where(
+        and(
+          eq(ingestionRows.batchId, batchId),
+          isNull(ingestionRows.deletedAt),
+        ),
+      )
+      .orderBy(asc(ingestionRows.sourceRowIndex), asc(ingestionRows.id))
+      .limit(limit);
+
+    return result.map((row) => RowMapper.toDomain(row));
+  }
 }
