@@ -103,21 +103,45 @@ export class CellAccessHelper {
     // Get sheet range, default to A1 if no data
     const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1');
 
-    // Iterate all cells in the range
-    for (let R = range.s.r; R <= range.e.r; ++R) {
-      for (let C = range.s.c; C <= range.e.c; ++C) {
-        const address = XLSX.utils.encode_cell({ r: R, c: C });
-        const type = this.getCellType(sheet, address);
+    if (mode === 'column') {
+      // Column mode: use header names from first row as keys
+      // This matches sheet_to_json() behavior which uses first row as headers
 
-        if (mode === 'cell') {
-          // Cell mode: map every cell address
-          typeMap[address] = type;
-        } else {
-          // Column mode: use first non-empty cell type for column
-          const colLetter = XLSX.utils.encode_col(C);
-          if (!typeMap[colLetter] && type !== CellType.Empty) {
-            typeMap[colLetter] = type;
+      // Build header map from first row
+      const headerMap: Record<number, string> = {};
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const headerAddress = XLSX.utils.encode_cell({
+          r: range.s.r,
+          c: C,
+        });
+        const headerCell = (
+          sheet as Record<string, XLSX.CellObject | undefined>
+        )[headerAddress];
+        const headerValue = headerCell?.v ?? headerCell?.w;
+        headerMap[C] =
+          headerValue !== undefined && headerValue !== null
+            ? String(headerValue)
+            : XLSX.utils.encode_col(C);
+      }
+
+      // Iterate data rows only (skip header row)
+      for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const address = XLSX.utils.encode_cell({ r: R, c: C });
+          const type = this.getCellType(sheet, address);
+          const headerName = headerMap[C] ?? XLSX.utils.encode_col(C);
+          if (!typeMap[headerName] && type !== CellType.Empty) {
+            typeMap[headerName] = type;
           }
+        }
+      }
+    } else {
+      // Cell mode: map every cell address
+      for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const address = XLSX.utils.encode_cell({ r: R, c: C });
+          const type = this.getCellType(sheet, address);
+          typeMap[address] = type;
         }
       }
     }
