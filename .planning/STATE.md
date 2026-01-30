@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 Phase: 16 of 16 (all milestones complete)
 Plan: N/A
 Status: v2.2 milestone archived, ready for next milestone
-Last activity: 2026-01-30 -- Completed quick task 004: Fix Empty Data Table and Column Metadata
+Last activity: 2026-01-30 -- Completed quick task 004: Fix empty data table and column metadata
 
 Progress: [██████████████] 100% (all milestones shipped)
 
@@ -68,7 +68,7 @@ None.
 | 001 | Fix navigation in ProjectCard | 2026-01-30 | 65e6530 | [001-fix-navigation-in-projectcard](./quick/001-fix-navigation-in-projectcard/) |
 | 002 | Optimize project listing performance | 2026-01-30 | bf4f521 | [002-optimize-project-listing-performance](./quick/002-optimize-project-listing-performance/) |
 | 003 | Fix file upload field name mismatch | 2026-01-30 | a736bdf | [003-fix-file-upload-field-name-mismatch](./quick/003-fix-file-upload-field-name-mismatch/) |
-| 004 | Fix empty data table and column metadata | 2026-01-30 | 1bb5714 | [004-fix-empty-data-table-and-column-metadata](./quick/004-fix-empty-data-table-and-column-metadata/) |
+| 004 | Fix empty data table and column metadata | 2026-01-30 | 4def578 | [004-fix-empty-data-table-and-column-metadata](./quick/004-fix-empty-data-table-and-column-metadata/) |
 
 ## Session Continuity
 
