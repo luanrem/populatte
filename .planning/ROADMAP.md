@@ -85,10 +85,10 @@ Plans:
   3. User can click a batch card to navigate to the batch data table page
   4. Empty state component with upload CTA is shown when a project has no batches
   5. Loading skeleton cards (6) are displayed while batch data is being fetched
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 15-01: Batch card, batch grid, empty state, skeletons, and navigation wiring
+- [ ] 15-01-PLAN.md -- Batch card, batch grid, empty state with upload CTA, skeletons, and navigation wiring
 
 ### Phase 16: Data Table with Pagination
 **Goal**: Users can view batch row data in a paginated table with dynamically generated columns from Excel metadata
