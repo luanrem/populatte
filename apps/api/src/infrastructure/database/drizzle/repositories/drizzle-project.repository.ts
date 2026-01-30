@@ -4,6 +4,7 @@ import { and, eq, isNull } from 'drizzle-orm';
 import {
   CreateProjectData,
   Project,
+  ProjectSummary,
   UpdateProjectData,
 } from '../../../../core/entities/project.entity';
 import { ProjectRepository } from '../../../../core/repositories/project.repository';
@@ -56,6 +57,26 @@ export class DrizzleProjectRepository extends ProjectRepository {
       .orderBy(projects.createdAt);
 
     return result.map((row) => ProjectMapper.toDomain(row));
+  }
+
+  public async findAllSummariesByUserId(
+    userId: string,
+  ): Promise<ProjectSummary[]> {
+    const result = await this.drizzle
+      .getClient()
+      .select({
+        id: projects.id,
+        name: projects.name,
+        description: projects.description,
+        targetEntity: projects.targetEntity,
+        targetUrl: projects.targetUrl,
+        status: projects.status,
+      })
+      .from(projects)
+      .where(and(eq(projects.userId, userId), isNull(projects.deletedAt)))
+      .orderBy(projects.createdAt);
+
+    return result.map((row) => ProjectMapper.toSummary(row));
   }
 
   public async create(data: CreateProjectData): Promise<Project> {

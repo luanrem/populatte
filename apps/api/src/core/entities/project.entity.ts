@@ -31,3 +31,12 @@ export interface UpdateProjectData {
   targetUrl?: string | null;
   status?: ProjectStatus;
 }
+
+export interface ProjectSummary {
+  id: string;
+  name: string;
+  description: string | null;
+  targetEntity: string | null;
+  targetUrl: string | null;
+  status: ProjectStatus;
+}
