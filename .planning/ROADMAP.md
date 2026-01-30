@@ -110,7 +110,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 11-01-PLAN.md — PaginatedResult type, paginated repository methods, soft-delete audit, ordering fixes
+- [x] 11-01-PLAN.md — PaginatedResult type, paginated repository methods, soft-delete audit, ordering fixes
 
 #### Phase 12: Read Endpoints
 **Goal**: Batch and row read endpoints with ownership validation
@@ -144,5 +144,5 @@ Phases execute in numeric order: 11 → 12
 | 8. ListMode Strategy | v2.0 | 1/1 | Complete | 2026-01-29 |
 | 9. ProfileMode Strategy | v2.0 | 1/1 | Complete | 2026-01-29 |
 | 10. REST Endpoint | v2.0 | 4/4 | Complete | 2026-01-29 |
-| 11. Repository Layer | v2.1 | 0/1 | Not started | - |
+| 11. Repository Layer | v2.1 | 1/1 | Complete | 2026-01-30 |
 | 12. Read Endpoints | v2.1 | 0/TBD | Not started | - |
