@@ -2,8 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -11,17 +13,32 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 import type { User } from '../../core/entities/user.entity';
-import { CreateBatchUseCase } from '../../core/use-cases/batch';
+import {
+  CreateBatchUseCase,
+  GetBatchUseCase,
+  ListBatchesUseCase,
+  ListRowsUseCase,
+} from '../../core/use-cases/batch';
 import type { ExcelFileInput } from '../../infrastructure/excel/strategies/excel-parsing.strategy';
 import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import { createBatchSchema } from '../dto/batch.dto';
+import {
+  createBatchSchema,
+  paginationQuerySchema,
+} from '../dto/batch.dto';
+import type { PaginationQueryDto } from '../dto/batch.dto';
 import { FileContentValidationPipe } from '../pipes/file-content-validation.pipe';
+import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
 @Controller('projects/:projectId/batches')
 @UseGuards(ClerkAuthGuard)
 export class BatchController {
-  public constructor(private readonly createBatch: CreateBatchUseCase) {}
+  public constructor(
+    private readonly createBatch: CreateBatchUseCase,
+    private readonly getBatch: GetBatchUseCase,
+    private readonly listBatches: ListBatchesUseCase,
+    private readonly listRowsUseCase: ListRowsUseCase,
+  ) {}
 
   @Post()
   @UseInterceptors(
@@ -68,5 +85,46 @@ export class BatchController {
       mode: validated.mode,
       files,
     });
+  }
+
+  @Get()
+  public async list(
+    @Param('projectId') projectId: string,
+    @Query(new ZodValidationPipe(paginationQuerySchema))
+    query: PaginationQueryDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.listBatches.execute(
+      projectId,
+      user.id,
+      query.limit,
+      query.offset,
+    );
+  }
+
+  @Get(':batchId')
+  public async getById(
+    @Param('projectId') projectId: string,
+    @Param('batchId') batchId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.getBatch.execute(projectId, batchId, user.id);
+  }
+
+  @Get(':batchId/rows')
+  public async listRows(
+    @Param('projectId') projectId: string,
+    @Param('batchId') batchId: string,
+    @Query(new ZodValidationPipe(paginationQuerySchema))
+    query: PaginationQueryDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.listRowsUseCase.execute(
+      projectId,
+      batchId,
+      user.id,
+      query.limit,
+      query.offset,
+    );
   }
 }
