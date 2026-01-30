@@ -46,3 +46,5 @@ Thumbs.db
 # Misc
 *.pem
 .cache/
+PROJECT_DISCUSSION.md
+.project-docs/

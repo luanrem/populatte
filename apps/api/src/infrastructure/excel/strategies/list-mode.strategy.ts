@@ -4,7 +4,10 @@ import * as XLSX from 'xlsx';
 import { CellAccessHelper } from '../helpers/cell-access.helper';
 import type { CellTypeMap, ParsedRow, ParseResult } from '../types';
 
-import type { ExcelFileInput, ExcelParsingStrategy } from './excel-parsing.strategy';
+import type {
+  ExcelFileInput,
+  ExcelParsingStrategy,
+} from './excel-parsing.strategy';
 
 /**
  * ListMode Excel parsing strategy
@@ -42,7 +45,7 @@ export class ListModeStrategy implements ExcelParsingStrategy {
     this.validateFileCount(files.length);
 
     // Extract single file (validated above)
-    const file = files[0]!;
+    const file = files[0];
 
     // Parse workbook with date normalization
     const workbook = XLSX.read(file.buffer, {
@@ -67,7 +70,7 @@ export class ListModeStrategy implements ExcelParsingStrategy {
         defval: null, // Empty cells become null (not omitted)
         raw: false, // Use formatted strings (preserves date display format)
         blankrows: false, // Skip completely empty rows
-      }) as Array<Record<string, unknown>>;
+      });
 
       // Skip sheets with no data rows (header only)
       if (jsonRows.length === 0) {
@@ -82,7 +85,7 @@ export class ListModeStrategy implements ExcelParsingStrategy {
 
       // Transform JSON rows into ParsedRow format
       for (let i = 0; i < jsonRows.length; i++) {
-        const row = jsonRows[i]!;
+        const row = jsonRows[i] as Record<string, unknown>;
 
         // Normalize undefined values to null
         const normalizedData: Record<string, unknown> = {};

@@ -43,7 +43,10 @@ export class DrizzleRowRepository extends RowRepository {
       .select()
       .from(ingestionRows)
       .where(
-        and(eq(ingestionRows.batchId, batchId), isNull(ingestionRows.deletedAt)),
+        and(
+          eq(ingestionRows.batchId, batchId),
+          isNull(ingestionRows.deletedAt),
+        ),
       );
 
     return result.map((row) => RowMapper.toDomain(row));

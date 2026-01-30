@@ -4,7 +4,10 @@ import * as XLSX from 'xlsx';
 import { CellAccessHelper } from '../helpers/cell-access.helper';
 import type { CellTypeMap, ParsedRow, ParseResult } from '../types';
 
-import type { ExcelFileInput, ExcelParsingStrategy } from './excel-parsing.strategy';
+import type {
+  ExcelFileInput,
+  ExcelParsingStrategy,
+} from './excel-parsing.strategy';
 
 /**
  * ProfileMode Excel parsing strategy

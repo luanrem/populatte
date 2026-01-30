@@ -1,7 +1,7 @@
 // Mock @Transactional decorator BEFORE any imports that use it
 jest.mock('@nestjs-cls/transactional', () => ({
-  Transactional: () =>
-    (_target: unknown, _key: string, descriptor: PropertyDescriptor) =>
+  Transactional:
+    () => (_target: unknown, _key: string, descriptor: PropertyDescriptor) =>
       descriptor,
 }));
 
@@ -118,9 +118,9 @@ describe('CreateBatchUseCase', () => {
 
       // Assert - call order: project lookup before ingestion
       const projectCallOrder =
-        mockProjectRepository.findByIdOnly.mock.invocationCallOrder[0]!;
+        mockProjectRepository.findByIdOnly.mock.invocationCallOrder[0];
       const ingestCallOrder =
-        mockIngestionService.ingest.mock.invocationCallOrder[0]!;
+        mockIngestionService.ingest.mock.invocationCallOrder[0];
       expect(projectCallOrder).toBeLessThan(ingestCallOrder);
     });
   });

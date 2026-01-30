@@ -24,10 +24,7 @@ export const users = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
   },
   (table) => [
-    index('idx_users_clerk_id').on(table.clerkId),
-    uniqueIndex('users_clerk_id_unique')
-      .on(table.clerkId)
-      .where(sql`deleted_at IS NULL`),
+    uniqueIndex('users_clerk_id_unique').on(table.clerkId),
     index('idx_users_email')
       .on(table.email)
       .where(sql`deleted_at IS NULL`),

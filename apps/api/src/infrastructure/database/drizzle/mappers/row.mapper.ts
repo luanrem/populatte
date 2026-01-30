@@ -12,8 +12,7 @@ export class RowMapper {
       batchId: row.batchId,
       data: (row.data ?? {}) as Record<string, unknown>,
       status: row.status as RowStatus,
-      validationMessages: (row.validationMessages ??
-        []) as ValidationMessage[],
+      validationMessages: (row.validationMessages ?? []) as ValidationMessage[],
       sourceFileName: row.sourceFileName,
       sourceSheetName: row.sourceSheetName,
       sourceRowIndex: row.sourceRowIndex,
