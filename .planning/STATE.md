@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 Phase: 16 of 16 (all milestones complete)
 Plan: N/A
 Status: v2.2 milestone archived, ready for next milestone
-Last activity: 2026-01-30 -- v2.2 milestone completed and archived
+Last activity: 2026-01-30 -- Completed quick task 001: Fix navigation in ProjectCard
 
 Progress: [██████████████] 100% (all milestones shipped)
 
@@ -60,6 +60,12 @@ None.
 ### Blockers/Concerns
 
 None.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 001 | Fix navigation in ProjectCard | 2026-01-30 | 65e6530 | [001-fix-navigation-in-projectcard](./quick/001-fix-navigation-in-projectcard/) |
 
 ## Session Continuity
 
