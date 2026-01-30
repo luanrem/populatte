@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, and data ingestion with strategy-based Excel parsing. The Next.js dashboard manages projects and uploads. The Chrome extension maps Excel columns to form fields and auto-populates web forms.
+A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, and data ingestion with strategy-based Excel parsing. The Next.js dashboard manages projects, file uploads, and data visualization with paginated batch tables. The Chrome extension maps Excel columns to form fields and auto-populates web forms.
 
 ## Core Value
 
@@ -44,18 +44,20 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - ✓ Soft-delete filtering on all read queries (batches, rows, projects) — v2.1
 - ✓ PaginatedResult<T> generic type for consistent pagination — v2.1
 - ✓ Zod-validated pagination params (limit 1-100, offset >=0) with 400 on invalid — v2.1
+- ✓ React Query hooks for batch list, detail, rows, and upload mutation — v2.2
+- ✓ Zod response schemas for batch API responses — v2.2
+- ✓ FormData upload support in API client — v2.2
+- ✓ Project detail page with breadcrumb navigation — v2.2
+- ✓ Upload modal with List/Profile mode selector and drag-and-drop — v2.2
+- ✓ Client-side file validation (size, type, count) — v2.2
+- ✓ Responsive batch grid with mode badges and relative dates — v2.2
+- ✓ Dynamic data table with server-side pagination — v2.2
+- ✓ Smooth page transitions with keepPreviousData — v2.2
+- ✓ Complete dashboard upload-to-view flow — v2.2
 
 ### Active
 
-**Current Milestone: v2.2 — Dashboard Upload & Listing UI**
-
-**Goal:** Build the frontend interface for uploading Excel files and viewing ingested data, connecting the Next.js dashboard to the batch/row API endpoints.
-
-**Target features:**
-- Project detail page with batch history grid
-- Upload modal with visual mode selector and drag-and-drop
-- Batch data table page with paginated rows
-- React Query hooks for batch endpoints with cache invalidation
+(No active milestone — run `/gsd:new-milestone` to define next scope)
 
 ### Out of Scope
 
@@ -71,9 +73,8 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ## Context
 
-**Shipped v2.1** with 8,505+ LOC TypeScript across 130+ files (cumulative).
-**Starting v2.2** — Dashboard Upload & Listing UI (frontend for batch management).
-Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3.
+**Shipped v2.2** with ~10,200 LOC TypeScript across 145+ files (cumulative).
+Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, shadcn/ui.
 
 **Architecture patterns established:**
 - Compare-first sync: Guard fetches stored user, compares fields, writes only on mismatch
@@ -147,6 +148,15 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Zod coercion for pagination query params | Type-safe validation with strict limits (1-100) and 400 on invalid input | ✓ Good |
 | Route ordering in BatchController | @Get() → @Get(':batchId') → @Get(':batchId/rows') prevents NestJS path conflicts | ✓ Good |
 | Defense-in-depth on batch endpoints | Verify batch.projectId === projectId prevents cross-project access | ✓ Good |
+| FormData Content-Type skip | Conditionally omit Content-Type for FormData to allow browser multipart boundary | ✓ Good |
+| Fixed query key without pagination params | Simplifies cache invalidation on upload (invalidate all batch lists for project) | ✓ Good |
+| react-dropzone for file upload | Robust drag-and-drop with validation hooks; type assertions for strict TS | ✓ Good |
+| Mode selector as side-by-side cards | Visual clarity for List vs Profile mode (more intuitive than dropdown) | ✓ Good |
+| keepPreviousData for pagination | Prevents loading flash between page transitions; previous data stays visible | ✓ Good |
+| Dynamic columns from columnMetadata | Supports any Excel structure; preserves original column order and headers | ✓ Good |
+| Sticky row number column | Preserves context when horizontally scrolling wide tables | ✓ Good |
+| Tooltip on every cell | Simpler than conditional truncation detection; acceptable DOM overhead for MVP | ✓ Good |
+| Page size change resets offset | Prevents invalid pagination state (e.g., offset=200 with limit=25) | ✓ Good |
 
 ---
-*Last updated: 2026-01-30 after v2.2 milestone started*
+*Last updated: 2026-01-30 after v2.2 milestone complete*

@@ -1,5 +1,31 @@
 # Project Milestones: Populatte
 
+## v2.2 Dashboard Upload & Listing UI (Shipped: 2026-01-30)
+
+**Delivered:** Frontend interface for uploading Excel files and viewing ingested data, connecting the Next.js dashboard to batch/row API endpoints with a complete project detail → upload → batch grid → data table flow.
+
+**Phases completed:** 13-16 (4 plans total)
+
+**Key accomplishments:**
+- React Query + Zod batch API layer with FormData upload support and cache invalidation
+- Upload modal with List/Profile mode selector cards and drag-and-drop file zone (react-dropzone)
+- Responsive batch grid with Portuguese relative dates and colored mode badges
+- Dynamic data table with server-side pagination, keepPreviousData, sticky row numbers, and tooltips
+- Complete dashboard upload flow: Project detail → Upload → Batch grid → Batch detail with paginated data
+
+**Stats:**
+- 14 source files created/modified (40 total with docs/lock)
+- 1,696 lines of TypeScript added
+- 4 phases, 4 plans, 10 tasks
+- 1 day (2026-01-30, single session)
+- Execution time: 15m 54s (avg 3m 57s/plan)
+
+**Git range:** `feat(13-01)` → `docs(16)`
+
+**What's next:** Next milestone TBD — `/gsd:new-milestone` to define scope
+
+---
+
 ## v2.1 Batch Read Layer (Shipped: 2026-01-30)
 
 **Delivered:** Read endpoints for batch metadata and paginated row data, closing the read cycle so the dashboard can display ingested Excel data for user validation.
