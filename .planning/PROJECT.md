@@ -57,7 +57,14 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ### Active
 
-(No active milestone — run `/gsd:new-milestone` to define next scope)
+**v2.3 — Field Inventory**
+
+- [ ] Backend endpoint for field-level stats (presence count, inferred type, unique value count per field)
+- [ ] Backend endpoint for field values (all values for a specific field across records)
+- [ ] Field Inventory grid UI — card per field showing name, type badge, presence stats, unique count
+- [ ] View Values side sheet — click field card to see all values, with search and copy
+- [ ] View toggle on batch detail — switch between table view and field inventory for any batch mode
+- [ ] PROFILE_MODE defaults to field inventory, LIST_MODE defaults to table
 
 ### Out of Scope
 
@@ -159,4 +166,4 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Page size change resets offset | Prevents invalid pagination state (e.g., offset=200 with limit=25) | ✓ Good |
 
 ---
-*Last updated: 2026-01-30 after v2.2 milestone complete*
+*Last updated: 2026-01-30 after v2.3 milestone started*
