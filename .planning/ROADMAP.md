@@ -187,7 +187,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 07-01-PLAN.md — BatchController with Multer interceptor and ClerkAuthGuard
+- [ ] 07-01-PLAN.md — BatchController with Multer interceptor, Zod DTO, BatchModule wiring, and AppModule import
 
 ---
 
