@@ -21,7 +21,7 @@ This milestone adds a robust Excel file ingestion pipeline to the existing NestJ
 - [x] **Phase 4: Ingestion Module** - NestJS module wiring for strategies and ingestion service
 - [x] **Phase 5: CreateBatch Use Case** - Transactional use case with project ownership validation
 - [x] **Phase 6: Transaction Rollback Test** - Integration test proving atomic rollback behavior
-- [ ] **Phase 7: Batch Endpoint** - Controller with Multer file upload and ClerkAuthGuard
+- [x] **Phase 7: Batch Endpoint** - Controller with Multer file upload and ClerkAuthGuard
 - [ ] **Phase 8: Upload Size Limits** - Multer size/count enforcement with early rejection
 - [ ] **Phase 9: File Content Validation** - Magic-byte inspection for Excel file verification
 - [ ] **Phase 10: Batch DTO Validation** - Zod v4 schema for mode field and controller delegation
@@ -187,7 +187,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 07-01-PLAN.md — BatchController with Multer interceptor, Zod DTO, BatchModule wiring, and AppModule import
+- [x] 07-01-PLAN.md — BatchController with Multer interceptor, Zod DTO, BatchModule wiring, and AppModule import
 
 ---
 
@@ -281,7 +281,7 @@ Plans:
 | 4. Ingestion Module | 1/1 | Complete | 2026-01-29 |
 | 5. CreateBatch Use Case | 1/1 | Complete | 2026-01-29 |
 | 6. Transaction Rollback Test | 1/1 | Complete | 2026-01-29 |
-| 7. Batch Endpoint | 0/1 | Not started | - |
+| 7. Batch Endpoint | 1/1 | Complete | 2026-01-29 |
 | 8. Upload Size Limits | 0/1 | Not started | - |
 | 9. File Content Validation | 0/1 | Not started | - |
 | 10. Batch DTO Validation | 0/1 | Not started | - |
