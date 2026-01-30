@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Transform tedious manual data entry into automated form population.
-**Current focus:** v2.0 Data Ingestion Engine -- Phase 6 complete, ready for Phase 7
+**Current focus:** v2.0 Data Ingestion Engine -- Phase 7 complete, ready for Phase 8
 
 ## Current Position
 
-Phase: 6 of 10 (Transaction Rollback Test) -- COMPLETE
+Phase: 7 of 10 (Batch Endpoint) -- COMPLETE
 Plan: 1 of 1
 Status: Phase complete, verified (all success criteria met)
-Last activity: 2026-01-29 -- Completed 06-01-PLAN.md
+Last activity: 2026-01-29 -- Completed 07-01-PLAN.md
 
-Progress: [███████░░░] ~67% (8/12 plans)
+Progress: [████████░░] ~75% (9/12 plans)
 
 ## Performance Metrics
 
@@ -24,7 +24,7 @@ Progress: [███████░░░] ~67% (8/12 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 8
+- Plans completed: 9
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
@@ -33,7 +33,8 @@ Progress: [███████░░░] ~67% (8/12 plans)
 - 04-01: 54s (1 task)
 - 05-01: 3m 32s (2 tasks)
 - 06-01: 1m 21s (1 task)
-- Average duration: 2m 12s
+- 07-01: 5m 20s (2 tasks)
+- Average duration: 2m 35s
 
 *Updated after each plan completion*
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - Mock @Transactional decorator with pass-through for test isolation (06-01)
 - Jest config with roots array discovers both src/ (unit) and test/ (integration) directories (06-01)
 - beforeAll for NestJS module creation, beforeEach for mock reset (performance + isolation) (06-01)
+- Manual Zod validation in controller instead of ZodValidationPipe for multipart form data (07-01)
+- BatchModule imports IngestionModule to access CreateBatchUseCase (no re-providing) (07-01)
+- FilesInterceptor with 20-file limit balances usability with DoS protection (07-01)
 
 ### Roadmap Evolution
 
@@ -88,16 +92,17 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 6 complete. All concerns resolved:
-- Integration test validates atomic rollback behavior
-- Error propagation path verified
-- Happy-path and rollback-path tests both passing
-- No regressions in existing tests
-- Pre-existing TypeScript error in list-mode.strategy.ts (unrelated to this phase)
-- Ready for Phase 7 (HTTP Controller)
+None. Phase 7 complete. All concerns resolved:
+- POST /projects/:projectId/batches endpoint functional
+- Multer file upload handling with 20-file limit
+- ClerkAuthGuard authentication working
+- Manual Zod validation for mode field
+- BatchModule composition with IngestionModule
+- TypeScript compilation and linting pass
+- Ready for Phase 8 (Frontend Batch Upload)
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 06-01-PLAN.md
+Stopped at: Completed 07-01-PLAN.md
 Resume file: None
