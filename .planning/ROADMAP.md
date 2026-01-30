@@ -122,10 +122,10 @@ Plans:
   3. User can retrieve paginated rows via GET /projects/:projectId/batches/:batchId/rows?limit=N&offset=N
   4. Batch read endpoints return 404 if project not found, 403 if user is not owner
   5. Row responses include pagination metadata (items, total, limit, offset) and are ordered by sourceRowIndex
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 12-01: TBD
+- [ ] 12-01-PLAN.md — GET endpoints for batch detail, batch list, and paginated rows with ownership validation
 
 ## Progress
 
@@ -145,4 +145,4 @@ Phases execute in numeric order: 11 → 12
 | 9. ProfileMode Strategy | v2.0 | 1/1 | Complete | 2026-01-29 |
 | 10. REST Endpoint | v2.0 | 4/4 | Complete | 2026-01-29 |
 | 11. Repository Layer | v2.1 | 1/1 | Complete | 2026-01-30 |
-| 12. Read Endpoints | v2.1 | 0/TBD | Not started | - |
+| 12. Read Endpoints | v2.1 | 0/1 | Not started | - |
