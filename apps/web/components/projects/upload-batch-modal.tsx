@@ -118,10 +118,10 @@ export function UploadBatchModal({
     formData.append('mode', selectedMode);
 
     if (selectedMode === 'LIST_MODE') {
-      formData.append('file', selectedFiles[0]!);
+      formData.append('documents', selectedFiles[0]!);
     } else {
       selectedFiles.forEach(file => {
-        formData.append('files', file);
+        formData.append('documents', file);
       });
     }
 
