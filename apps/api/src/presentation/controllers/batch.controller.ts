@@ -15,7 +15,7 @@ import { CreateBatchUseCase } from '../../core/use-cases/batch';
 import type { ExcelFileInput } from '../../infrastructure/excel/strategies/excel-parsing.strategy';
 import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import { createBatchSchema } from '../dto/batch.dto';
+import { createBatchSchema, type CreateBatchDto } from '../dto/batch.dto';
 
 @Controller('projects/:projectId/batches')
 @UseGuards(ClerkAuthGuard)
@@ -31,12 +31,14 @@ export class BatchController {
     @CurrentUser() user: User,
   ) {
     // Validate mode field with Zod
-    let validated;
+    let validated: CreateBatchDto;
     try {
       validated = createBatchSchema.parse({ mode });
     } catch (error) {
       if (error instanceof Error && 'issues' in error) {
-        const zodError = error as { issues: Array<{ path: string[]; message: string }> };
+        const zodError = error as {
+          issues: Array<{ path: string[]; message: string }>;
+        };
         const errors = zodError.issues.map((issue) => ({
           field: issue.path.join('.'),
           message: issue.message,
