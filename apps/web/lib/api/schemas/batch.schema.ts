@@ -57,8 +57,16 @@ export const paginatedRowsResponseSchema = z.object({
   offset: z.number(),
 });
 
+export const uploadBatchResponseSchema = z.object({
+  batchId: z.string(),
+  rowCount: z.number(),
+  mode: z.enum(['LIST_MODE', 'PROFILE_MODE']),
+  fileCount: z.number(),
+});
+
 export type ColumnMetadata = z.infer<typeof columnMetadataSchema>;
 export type BatchResponse = z.infer<typeof batchResponseSchema>;
 export type BatchListResponse = z.infer<typeof batchListResponseSchema>;
 export type RowResponse = z.infer<typeof rowResponseSchema>;
+export type UploadBatchResponse = z.infer<typeof uploadBatchResponseSchema>;
 export type PaginatedRowsResponse = z.infer<typeof paginatedRowsResponseSchema>;

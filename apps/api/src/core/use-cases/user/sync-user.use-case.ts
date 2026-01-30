@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { UpsertUserData, User } from '../../entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { UserRepository } from '../../repositories/user.repository';
 
 export interface SyncUserInput {

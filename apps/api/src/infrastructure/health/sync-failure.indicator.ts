@@ -25,6 +25,7 @@ export class SyncFailureIndicator extends HealthIndicator {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await -- HealthIndicator contract requires async signature
   public async isHealthy(key: string): Promise<HealthIndicatorResult> {
     if (this.syncAttempts === 0) {
       return this.getStatus(key, true, {

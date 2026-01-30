@@ -2,6 +2,10 @@ import * as XLSX from 'xlsx';
 
 import { CellType, type CellTypeMap } from '../types';
 
+interface SsfModule {
+  is_date(fmt: string): boolean;
+}
+
 /**
  * Type-safe SheetJS cell access helper
  * Handles TypeScript strict mode (noUncheckedIndexedAccess)
@@ -66,8 +70,13 @@ export class CellAccessHelper {
       case 'n': {
         // Numbers with date format code are dates
         // Use SSF.is_date if available and format code exists
-        if (cell.z && typeof XLSX.SSF !== 'undefined') {
-          const isDate = XLSX.SSF.is_date(cell.z);
+        if (
+          cell.z &&
+          typeof cell.z === 'string' &&
+          typeof XLSX.SSF !== 'undefined'
+        ) {
+          const ssf = XLSX.SSF as SsfModule;
+          const isDate = ssf.is_date(cell.z);
           return isDate ? CellType.Date : CellType.Number;
         }
         return CellType.Number;

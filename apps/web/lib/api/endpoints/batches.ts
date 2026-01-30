@@ -4,9 +4,11 @@ import {
   batchListResponseSchema,
   batchResponseSchema,
   paginatedRowsResponseSchema,
+  uploadBatchResponseSchema,
   type BatchListResponse,
   type BatchResponse,
   type PaginatedRowsResponse,
+  type UploadBatchResponse,
 } from '../schemas/batch.schema';
 
 export function createBatchEndpoints(
@@ -85,14 +87,14 @@ export function createBatchEndpoints(
     async upload(
       projectId: string,
       formData: FormData,
-    ): Promise<BatchResponse> {
+    ): Promise<UploadBatchResponse> {
       const response = await fetchFn(`/projects/${projectId}/batches`, {
         method: 'POST',
         body: formData,
       });
       const data: unknown = await response.json();
 
-      const result = batchResponseSchema.safeParse(data);
+      const result = uploadBatchResponseSchema.safeParse(data);
 
       if (!result.success) {
         console.error(

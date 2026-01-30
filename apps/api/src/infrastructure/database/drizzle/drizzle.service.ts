@@ -2,7 +2,6 @@ import {
   Inject,
   Injectable,
   OnModuleDestroy,
-  OnModuleInit,
 } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
@@ -13,16 +12,14 @@ import * as schema from './schema';
 import type { DrizzleClient } from './drizzle.types';
 
 @Injectable()
-export class DrizzleService implements OnModuleInit, OnModuleDestroy {
+export class DrizzleService implements OnModuleDestroy {
   private pool: Pool;
   private client: DrizzleClient;
 
   public constructor(
     @Inject(databaseConfig.KEY)
     private readonly config: ConfigType<typeof databaseConfig>,
-  ) {}
-
-  public onModuleInit(): void {
+  ) {
     if (!this.config.url) {
       throw new Error('DATABASE_URL is not configured');
     }

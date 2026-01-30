@@ -8,6 +8,7 @@ import type {
   BatchListResponse,
   BatchResponse,
   PaginatedRowsResponse,
+  UploadBatchResponse,
 } from '../../api/schemas/batch.schema';
 
 export function useBatches(projectId: string, limit = 50, offset = 0) {
@@ -54,7 +55,7 @@ export function useUploadBatch(projectId: string) {
   const endpoints = createBatchEndpoints(client.fetch);
   const queryClient = useQueryClient();
 
-  return useMutation<BatchResponse, Error, FormData>({
+  return useMutation<UploadBatchResponse, Error, FormData>({
     mutationFn: (formData) => endpoints.upload(projectId, formData),
     onSuccess: () => {
       void queryClient.invalidateQueries({

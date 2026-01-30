@@ -48,3 +48,13 @@ Thumbs.db
 .cache/
 PROJECT_DISCUSSION.md
 .project-docs/
+.agent/
+.agents/
+.claude/
+.codex/
+.gemini/
+.cursor/
+.continue/
+.trae/
+docs/test-documents
+docs/RAL/

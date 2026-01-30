@@ -81,7 +81,9 @@ export class WebhookController {
           break;
 
         default:
-          this.logger.warn(`Unhandled webhook event type: ${event.type}`);
+          this.logger.warn(
+            `Unhandled webhook event type: ${event.type as string}`,
+          );
       }
     } catch (error) {
       this.logger.error(`Failed to process webhook: ${event.type}`, error);
