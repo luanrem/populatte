@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 ## Current Position
 
 Phase: 17 of 20 (Backend Field Stats with Type Inference)
-Plan: 1 of 2
-Status: In progress
-Last activity: 2026-01-30 — Completed 17-01-PLAN.md (TypeInferenceService with TDD)
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-01-30 — Completed 17-02-PLAN.md (Repository aggregation and endpoint)
 
-Progress: [████████████████░░░░] 80.5%
+Progress: [████████████████░░░░] 85.0%
 
 ## Performance Metrics
 
@@ -39,9 +39,9 @@ Progress: [████████████████░░░░] 80.5%
 - Total execution time: 15m 54s
 
 **v2.3 velocity:**
-- Plans completed: 1
-- Average duration: 4m 56s
-- Total execution time: 4m 56s
+- Plans completed: 2
+- Average duration: 4m 16s
+- Total execution time: 8m 32s
 - Current phase: 17 of 20
 
 *Updated after each plan completion*
@@ -53,6 +53,10 @@ Progress: [████████████████░░░░] 80.5%
 See PROJECT.md Key Decisions table for full log with outcomes.
 
 Recent decisions affecting current work:
+- v2.3 (17-02): Single CTE-based query for field aggregation (no N+1 per field)
+- v2.3 (17-02): Empty strings not counted toward presence (filtered in SQL)
+- v2.3 (17-02): First 100 rows for type inference (deterministic sample)
+- v2.3 (17-02): Presence/unique counts use ALL rows (exact, not approximate)
 - v2.3 (17-01): 0/1 boolean pattern context-aware detection (['1','0'] vs ['1','2.5','3'])
 - v2.3 (17-01): Brazilian date check BEFORE ISO parse prevents MM/DD/YYYY misinterpretation
 - v2.3 (17-01): Threshold fallback < 80% → STRING with 1.0 confidence for mixed-type columns
@@ -90,6 +94,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 17-01-PLAN.md (TypeInferenceService with TDD)
+Stopped at: Completed 17-02-PLAN.md (Repository aggregation and endpoint)
 Resume file: None
-Next step: /gsd:plan-phase 17 (plan 17-02)
+Next step: Phase 17 complete — ready for Phase 18
