@@ -23,7 +23,7 @@ This milestone adds a robust Excel file ingestion pipeline to the existing NestJ
 - [x] **Phase 6: Transaction Rollback Test** - Integration test proving atomic rollback behavior
 - [x] **Phase 7: Batch Endpoint** - Controller with Multer file upload and ClerkAuthGuard
 - [x] **Phase 8: Upload Size Limits** - Multer size/count enforcement with early rejection
-- [ ] **Phase 9: File Content Validation** - Magic-byte inspection for Excel file verification
+- [x] **Phase 9: File Content Validation** - Magic-byte inspection for Excel file verification
 - [ ] **Phase 10: Batch DTO Validation** - Zod v4 schema for mode field and controller delegation
 
 ## Phase Details
@@ -228,7 +228,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 09-01-PLAN.md — Magic-byte validation pipe/guard for Excel file verification
+- [x] 09-01-PLAN.md — Magic-byte validation pipe/guard for Excel file verification
 
 ---
 
@@ -283,5 +283,5 @@ Plans:
 | 6. Transaction Rollback Test | 1/1 | Complete | 2026-01-29 |
 | 7. Batch Endpoint | 1/1 | Complete | 2026-01-29 |
 | 8. Upload Size Limits | 1/1 | Complete | 2026-01-29 |
-| 9. File Content Validation | 0/1 | Not started | - |
+| 9. File Content Validation | 1/1 | Complete | 2026-01-29 |
 | 10. Batch DTO Validation | 0/1 | Not started | - |
