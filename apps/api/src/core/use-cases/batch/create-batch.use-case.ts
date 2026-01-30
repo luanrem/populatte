@@ -16,6 +16,7 @@ export interface CreateBatchInput {
   userId: string;
   mode: BatchMode;
   files: ExcelFileInput[];
+  name?: string;
 }
 
 export interface CreateBatchResult {
@@ -62,6 +63,7 @@ export class CreateBatchUseCase {
       userId: input.userId,
       mode: input.mode,
       files: input.files,
+      name: input.name,
     });
 
     // Step 5: Return summary

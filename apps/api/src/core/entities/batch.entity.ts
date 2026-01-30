@@ -21,6 +21,7 @@ export interface Batch {
   projectId: string;
   userId: string;
   mode: BatchMode;
+  name: string | null;
   status: BatchStatus;
   fileCount: number;
   rowCount: number;
@@ -35,6 +36,7 @@ export interface CreateBatchData {
   projectId: string;
   userId: string;
   mode: BatchMode;
+  name?: string | null;
   fileCount: number;
   rowCount: number;
   columnMetadata: ColumnMetadata[];

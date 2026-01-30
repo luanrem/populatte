@@ -75,12 +75,16 @@ export class BatchController {
       originalName: file.originalname,
     }));
 
+    // Extract original filename from first uploaded file
+    const batchName = uploadedFiles[0]?.originalname;
+
     // Delegate to use case
     return this.createBatch.execute({
       projectId,
       userId: user.id,
       mode: validated.mode,
       files,
+      name: batchName,
     });
   }
 

@@ -21,6 +21,7 @@ export interface IngestInput {
   userId: string;
   mode: BatchMode;
   files: ExcelFileInput[];
+  name?: string;
 }
 
 /**
@@ -86,6 +87,7 @@ export class IngestionService {
       projectId: input.projectId,
       userId: input.userId,
       mode: input.mode,
+      name: input.name,
       fileCount: input.files.length,
       rowCount: parseResult.rows.length,
       columnMetadata,

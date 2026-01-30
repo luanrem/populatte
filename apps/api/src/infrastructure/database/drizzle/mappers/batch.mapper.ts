@@ -13,6 +13,7 @@ export class BatchMapper {
       projectId: row.projectId,
       userId: row.userId,
       mode: row.mode as BatchMode,
+      name: row.name ?? null,
       status: row.status as BatchStatus,
       fileCount: row.fileCount,
       rowCount: row.rowCount,

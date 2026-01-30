@@ -22,6 +22,7 @@ export class DrizzleBatchRepository extends BatchRepository {
         projectId: data.projectId,
         userId: data.userId,
         mode: data.mode,
+        name: data.name ?? null,
         fileCount: data.fileCount,
         rowCount: data.rowCount,
         columnMetadata: data.columnMetadata,
