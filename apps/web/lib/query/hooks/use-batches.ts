@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useApiClient } from '../../api/client';
 import { createBatchEndpoints } from '../../api/endpoints/batches';
@@ -45,6 +45,7 @@ export function useBatchRows(
     queryKey: ['projects', projectId, 'batches', batchId, 'rows', { limit, offset }],
     queryFn: () => endpoints.listRows(projectId, batchId, limit, offset),
     enabled: !!projectId && !!batchId,
+    placeholderData: keepPreviousData,
   });
 }
 
