@@ -80,7 +80,9 @@ export function createApiClient(getToken: GetToken): ApiClient {
 
       // Prepare headers
       const headers = new Headers(requestOptions.headers);
-      headers.set('Content-Type', 'application/json');
+      if (!(requestOptions.body instanceof FormData)) {
+        headers.set('Content-Type', 'application/json');
+      }
 
       if (token !== null) {
         headers.set('Authorization', `Bearer ${token}`);
