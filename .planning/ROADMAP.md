@@ -40,7 +40,7 @@ Collapsed. See git history for details.
 
 - [x] **Phase 13: API Foundation & Project Detail Page** - Wire batch endpoints, Zod schemas, React Query hooks, FormData fix, and project detail page shell
 - [x] **Phase 14: Upload Modal** - File upload modal with mode selector, drag-and-drop, validation, and batch creation
-- [ ] **Phase 15: Batch Grid** - Responsive batch card grid with empty state, skeletons, and navigation
+- [x] **Phase 15: Batch Grid** - Responsive batch card grid with empty state, skeletons, and navigation
 - [ ] **Phase 16: Data Table with Pagination** - Dynamic-column data table with server-side pagination and loading states
 
 ## Phase Details
@@ -88,7 +88,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 15-01-PLAN.md -- Batch card, batch grid, empty state with upload CTA, skeletons, and navigation wiring
+- [x] 15-01-PLAN.md -- Batch card, batch grid, empty state with upload CTA, skeletons, and navigation wiring
 
 ### Phase 16: Data Table with Pagination
 **Goal**: Users can view batch row data in a paginated table with dynamically generated columns from Excel metadata
@@ -115,5 +115,5 @@ Phases execute in numeric order: 13 -> 14 -> 15 -> 16
 |-------|-----------|----------------|--------|-----------|
 | 13. API Foundation & Project Detail Page | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 14. Upload Modal | v2.2 | 1/1 | Complete | 2026-01-30 |
-| 15. Batch Grid | v2.2 | 0/1 | Not started | - |
+| 15. Batch Grid | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 16. Data Table with Pagination | v2.2 | 0/1 | Not started | - |

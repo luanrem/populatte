@@ -29,12 +29,12 @@ Requirements for Dashboard Upload & Listing UI. Each maps to roadmap phases.
 
 ### Batch Grid (GRID)
 
-- [ ] **GRID-01**: Project detail page displays batch cards in responsive grid layout
-- [ ] **GRID-02**: Batch card shows creation date, mode badge, and total row count
-- [ ] **GRID-03**: Batch grid sorts newest-first (matches API default DESC ordering)
-- [ ] **GRID-04**: User can click batch card to navigate to batch data table page
-- [ ] **GRID-05**: Empty state component shown when project has no batches (with upload CTA)
-- [ ] **GRID-06**: Loading skeleton cards (6) displayed during data fetch
+- [x] **GRID-01**: Project detail page displays batch cards in responsive grid layout
+- [x] **GRID-02**: Batch card shows creation date, mode badge, and total row count
+- [x] **GRID-03**: Batch grid sorts newest-first (matches API default DESC ordering)
+- [x] **GRID-04**: User can click batch card to navigate to batch data table page
+- [x] **GRID-05**: Empty state component shown when project has no batches (with upload CTA)
+- [x] **GRID-06**: Loading skeleton cards (6) displayed during data fetch
 
 ### Data Table (DTBL)
 
@@ -111,12 +111,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UPLD-07 | Phase 14 | Complete |
 | UPLD-08 | Phase 14 | Complete |
 | UPLD-09 | Phase 14 | Complete |
-| GRID-01 | Phase 15 | Pending |
-| GRID-02 | Phase 15 | Pending |
-| GRID-03 | Phase 15 | Pending |
-| GRID-04 | Phase 15 | Pending |
-| GRID-05 | Phase 15 | Pending |
-| GRID-06 | Phase 15 | Pending |
+| GRID-01 | Phase 15 | Complete |
+| GRID-02 | Phase 15 | Complete |
+| GRID-03 | Phase 15 | Complete |
+| GRID-04 | Phase 15 | Complete |
+| GRID-05 | Phase 15 | Complete |
+| GRID-06 | Phase 15 | Complete |
 | DTBL-01 | Phase 16 | Pending |
 | DTBL-02 | Phase 16 | Pending |
 | DTBL-03 | Phase 16 | Pending |
