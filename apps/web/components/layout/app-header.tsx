@@ -4,9 +4,10 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface AppHeaderProps {
   title: string;
+  children?: React.ReactNode;
 }
 
-export function AppHeader({ title }: AppHeaderProps) {
+export function AppHeader({ title, children }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center justify-between px-8">
@@ -19,6 +20,7 @@ export function AppHeader({ title }: AppHeaderProps) {
           </h1>
         </div>
         <div className="flex items-center gap-3">
+          {children}
           <SignedOut>
             <SignInButton />
           </SignedOut>
