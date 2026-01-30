@@ -21,8 +21,8 @@ Requirements for Batch Read Layer milestone. Closes the read cycle for ingested 
 
 ### Repository Layer
 
-- [ ] **REPO-01**: `RowRepository` extended with paginated query method (`findByBatchIdPaginated`) accepting limit, offset, returning rows + total count
-- [ ] **REPO-02**: All read queries filter out soft-deleted records (`deletedAt IS NULL`)
+- [x] **REPO-01**: `RowRepository` extended with paginated query method (`findByBatchIdPaginated`) accepting limit, offset, returning rows + total count
+- [x] **REPO-02**: All read queries filter out soft-deleted records (`deletedAt IS NULL`)
 
 ## Future Requirements
 
@@ -53,8 +53,8 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | Phase 11 | Pending |
-| REPO-02 | Phase 11 | Pending |
+| REPO-01 | Phase 11 | Complete |
+| REPO-02 | Phase 11 | Complete |
 | BREAD-01 | Phase 12 | Pending |
 | BREAD-02 | Phase 12 | Pending |
 | BREAD-03 | Phase 12 | Pending |
@@ -73,4 +73,4 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-01-29*
-*Last updated: 2026-01-30 after roadmap creation*
+*Last updated: 2026-01-30 after phase 11 completion*
