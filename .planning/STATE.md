@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 11 - Repository Layer
+**Current focus:** Phase 12 - Read Endpoints
 
 ## Current Position
 
-Phase: 11 of 12 (Repository Layer)
+Phase: 12 of 12 (Read Endpoints)
 Plan: 1 of 1 complete
 Status: Phase complete
-Last activity: 2026-01-30 — Completed 11-01-PLAN.md (Repository Layer paginated methods)
+Last activity: 2026-01-30 — Completed 12-01-PLAN.md (Batch read endpoints)
 
-Progress: [████████████░░] 92% (11/12 phases complete)
+Progress: [██████████████] 100% (12/12 phases complete)
 
 ## Performance Metrics
 
@@ -29,9 +29,9 @@ Progress: [████████████░░] 92% (11/12 phases complet
 - Total execution time: ~31min
 
 **v2.1 velocity:**
-- Plans completed: 1
-- Average duration: 2m 36s
-- Total execution time: 2m 36s
+- Plans completed: 2
+- Average duration: 3m 9s
+- Total execution time: 6m 17s
 
 *Updated after each plan completion*
 
@@ -48,6 +48,10 @@ Recent decisions affecting v2.1:
 - PaginatedResult<T> returns only items + total, use case layer adds limit/offset (11-01)
 - Batches sorted by createdAt DESC, rows by sourceRowIndex ASC with id tiebreaker (11-01)
 - Shared conditions variable between data and count queries prevents inconsistency (11-01)
+- countByBatchId created from scratch for efficient row counting (12-01)
+- N+1 query pattern in ListBatchesUseCase acceptable for MVP with Promise.all parallelization (12-01)
+- Pagination uses Zod coercion with strict limits: 1-100 default 50, offset >=0 default 0 (12-01)
+- Route ordering matters: @Get() before @Get(':batchId') before @Get(':batchId/rows') (12-01)
 
 ### Roadmap Evolution
 
@@ -66,6 +70,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 11-01-PLAN.md (Repository Layer paginated methods)
+Stopped at: Completed 12-01-PLAN.md (Batch read endpoints)
 Resume file: None
-Next step: Ready for Phase 12 (Read Endpoints)
+Next step: v2.1 complete - all 12 phases shipped
