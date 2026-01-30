@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 8 of 10 (Upload Size Limits) -- COMPLETE
+Phase: 9 of 10 (File Content Validation) -- COMPLETE
 Plan: 1 of 1
 Status: Phase complete, verified (all success criteria met)
-Last activity: 2026-01-29 -- Completed 08-01-PLAN.md
+Last activity: 2026-01-29 -- Completed 09-01-PLAN.md
 
-Progress: [█████████░] ~83% (10/12 plans)
+Progress: [█████████░] ~92% (11/12 plans)
 
 ## Performance Metrics
 
@@ -24,7 +24,7 @@ Progress: [█████████░] ~83% (10/12 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 10
+- Plans completed: 11
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
@@ -35,7 +35,8 @@ Progress: [█████████░] ~83% (10/12 plans)
 - 06-01: 1m 21s (1 task)
 - 07-01: 5m 20s (2 tasks)
 - 08-01: 3m 18s (2 tasks)
-- Average duration: 2m 37s
+- 09-01: 2m 31s (2 tasks)
+- Average duration: 2m 36s
 
 *Updated after each plan completion*
 
@@ -87,6 +88,11 @@ Recent decisions affecting current work:
 - Content-Length threshold includes 100KB overhead for multipart boundaries/metadata (08-01)
 - maxCount parameter and limits.files both set to 50 to avoid unpredictable behavior (08-01)
 - Early rejection via Content-Length prevents Multer buffering for oversized requests (08-01)
+- Manual magic-byte inspection instead of file-type npm package (ESM compatibility) (09-01)
+- Fail-fast validation rejects entire batch on first invalid file (09-01)
+- No individual filenames in error response for security (server-side logging only) (09-01)
+- UTF-8 text heuristic for CSV validation (>95% printable ASCII in first 512 bytes) (09-01)
+- Server-side logging includes detected bytes as hex for spoofed file diagnosis (09-01)
 
 ### Roadmap Evolution
 
@@ -98,17 +104,19 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 8 complete. All concerns resolved:
-- Upload limits enforced (5MB/file, 50 files max) via Multer interceptor
-- MulterExceptionFilter returns HTTP 413 with detailed error codes
-- Content-Length middleware provides early rejection before buffering
-- All limits configurable via environment variables
-- Upload violations logged with userId and request context
+None. Phase 9 complete. All concerns resolved:
+- File content validation via magic-byte inspection prevents MIME-type spoofing
+- ZIP signature (0x504B0304) for .xlsx, OLE2 (0xD0CF11E0A1B11AE1) for .xls
+- CSV validation via UTF-8 text heuristic (>95% printable ASCII)
+- Fail-fast validation rejects entire batch on first invalid file
+- HTTP 422 with INVALID_FILE_TYPE error code
+- Server-side logging with filename, mimetype, size, and detected bytes
+- No filenames exposed in error response (security)
 - TypeScript compilation and linting pass
-- Ready for Phase 9 (Frontend Batch Upload UI)
+- Ready for Phase 10 (Frontend Batch Upload UI)
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 08-01-PLAN.md
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None
