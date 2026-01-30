@@ -5,6 +5,7 @@ import { SyncUserUseCase, DeleteUserUseCase } from './core/use-cases/user';
 import {
   clerkConfig,
   databaseConfig,
+  uploadConfig,
   envValidationSchema,
 } from './infrastructure/config';
 import { AuthModule } from './infrastructure/auth/auth.module';
@@ -22,7 +23,7 @@ import { AppService } from './app.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [clerkConfig, databaseConfig],
+      load: [clerkConfig, databaseConfig, uploadConfig],
       validationSchema: envValidationSchema,
       validationOptions: {
         abortEarly: false, // Show all validation errors

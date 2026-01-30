@@ -22,4 +22,12 @@ export const envValidationSchema = Joi.object({
     .valid('development', 'production', 'test')
     .default('development'),
   PORT: Joi.number().default(3001),
+
+  // Upload configuration
+  UPLOAD_MAX_FILE_SIZE: Joi.number()
+    .default(5 * 1024 * 1024)
+    .description('Maximum file size in bytes'),
+  UPLOAD_MAX_FILE_COUNT: Joi.number()
+    .default(50)
+    .description('Maximum number of files per request'),
 });

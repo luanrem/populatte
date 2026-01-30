@@ -23,7 +23,11 @@ export class BatchController {
   public constructor(private readonly createBatch: CreateBatchUseCase) {}
 
   @Post()
-  @UseInterceptors(FilesInterceptor('documents', 20))
+  @UseInterceptors(
+    FilesInterceptor('documents', 50, {
+      limits: { fileSize: 5 * 1024 * 1024, files: 50 },
+    }),
+  )
   public async create(
     @Param('projectId') projectId: string,
     @Body('mode') mode: string,
