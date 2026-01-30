@@ -6,6 +6,7 @@ import {
   jsonb,
   timestamp,
   index,
+  varchar,
 } from 'drizzle-orm/pg-core';
 
 import { projects } from './projects.schema';
@@ -33,6 +34,7 @@ export const ingestionBatches = pgTable(
       .notNull()
       .references(() => users.id),
     mode: batchModeEnum('mode').notNull(),
+    name: varchar('name', { length: 255 }),
     status: batchStatusEnum('status').notNull().default('PROCESSING'),
     fileCount: integer('file_count').notNull(),
     rowCount: integer('row_count').notNull(),
