@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 7 of 10 (Batch Endpoint) -- COMPLETE
+Phase: 8 of 10 (Upload Size Limits) -- COMPLETE
 Plan: 1 of 1
 Status: Phase complete, verified (all success criteria met)
-Last activity: 2026-01-29 -- Completed 07-01-PLAN.md
+Last activity: 2026-01-29 -- Completed 08-01-PLAN.md
 
-Progress: [████████░░] ~75% (9/12 plans)
+Progress: [█████████░] ~83% (10/12 plans)
 
 ## Performance Metrics
 
@@ -24,7 +24,7 @@ Progress: [████████░░] ~75% (9/12 plans)
 - Total execution time: 21min 50s
 
 **v2.0 velocity:**
-- Plans completed: 9
+- Plans completed: 10
 - 01-01: 1m 25s (2 tasks)
 - 01-02: 3m 01s (2 tasks)
 - 02-01: 3m 26s (2 tasks)
@@ -34,7 +34,8 @@ Progress: [████████░░] ~75% (9/12 plans)
 - 05-01: 3m 32s (2 tasks)
 - 06-01: 1m 21s (1 task)
 - 07-01: 5m 20s (2 tasks)
-- Average duration: 2m 35s
+- 08-01: 3m 18s (2 tasks)
+- Average duration: 2m 37s
 
 *Updated after each plan completion*
 
@@ -81,6 +82,11 @@ Recent decisions affecting current work:
 - Manual Zod validation in controller instead of ZodValidationPipe for multipart form data (07-01)
 - BatchModule imports IngestionModule to access CreateBatchUseCase (no re-providing) (07-01)
 - FilesInterceptor with 20-file limit balances usability with DoS protection (07-01)
+- Hardcoded limits in FilesInterceptor as decorator options are static (not injectable) (08-01)
+- Environment-driven config used by Content-Length middleware for runtime flexibility (08-01)
+- Content-Length threshold includes 100KB overhead for multipart boundaries/metadata (08-01)
+- maxCount parameter and limits.files both set to 50 to avoid unpredictable behavior (08-01)
+- Early rejection via Content-Length prevents Multer buffering for oversized requests (08-01)
 
 ### Roadmap Evolution
 
@@ -92,17 +98,17 @@ None.
 
 ### Blockers/Concerns
 
-None. Phase 7 complete. All concerns resolved:
-- POST /projects/:projectId/batches endpoint functional
-- Multer file upload handling with 20-file limit
-- ClerkAuthGuard authentication working
-- Manual Zod validation for mode field
-- BatchModule composition with IngestionModule
+None. Phase 8 complete. All concerns resolved:
+- Upload limits enforced (5MB/file, 50 files max) via Multer interceptor
+- MulterExceptionFilter returns HTTP 413 with detailed error codes
+- Content-Length middleware provides early rejection before buffering
+- All limits configurable via environment variables
+- Upload violations logged with userId and request context
 - TypeScript compilation and linting pass
-- Ready for Phase 8 (Frontend Batch Upload)
+- Ready for Phase 9 (Frontend Batch Upload UI)
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 07-01-PLAN.md
+Stopped at: Completed 08-01-PLAN.md
 Resume file: None
