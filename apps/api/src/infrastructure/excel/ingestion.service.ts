@@ -138,8 +138,8 @@ export class IngestionService {
     typeMap: Record<string, CellType>,
   ): ColumnMetadata[] {
     return Object.entries(typeMap).map(([key, inferredType], index) => ({
-      originalHeader: key,
-      normalizedKey: key,
+      originalHeader: key.trim(),
+      normalizedKey: key.trim(),
       inferredType,
       position: index,
     }));
