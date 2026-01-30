@@ -17,15 +17,15 @@ Requirements for Dashboard Upload & Listing UI. Each maps to roadmap phases.
 
 ### Upload Modal (UPLD)
 
-- [ ] **UPLD-01**: User can open upload modal from project detail page via "Nova Importacao" button
-- [ ] **UPLD-02**: User can select List Mode or Profile Mode via visual card selector before upload
-- [ ] **UPLD-03**: User can add files via drag-and-drop zone with visual feedback on dragover
-- [ ] **UPLD-04**: User can add files via manual file selection fallback (click to browse)
-- [ ] **UPLD-05**: User sees client-side validation errors (file size >5MB, file count rules per mode)
-- [ ] **UPLD-06**: User sees selected files list with filename and size before upload
-- [ ] **UPLD-07**: Upload submit triggers batch creation API call with FormData
-- [ ] **UPLD-08**: Modal closes and batch list refreshes on successful upload
-- [ ] **UPLD-09**: User sees toast notification on upload success or failure
+- [x] **UPLD-01**: User can open upload modal from project detail page via "Nova Importacao" button
+- [x] **UPLD-02**: User can select List Mode or Profile Mode via visual card selector before upload
+- [x] **UPLD-03**: User can add files via drag-and-drop zone with visual feedback on dragover
+- [x] **UPLD-04**: User can add files via manual file selection fallback (click to browse)
+- [x] **UPLD-05**: User sees client-side validation errors (file size >5MB, file count rules per mode)
+- [x] **UPLD-06**: User sees selected files list with filename and size before upload
+- [x] **UPLD-07**: Upload submit triggers batch creation API call with FormData
+- [x] **UPLD-08**: Modal closes and batch list refreshes on successful upload
+- [x] **UPLD-09**: User sees toast notification on upload success or failure
 
 ### Batch Grid (GRID)
 
@@ -102,15 +102,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | APIF-03 | Phase 13 | Complete |
 | APIF-04 | Phase 13 | Complete |
 | APIF-05 | Phase 13 | Complete |
-| UPLD-01 | Phase 14 | Pending |
-| UPLD-02 | Phase 14 | Pending |
-| UPLD-03 | Phase 14 | Pending |
-| UPLD-04 | Phase 14 | Pending |
-| UPLD-05 | Phase 14 | Pending |
-| UPLD-06 | Phase 14 | Pending |
-| UPLD-07 | Phase 14 | Pending |
-| UPLD-08 | Phase 14 | Pending |
-| UPLD-09 | Phase 14 | Pending |
+| UPLD-01 | Phase 14 | Complete |
+| UPLD-02 | Phase 14 | Complete |
+| UPLD-03 | Phase 14 | Complete |
+| UPLD-04 | Phase 14 | Complete |
+| UPLD-05 | Phase 14 | Complete |
+| UPLD-06 | Phase 14 | Complete |
+| UPLD-07 | Phase 14 | Complete |
+| UPLD-08 | Phase 14 | Complete |
+| UPLD-09 | Phase 14 | Complete |
 | GRID-01 | Phase 15 | Pending |
 | GRID-02 | Phase 15 | Pending |
 | GRID-03 | Phase 15 | Pending |
