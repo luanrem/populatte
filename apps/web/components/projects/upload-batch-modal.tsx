@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, type DropzoneOptions, type FileRejection } from "react-dropzone";
 import { FileSpreadsheet, List, Loader2, Upload, Users, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -60,7 +60,8 @@ export function UploadBatchModal({
   };
 
   // Configure dropzone
-  const dropzoneConfig = {
+  // Type assertion needed due to react-dropzone v14 type incompatibility with strict TypeScript
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
     },
@@ -76,8 +77,8 @@ export function UploadBatchModal({
         setSelectedFiles(prev => [...prev, ...acceptedFiles]);
       }
     },
-    onDropRejected: (fileRejections: any[]) => {
-      fileRejections.forEach(rejection => {
+    onDropRejected: (fileRejections: FileRejection[]) => {
+      fileRejections.forEach((rejection: FileRejection) => {
         const error = rejection.errors[0];
         if (!error) {
           return;
@@ -98,9 +99,9 @@ export function UploadBatchModal({
         }
       });
     },
-  };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneConfig as any);
+    noClick: false,
+    noKeyboard: false,
+  } as unknown as DropzoneOptions);
 
   // Remove file by index
   const removeFile = (index: number) => {
@@ -197,7 +198,7 @@ export function UploadBatchModal({
                     : "bg-muted/50 border-2 border-dashed border-muted-foreground/25"
                 )}
               >
-                <input {...(getInputProps() as any)} />
+                <input {...(getInputProps() as unknown as React.InputHTMLAttributes<HTMLInputElement>)} />
                 {isDragActive ? (
                   <>
                     <Upload className="mb-4 h-10 w-10 text-primary" />

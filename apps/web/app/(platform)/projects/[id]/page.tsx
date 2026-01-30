@@ -1,12 +1,13 @@
 "use client";
 
-import { use, useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppHeader } from "@/components/layout/app-header";
 import { BatchEmptyState } from "@/components/projects/batch-empty-state";
+import { UploadBatchModal } from "@/components/projects/upload-batch-modal";
 import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
@@ -29,6 +30,7 @@ export default function ProjectDetailPage({
   const { id } = use(params);
   const { data: project, isLoading: projectLoading, isError: projectError, error: projectErrorData } = useProject(id);
   const { data: batches, isLoading: batchesLoading } = useBatches(id);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
   // Handle error toasts
   useEffect(() => {
@@ -133,7 +135,7 @@ export default function ProjectDetailPage({
       </div>
 
       <AppHeader title={project.name}>
-        <Button size="sm" disabled>
+        <Button size="sm" onClick={() => setUploadModalOpen(true)}>
           <Upload className="mr-2 h-4 w-4" />
           Nova Importacao
         </Button>
@@ -154,6 +156,12 @@ export default function ProjectDetailPage({
           </p>
         )}
       </div>
+
+      <UploadBatchModal
+        open={uploadModalOpen}
+        onOpenChange={setUploadModalOpen}
+        projectId={id}
+      />
     </main>
   );
 }
