@@ -86,35 +86,35 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| API-01 | — | Pending |
-| API-02 | — | Pending |
-| API-03 | — | Pending |
-| API-04 | — | Pending |
-| API-05 | — | Pending |
-| API-06 | — | Pending |
-| TYPE-01 | — | Pending |
-| TYPE-02 | — | Pending |
-| TYPE-03 | — | Pending |
-| TYPE-04 | — | Pending |
-| UI-01 | — | Pending |
-| UI-02 | — | Pending |
-| UI-03 | — | Pending |
-| UI-04 | — | Pending |
-| UI-05 | — | Pending |
-| SHEET-01 | — | Pending |
-| SHEET-02 | — | Pending |
-| SHEET-03 | — | Pending |
-| SHEET-04 | — | Pending |
-| UX-01 | — | Pending |
-| UX-02 | — | Pending |
-| UX-03 | — | Pending |
-| UX-04 | — | Pending |
+| API-01 | Phase 17 | Pending |
+| API-02 | Phase 17 | Pending |
+| API-05 | Phase 17 | Pending |
+| API-06 | Phase 17 | Pending |
+| TYPE-01 | Phase 17 | Pending |
+| TYPE-02 | Phase 17 | Pending |
+| TYPE-03 | Phase 17 | Pending |
+| TYPE-04 | Phase 17 | Pending |
+| API-03 | Phase 18 | Pending |
+| API-04 | Phase 18 | Pending |
+| UI-01 | Phase 19 | Pending |
+| UI-02 | Phase 19 | Pending |
+| UI-03 | Phase 19 | Pending |
+| UI-04 | Phase 19 | Pending |
+| UI-05 | Phase 19 | Pending |
+| UX-01 | Phase 19 | Pending |
+| UX-02 | Phase 19 | Pending |
+| SHEET-01 | Phase 20 | Pending |
+| SHEET-02 | Phase 20 | Pending |
+| SHEET-03 | Phase 20 | Pending |
+| SHEET-04 | Phase 20 | Pending |
+| UX-03 | Phase 20 | Pending |
+| UX-04 | Phase 20 | Pending |
 
 **Coverage:**
 - v2.3 requirements: 23 total
-- Mapped to phases: 0
-- Unmapped: 23
+- Mapped to phases: 23 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-01-30*
-*Last updated: 2026-01-30 after initial definition*
+*Last updated: 2026-01-30 after roadmap creation*
