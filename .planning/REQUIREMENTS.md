@@ -38,13 +38,13 @@ Requirements for Dashboard Upload & Listing UI. Each maps to roadmap phases.
 
 ### Data Table (DTBL)
 
-- [ ] **DTBL-01**: Batch detail page shows batch metadata header (mode, date, total rows)
-- [ ] **DTBL-02**: Data table generates columns dynamically from batch columnMetadata
-- [ ] **DTBL-03**: Data table displays paginated rows with server-side pagination (limit/offset)
-- [ ] **DTBL-04**: Pagination controls (Previous/Next) with "Showing X-Y of Z rows" label
-- [ ] **DTBL-05**: Smooth page transitions using keepPreviousData in React Query
-- [ ] **DTBL-06**: Loading skeleton rows displayed during data fetch
-- [ ] **DTBL-07**: Empty state for batches with zero rows
+- [x] **DTBL-01**: Batch detail page shows batch metadata header (mode, date, total rows)
+- [x] **DTBL-02**: Data table generates columns dynamically from batch columnMetadata
+- [x] **DTBL-03**: Data table displays paginated rows with server-side pagination (limit/offset)
+- [x] **DTBL-04**: Pagination controls (Previous/Next) with "Showing X-Y of Z rows" label
+- [x] **DTBL-05**: Smooth page transitions using keepPreviousData in React Query
+- [x] **DTBL-06**: Loading skeleton rows displayed during data fetch
+- [x] **DTBL-07**: Empty state for batches with zero rows
 
 ### Project Detail Page (PROJ)
 
@@ -117,13 +117,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GRID-04 | Phase 15 | Complete |
 | GRID-05 | Phase 15 | Complete |
 | GRID-06 | Phase 15 | Complete |
-| DTBL-01 | Phase 16 | Pending |
-| DTBL-02 | Phase 16 | Pending |
-| DTBL-03 | Phase 16 | Pending |
-| DTBL-04 | Phase 16 | Pending |
-| DTBL-05 | Phase 16 | Pending |
-| DTBL-06 | Phase 16 | Pending |
-| DTBL-07 | Phase 16 | Pending |
+| DTBL-01 | Phase 16 | Complete |
+| DTBL-02 | Phase 16 | Complete |
+| DTBL-03 | Phase 16 | Complete |
+| DTBL-04 | Phase 16 | Complete |
+| DTBL-05 | Phase 16 | Complete |
+| DTBL-06 | Phase 16 | Complete |
+| DTBL-07 | Phase 16 | Complete |
 | PROJ-01 | Phase 13 | Complete |
 | PROJ-02 | Phase 13 | Complete |
 | PROJ-03 | Phase 13 | Complete |
