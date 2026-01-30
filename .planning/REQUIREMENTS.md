@@ -97,42 +97,42 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| APIF-01 | TBD | Pending |
-| APIF-02 | TBD | Pending |
-| APIF-03 | TBD | Pending |
-| APIF-04 | TBD | Pending |
-| APIF-05 | TBD | Pending |
-| UPLD-01 | TBD | Pending |
-| UPLD-02 | TBD | Pending |
-| UPLD-03 | TBD | Pending |
-| UPLD-04 | TBD | Pending |
-| UPLD-05 | TBD | Pending |
-| UPLD-06 | TBD | Pending |
-| UPLD-07 | TBD | Pending |
-| UPLD-08 | TBD | Pending |
-| UPLD-09 | TBD | Pending |
-| GRID-01 | TBD | Pending |
-| GRID-02 | TBD | Pending |
-| GRID-03 | TBD | Pending |
-| GRID-04 | TBD | Pending |
-| GRID-05 | TBD | Pending |
-| GRID-06 | TBD | Pending |
-| DTBL-01 | TBD | Pending |
-| DTBL-02 | TBD | Pending |
-| DTBL-03 | TBD | Pending |
-| DTBL-04 | TBD | Pending |
-| DTBL-05 | TBD | Pending |
-| DTBL-06 | TBD | Pending |
-| DTBL-07 | TBD | Pending |
-| PROJ-01 | TBD | Pending |
-| PROJ-02 | TBD | Pending |
-| PROJ-03 | TBD | Pending |
+| APIF-01 | Phase 13 | Pending |
+| APIF-02 | Phase 13 | Pending |
+| APIF-03 | Phase 13 | Pending |
+| APIF-04 | Phase 13 | Pending |
+| APIF-05 | Phase 13 | Pending |
+| UPLD-01 | Phase 14 | Pending |
+| UPLD-02 | Phase 14 | Pending |
+| UPLD-03 | Phase 14 | Pending |
+| UPLD-04 | Phase 14 | Pending |
+| UPLD-05 | Phase 14 | Pending |
+| UPLD-06 | Phase 14 | Pending |
+| UPLD-07 | Phase 14 | Pending |
+| UPLD-08 | Phase 14 | Pending |
+| UPLD-09 | Phase 14 | Pending |
+| GRID-01 | Phase 15 | Pending |
+| GRID-02 | Phase 15 | Pending |
+| GRID-03 | Phase 15 | Pending |
+| GRID-04 | Phase 15 | Pending |
+| GRID-05 | Phase 15 | Pending |
+| GRID-06 | Phase 15 | Pending |
+| DTBL-01 | Phase 16 | Pending |
+| DTBL-02 | Phase 16 | Pending |
+| DTBL-03 | Phase 16 | Pending |
+| DTBL-04 | Phase 16 | Pending |
+| DTBL-05 | Phase 16 | Pending |
+| DTBL-06 | Phase 16 | Pending |
+| DTBL-07 | Phase 16 | Pending |
+| PROJ-01 | Phase 13 | Pending |
+| PROJ-02 | Phase 13 | Pending |
+| PROJ-03 | Phase 13 | Pending |
 
 **Coverage:**
 - v2.2 requirements: 30 total
-- Mapped to phases: 0
-- Unmapped: 30 (pending roadmap creation)
+- Mapped to phases: 30
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-30*
-*Last updated: 2026-01-30 after research completion*
+*Last updated: 2026-01-30 after roadmap creation*
