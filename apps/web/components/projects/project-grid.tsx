@@ -1,17 +1,17 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ProjectResponse } from "@/lib/api/schemas/project.schema";
+import type { ProjectSummaryResponse } from "@/lib/api/schemas/project.schema";
 
 import { ProjectCard } from "./project-card";
 import { ProjectEmptyState } from "./project-empty-state";
 
 interface ProjectGridProps {
-  projects?: ProjectResponse[];
+  projects?: ProjectSummaryResponse[];
   isLoading: boolean;
-  onEdit: (project: ProjectResponse) => void;
-  onDelete: (project: ProjectResponse) => void;
-  onToggleArchive: (project: ProjectResponse) => void;
+  onEdit: (project: ProjectSummaryResponse) => void;
+  onDelete: (project: ProjectSummaryResponse) => void;
+  onToggleArchive: (project: ProjectSummaryResponse) => void;
   onCreateClick: () => void;
 }
 

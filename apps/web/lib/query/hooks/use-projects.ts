@@ -6,6 +6,7 @@ import { useApiClient } from '../../api/client';
 import { createProjectEndpoints } from '../../api/endpoints/projects';
 import type {
   ProjectResponse,
+  ProjectSummaryResponse,
   CreateProjectRequest,
   UpdateProjectRequest,
 } from '../../api/schemas/project.schema';
@@ -14,7 +15,7 @@ export function useProjects() {
   const client = useApiClient();
   const endpoints = createProjectEndpoints(client.fetch);
 
-  return useQuery<ProjectResponse[]>({
+  return useQuery<ProjectSummaryResponse[]>({
     queryKey: ['projects'],
     queryFn: () => endpoints.list(),
   });

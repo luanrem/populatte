@@ -11,13 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { ProjectResponse } from "@/lib/api/schemas/project.schema";
+import type { ProjectSummaryResponse } from "@/lib/api/schemas/project.schema";
 
 interface DeleteProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  project: ProjectResponse | null;
+  project: ProjectSummaryResponse | null;
   isPending?: boolean;
 }
 

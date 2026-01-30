@@ -26,13 +26,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { ProjectResponse } from "@/lib/api/schemas/project.schema";
+import type { ProjectSummaryResponse } from "@/lib/api/schemas/project.schema";
 
 interface ProjectCardProps {
-  project: ProjectResponse;
-  onEdit: (project: ProjectResponse) => void;
-  onDelete: (project: ProjectResponse) => void;
-  onToggleArchive: (project: ProjectResponse) => void;
+  project: ProjectSummaryResponse;
+  onEdit: (project: ProjectSummaryResponse) => void;
+  onDelete: (project: ProjectSummaryResponse) => void;
+  onToggleArchive: (project: ProjectSummaryResponse) => void;
 }
 
 export function ProjectCard({

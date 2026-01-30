@@ -11,7 +11,7 @@ import { ProjectFormDialog } from "@/components/projects/project-form-dialog";
 import { ProjectGrid } from "@/components/projects/project-grid";
 import type {
   CreateProjectRequest,
-  ProjectResponse,
+  ProjectSummaryResponse,
 } from "@/lib/api/schemas/project.schema";
 import {
   useCreateProject,
@@ -29,24 +29,24 @@ export default function ProjectsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedProject, setSelectedProject] =
-    useState<ProjectResponse | null>(null);
+    useState<ProjectSummaryResponse | null>(null);
 
   function handleOpenCreate() {
     setSelectedProject(null);
     setFormOpen(true);
   }
 
-  function handleEdit(project: ProjectResponse) {
+  function handleEdit(project: ProjectSummaryResponse) {
     setSelectedProject(project);
     setFormOpen(true);
   }
 
-  function handleDelete(project: ProjectResponse) {
+  function handleDelete(project: ProjectSummaryResponse) {
     setSelectedProject(project);
     setDeleteOpen(true);
   }
 
-  function handleToggleArchive(project: ProjectResponse) {
+  function handleToggleArchive(project: ProjectSummaryResponse) {
     const newStatus = project.status === "archived" ? "active" : "archived";
     updateProject.mutate(
       { id: project.id, data: { status: newStatus } },

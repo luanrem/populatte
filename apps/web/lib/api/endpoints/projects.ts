@@ -2,8 +2,9 @@
 
 import {
   projectResponseSchema,
-  projectListResponseSchema,
+  projectSummaryListResponseSchema,
   type ProjectResponse,
+  type ProjectSummaryResponse,
   type CreateProjectRequest,
   type UpdateProjectRequest,
 } from '../schemas/project.schema';
@@ -12,11 +13,11 @@ export function createProjectEndpoints(
   fetchFn: (endpoint: string, options?: RequestInit) => Promise<Response>,
 ) {
   return {
-    async list(): Promise<ProjectResponse[]> {
+    async list(): Promise<ProjectSummaryResponse[]> {
       const response = await fetchFn('/projects');
       const data: unknown = await response.json();
 
-      const result = projectListResponseSchema.safeParse(data);
+      const result = projectSummaryListResponseSchema.safeParse(data);
 
       if (!result.success) {
         console.error(

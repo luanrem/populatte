@@ -32,14 +32,14 @@ import {
 import {
   createProjectRequestSchema,
   type CreateProjectRequest,
-  type ProjectResponse,
+  type ProjectSummaryResponse,
 } from "@/lib/api/schemas/project.schema";
 
 interface ProjectFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreateProjectRequest) => void;
-  project?: ProjectResponse | null;
+  project?: ProjectSummaryResponse | null;
   isPending?: boolean;
 }
 
