@@ -15,7 +15,7 @@ import { CreateBatchUseCase } from '../../core/use-cases/batch';
 import type { ExcelFileInput } from '../../infrastructure/excel/strategies/excel-parsing.strategy';
 import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import { createBatchSchema, type CreateBatchDto } from '../dto/batch.dto';
+import { createBatchSchema } from '../dto/batch.dto';
 import { FileContentValidationPipe } from '../pipes/file-content-validation.pipe';
 
 @Controller('projects/:projectId/batches')
@@ -37,25 +37,18 @@ export class BatchController {
     @CurrentUser() user: User,
   ) {
     // Validate mode field with Zod
-    let validated: CreateBatchDto;
-    try {
-      validated = createBatchSchema.parse({ mode });
-    } catch (error) {
-      if (error instanceof Error && 'issues' in error) {
-        const zodError = error as {
-          issues: Array<{ path: string[]; message: string }>;
-        };
-        const errors = zodError.issues.map((issue) => ({
-          field: issue.path.join('.'),
-          message: issue.message,
-        }));
-        throw new BadRequestException({
-          message: 'Validation failed',
-          errors,
-        });
-      }
-      throw error;
+    const result = createBatchSchema.safeParse({ mode });
+    if (!result.success) {
+      const errors = result.error.issues.map((issue) => ({
+        field: issue.path.join('.'),
+        message: issue.message,
+      }));
+      throw new BadRequestException({
+        message: 'Validation failed',
+        errors,
+      });
     }
+    const validated = result.data;
 
     // Validate file presence
     if (!uploadedFiles || uploadedFiles.length === 0) {
