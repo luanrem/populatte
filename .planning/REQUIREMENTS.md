@@ -53,20 +53,24 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BREAD-01 | TBD | Pending |
-| BREAD-02 | TBD | Pending |
-| BREAD-03 | TBD | Pending |
-| RREAD-01 | TBD | Pending |
-| RREAD-02 | TBD | Pending |
-| RREAD-03 | TBD | Pending |
-| REPO-01 | TBD | Pending |
-| REPO-02 | TBD | Pending |
+| REPO-01 | Phase 11 | Pending |
+| REPO-02 | Phase 11 | Pending |
+| BREAD-01 | Phase 12 | Pending |
+| BREAD-02 | Phase 12 | Pending |
+| BREAD-03 | Phase 12 | Pending |
+| RREAD-01 | Phase 12 | Pending |
+| RREAD-02 | Phase 12 | Pending |
+| RREAD-03 | Phase 12 | Pending |
 
 **Coverage:**
 - v2.1 requirements: 8 total
-- Mapped to phases: 0
-- Unmapped: 8 ⚠️
+- Mapped to phases: 8/8 ✓
+- Unmapped: 0
+
+**Phase Mapping:**
+- Phase 11 (Repository Layer): 2 requirements
+- Phase 12 (Read Endpoints): 6 requirements
 
 ---
 *Requirements defined: 2026-01-29*
-*Last updated: 2026-01-29 after initial definition*
+*Last updated: 2026-01-30 after roadmap creation*
