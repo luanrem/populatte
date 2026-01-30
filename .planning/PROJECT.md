@@ -39,7 +39,15 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ### Active
 
-(None — next milestone will define new requirements)
+#### Current Milestone: v2.1 Batch Read Layer
+
+**Goal:** Close the read cycle — let the dashboard display batch metadata and paginated row data so users can validate extracted Excel data before automation.
+
+**Target features:**
+- Batch detail retrieval (metadata, columnMetadata, mode)
+- Paginated row listing ordered by sourceRowIndex
+- Ownership validation consistent with write path (404/403)
+- Standard pagination response shape (items, total, limit, offset)
 
 ### Out of Scope
 
@@ -118,4 +126,4 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | safeParse for multipart DTO validation | Type-safe Zod validation without unsafe assertions in controller | ✓ Good |
 
 ---
-*Last updated: 2026-01-29 after v2.0 milestone completion*
+*Last updated: 2026-01-29 after v2.1 milestone start*

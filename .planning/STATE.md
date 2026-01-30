@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Transform tedious manual data entry into automated form population.
-**Current focus:** Planning next milestone
+**Current focus:** Milestone v2.1 — Batch Read Layer
 
 ## Current Position
 
-Phase: N/A — between milestones
-Plan: N/A
-Status: Ready to plan next milestone
-Last activity: 2026-01-29 — v2.0 milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-29 — Milestone v2.1 started
 
-Progress: v1.0 shipped, v2.0 shipped
+Progress: v1.0 shipped, v2.0 shipped, v2.1 initializing
 
 ## Performance Metrics
 
@@ -40,6 +40,7 @@ See PROJECT.md Key Decisions table for full log with outcomes.
 
 - v1.0: 3 phases, 5 plans — End-to-End Auth & User Sync
 - v2.0: 10 phases, 12 plans — Data Ingestion Engine
+- v2.1: TBD — Batch Read Layer
 
 ### Pending Todos
 
@@ -47,10 +48,10 @@ None.
 
 ### Blockers/Concerns
 
-None. Both milestones shipped successfully. Ready for next milestone.
+None.
 
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: v2.0 milestone completion
+Stopped at: v2.1 milestone initialization
 Resume file: None
