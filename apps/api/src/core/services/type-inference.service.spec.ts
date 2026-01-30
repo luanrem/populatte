@@ -59,10 +59,7 @@ describe('TypeInferenceService', () => {
     });
 
     it('should classify unformatted CNPJ as STRING', () => {
-      const result = service.inferType([
-        '12345678000190',
-        '98765432000101',
-      ]);
+      const result = service.inferType(['12345678000190', '98765432000101']);
       expect(result.type).toBe(InferredType.STRING);
       expect(result.confidence).toBe(1.0);
     });
@@ -82,11 +79,7 @@ describe('TypeInferenceService', () => {
     });
 
     it('should detect NUMBER from Brazilian currency format', () => {
-      const result = service.inferType([
-        'R$ 1.234,56',
-        'R$ 99,00',
-        'R$ 0,50',
-      ]);
+      const result = service.inferType(['R$ 1.234,56', 'R$ 99,00', 'R$ 0,50']);
       expect(result.type).toBe(InferredType.NUMBER);
       expect(result.confidence).toBe(1.0);
     });

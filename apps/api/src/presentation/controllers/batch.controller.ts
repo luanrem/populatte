@@ -16,6 +16,7 @@ import type { User } from '../../core/entities/user.entity';
 import {
   CreateBatchUseCase,
   GetBatchUseCase,
+  GetFieldStatsUseCase,
   ListBatchesUseCase,
   ListRowsUseCase,
 } from '../../core/use-cases/batch';
@@ -33,6 +34,7 @@ export class BatchController {
   public constructor(
     private readonly createBatch: CreateBatchUseCase,
     private readonly getBatch: GetBatchUseCase,
+    private readonly getFieldStatsUseCase: GetFieldStatsUseCase,
     private readonly listBatches: ListBatchesUseCase,
     private readonly listRowsUseCase: ListRowsUseCase,
   ) {}
@@ -127,5 +129,14 @@ export class BatchController {
       query.limit,
       query.offset,
     );
+  }
+
+  @Get(':batchId/field-stats')
+  public async getFieldStats(
+    @Param('projectId') projectId: string,
+    @Param('batchId') batchId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.getFieldStatsUseCase.execute(projectId, batchId, user.id);
   }
 }
