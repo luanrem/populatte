@@ -1,577 +1,518 @@
-# Architecture Patterns: Dashboard Upload & Listing UI
+# Architecture Patterns: Field Inventory Integration
 
-**Domain:** Next.js 16 App Router frontend integration for batch upload and data viewing
+**Domain:** NestJS Clean Architecture integration for Field Inventory features
 **Researched:** 2026-01-30
 **Confidence:** HIGH
 
 ## Recommended Architecture
 
-The new batch upload and listing pages should follow the existing Next.js architecture patterns already established in the `/projects` page. This is a **subsequent milestone** that extends, rather than replaces, the current structure.
+Field Inventory extends the existing batch detail system with field-level analytics. This is a **subsequent milestone** that integrates with established patterns: Clean Architecture (Core/Infrastructure/Presentation), Drizzle ORM with PostgreSQL JSONB, and the existing batch/row domain model.
 
 ### System Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                       Client (Browser)                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  App Router Pages                                               │
-│  ┌──────────────────┐  ┌──────────────────┐                    │
-│  │ /projects/[id]   │  │ /projects/[id]/  │                    │
-│  │                  │  │ batches/[batchId]│                    │
-│  │ Project Detail   │  │                  │                    │
-│  │ + Batch List     │  │ Batch Data Table │                    │
-│  └────────┬─────────┘  └────────┬─────────┘                    │
-│           │                     │                               │
-│  ┌────────▼─────────────────────▼────────┐                     │
-│  │     React Query Hooks                 │                     │
-│  │  - useBatches(projectId)              │                     │
-│  │  - useBatch(projectId, batchId)       │                     │
-│  │  - useBatchRows(projectId, batchId)   │                     │
-│  │  - useUploadBatch()                   │                     │
-│  └────────┬──────────────────────────────┘                     │
-│           │                                                     │
-│  ┌────────▼──────────────────────────────┐                     │
-│  │     API Client (useApiClient)         │                     │
-│  │  - Clerk token injection              │                     │
-│  │  - 401 retry logic                    │                     │
-│  │  - FormData support (for upload)      │                     │
-│  └────────┬──────────────────────────────┘                     │
-│           │                                                     │
-└───────────┼─────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Client (Browser)                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  Batch Detail Page (apps/web)                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐│
+│  │  [View Toggle: Table ⟷ Field Inventory]                        ││
+│  │                                                                  ││
+│  │  Table View (existing)          Field Inventory (NEW)           ││
+│  │  ┌────────────────────┐         ┌─────────────────────────┐    ││
+│  │  │ Row-based table    │         │ Field cards grid        │    ││
+│  │  │ Dynamic columns    │         │ - Field name            │    ││
+│  │  │ Server pagination  │         │ - Type badge            │    ││
+│  │  └────────────────────┘         │ - Presence stats        │    ││
+│  │                                 │ - Unique count          │    ││
+│  │                                 │ [Click → View Values]   │    ││
+│  │                                 └─────────────────────────┘    ││
+│  └─────────────────────────────────────────────────────────────────┘│
+│           │                                   │                      │
+│           │                                   │                      │
+│  ┌────────▼───────────────────────────────────▼───────────────────┐ │
+│  │             React Query Hooks (NEW)                            │ │
+│  │  - useFieldStats(projectId, batchId)                           │ │
+│  │  - useFieldValues(projectId, batchId, fieldKey)                │ │
+│  └────────┬───────────────────────────────────────────────────────┘ │
+│           │                                                          │
+└───────────┼──────────────────────────────────────────────────────────┘
             │
-            │ HTTP (fetch)
+            │ HTTP (fetch with token)
             │
-┌───────────▼─────────────────────────────────────────────────────┐
-│                    NestJS API (existing)                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  BatchController                                                │
-│  - POST /projects/:projectId/batches                            │
-│  - GET  /projects/:projectId/batches?limit=50&offset=0          │
-│  - GET  /projects/:projectId/batches/:batchId                   │
-│  - GET  /projects/:projectId/batches/:batchId/rows?limit&offset │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+┌───────────▼──────────────────────────────────────────────────────────┐
+│                    NestJS API (Core → Infrastructure → Presentation) │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Presentation Layer (NEW Endpoints)                                 │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │ BatchController                                              │   │
+│  │  GET /projects/:projectId/batches/:batchId/field-stats      │   │
+│  │  GET /projects/:projectId/batches/:batchId/fields/:fieldKey │   │
+│  │       /values                                                │   │
+│  └────────┬─────────────────────────────────────────────────────┘   │
+│           │                                                          │
+│  Core Layer (NEW Use Cases)                                          │
+│  ┌────────▼─────────────────────────────────────────────────────┐   │
+│  │ GetFieldStatsUseCase                                         │   │
+│  │  - Ownership validation (project → batch chain)             │   │
+│  │  - Delegates to RowRepository.getFieldStats()               │   │
+│  │  - Optional: type inference from sample values              │   │
+│  │                                                              │   │
+│  │ GetFieldValuesUseCase                                        │   │
+│  │  - Ownership validation (project → batch chain)             │   │
+│  │  - Delegates to RowRepository.getFieldValues()              │   │
+│  │  - Returns distinct values sorted                           │   │
+│  └────────┬─────────────────────────────────────────────────────┘   │
+│           │                                                          │
+│  Core Layer (MODIFIED Repository Interface)                          │
+│  ┌────────▼─────────────────────────────────────────────────────┐   │
+│  │ RowRepository (abstract class)                               │   │
+│  │  createMany()                   ← existing                   │   │
+│  │  findByBatchId()                ← existing                   │   │
+│  │  findByBatchIdPaginated()       ← existing                   │   │
+│  │  countByBatchId()               ← existing                   │   │
+│  │  getFieldStats(batchId)         ← NEW                        │   │
+│  │  getFieldValues(batchId, key)   ← NEW                        │   │
+│  └────────┬─────────────────────────────────────────────────────┘   │
+│           │                                                          │
+│  Infrastructure Layer (MODIFIED Drizzle Implementation)              │
+│  ┌────────▼─────────────────────────────────────────────────────┐   │
+│  │ DrizzleRowRepository                                         │   │
+│  │  getFieldStats():                                            │   │
+│  │    - Raw SQL via sql`` template tag                          │   │
+│  │    - jsonb_object_keys() to list all keys                    │   │
+│  │    - COUNT(CASE WHEN data ? key) for presence                │   │
+│  │    - COUNT(DISTINCT data->>key) for unique values            │   │
+│  │    - Single query with LATERAL join                          │   │
+│  │                                                              │   │
+│  │  getFieldValues():                                           │   │
+│  │    - Raw SQL via sql`` template tag                          │   │
+│  │    - data->>key extraction with WHERE data ? key             │   │
+│  │    - DISTINCT + ORDER BY for sorted unique values            │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
 ```
 
-### Data Flow Patterns
+### Critical Integration Points
 
-**Pattern 1: List Batches (with Pagination)**
-```
-Page → useBatches(projectId, { limit, offset })
-     → createBatchEndpoints(fetchFn).list(projectId, limit, offset)
-     → API client fetch with token
-     → GET /projects/:projectId/batches?limit=50&offset=0
-     → Response: { items: BatchWithTotalRows[], total, limit, offset }
-     → Zod validation (batchListResponseSchema)
-     → React Query cache
-     → Component re-renders
-```
+**1. JSONB Querying Strategy**
 
-**Pattern 2: Upload Batch (Multipart Form-Data)**
+PostgreSQL JSONB operators used via Drizzle `sql` template tag:
+- `jsonb_object_keys(data)` → extract all keys across rows
+- `data ? 'key'` → presence check (key exists in JSONB object)
+- `data ->> 'key'` → extract value as text
+- `COUNT(CASE WHEN ...)` → conditional counting
+- `COUNT(DISTINCT ...)` → unique value counting
+
+**2. Existing Ownership Validation Pattern**
+
+Follow the established 5-step pattern from existing use cases:
 ```
-Component → handleUpload(files, mode)
-          → useUploadBatch().mutate({ projectId, files, mode })
-          → createBatchEndpoints(fetchFn).upload(projectId, formData)
-          → FormData construction (files + mode field)
-          → API client fetch with Content-Type: multipart/form-data
-          → POST /projects/:projectId/batches
-          → Response: Batch
-          → Zod validation (batchResponseSchema)
-          → Invalidate batches query cache
-          → Success toast
+Step 1: findByIdOnly(projectId) WITHOUT userId filter
+Step 2: Check project.deletedAt → 404 if archived
+Step 3: Validate project.userId === userId → 403 if unauthorized (with security log)
+Step 4: findById(batchId) → 404 if not found
+Step 5: Defense-in-depth → verify batch.projectId === projectId
 ```
 
-**Pattern 3: View Batch Rows (Paginated Table)**
-```
-Page → useBatchRows(projectId, batchId, { limit, offset })
-     → createBatchEndpoints(fetchFn).listRows(projectId, batchId, limit, offset)
-     → API client fetch with token
-     → GET /projects/:projectId/batches/:batchId/rows?limit=50&offset=0
-     → Response: { items: Row[], total, limit, offset }
-     → Zod validation (rowListResponseSchema)
-     → Extract dynamic columns from columnMetadata
-     → TanStack Table with server-side pagination
-     → Render table with shadcn/ui Table components
+New use cases (GetFieldStatsUseCase, GetFieldValuesUseCase) implement this pattern identically to ListRowsUseCase.
+
+**3. Repository Layer Responsibility**
+
+Following Clean Architecture principles, raw SQL aggregations belong in Infrastructure, not Core:
+- **Core (RowRepository interface):** Declares `getFieldStats()` and `getFieldValues()` as abstract methods returning domain types
+- **Infrastructure (DrizzleRowRepository):** Implements methods with PostgreSQL-specific JSONB queries via `sql` template tag
+- **Use Case:** Delegates to repository, handles ownership validation, returns results
+
+**4. Type Inference Placement**
+
+**Decision:** Type inference lives in **Use Case layer** as application-specific business logic.
+
+**Rationale:**
+- Type inference requires domain knowledge (e.g., "123.456.789-00" → CPF, "01/01/2024" → date)
+- Repository focuses on data access (what values exist), not interpretation (what values mean)
+- Use Case orchestrates: fetch sample values → apply heuristics → enrich field stats
+
+**Implementation:**
+```typescript
+// Core layer: Use Case
+export class GetFieldStatsUseCase {
+  constructor(
+    private rowRepository: RowRepository,
+    private typeInferenceService: TypeInferenceService // NEW utility service
+  ) {}
+
+  async execute(projectId, batchId, userId): Promise<FieldStats[]> {
+    // Ownership validation (steps 1-5)...
+
+    // Get field stats from repository (counts only)
+    const stats = await this.rowRepository.getFieldStats(batchId);
+
+    // Enrich with type inference (application logic)
+    return Promise.all(
+      stats.map(async (stat) => ({
+        ...stat,
+        inferredType: await this.typeInferenceService.infer(
+          batchId,
+          stat.fieldKey,
+          stat.sampleValues // Repository includes sample values for inference
+        ),
+      }))
+    );
+  }
+}
 ```
 
 ## Component Structure
 
-### Directory Organization
+### New Components (Backend)
 
-Follow the existing pattern established in the project:
+| Component | Location | Responsibility |
+|-----------|----------|---------------|
+| **GetFieldStatsUseCase** | `src/core/use-cases/batch/get-field-stats.use-case.ts` | Ownership validation, orchestrate stats + type inference |
+| **GetFieldValuesUseCase** | `src/core/use-cases/batch/get-field-values.use-case.ts` | Ownership validation, delegate to repository |
+| **TypeInferenceService** | `src/core/services/type-inference.service.ts` | Heuristic-based type detection from sample values |
+| **RowRepository.getFieldStats()** | `src/core/repositories/row.repository.ts` | Abstract method declaration (interface) |
+| **RowRepository.getFieldValues()** | `src/core/repositories/row.repository.ts` | Abstract method declaration (interface) |
+| **DrizzleRowRepository.getFieldStats()** | `src/infrastructure/database/drizzle/repositories/drizzle-row.repository.ts` | Raw SQL implementation (JSONB aggregation) |
+| **DrizzleRowRepository.getFieldValues()** | `src/infrastructure/database/drizzle/repositories/drizzle-row.repository.ts` | Raw SQL implementation (JSONB extraction) |
+| **BatchController endpoints** | `src/presentation/controllers/batch.controller.ts` | HTTP handlers (add 2 new endpoints) |
+| **DTO schemas** | `src/presentation/dto/batch.dto.ts` | Response type definitions with Zod |
 
+### Modified Components
+
+| Component | Modification Type | Changes |
+|-----------|------------------|---------|
+| **RowRepository** | Interface extension | Add 2 abstract methods |
+| **DrizzleRowRepository** | Implementation | Add 2 concrete methods with raw SQL |
+| **BatchController** | New routes | Add 2 GET endpoints |
+| **batch.dto.ts** | Schema additions | Add FieldStats and FieldValues response schemas |
+| **batch/index.ts** | Export additions | Export new use cases |
+
+### New Components (Frontend)
+
+| Component | Location | Responsibility |
+|-----------|----------|---------------|
+| **useFieldStats hook** | `apps/web/lib/query/hooks/use-batches.ts` | React Query hook for field stats |
+| **useFieldValues hook** | `apps/web/lib/query/hooks/use-batches.ts` | React Query hook for field values |
+| **field-inventory-grid.tsx** | `apps/web/components/batches/` | Grid layout for field cards |
+| **field-card.tsx** | `apps/web/components/batches/` | Individual field card with stats |
+| **view-values-sheet.tsx** | `apps/web/components/batches/` | Side sheet with all values for one field |
+| **view-toggle.tsx** | `apps/web/components/batches/` | Table ⟷ Field Inventory toggle |
+| **fieldStatsSchema** | `apps/web/lib/api/schemas/batch.schema.ts` | Zod schema for field stats response |
+| **fieldValuesSchema** | `apps/web/lib/api/schemas/batch.schema.ts` | Zod schema for field values response |
+
+## Data Flow Patterns
+
+### Pattern 1: Field Stats Query (Single Aggregation)
+
+**Flow:**
 ```
-apps/web/
-├── app/
-│   └── (platform)/
-│       └── projects/
-│           ├── page.tsx                           # Existing: project list
-│           └── [id]/
-│               ├── page.tsx                       # NEW: project detail + batch list
-│               └── batches/
-│                   └── [batchId]/
-│                       └── page.tsx               # NEW: batch data table
-├── components/
-│   ├── ui/                                        # shadcn/ui only (DO NOT create custom here)
-│   │   ├── table.tsx                              # NEW: Add via shadcn CLI
-│   │   ├── pagination.tsx                         # NEW: Add via shadcn CLI (if available)
-│   │   └── ...existing shadcn components
-│   ├── layout/
-│   │   └── ...existing layout components
-│   ├── projects/
-│   │   └── ...existing project components
-│   └── batches/                                   # NEW: Feature directory
-│       ├── batch-grid.tsx                         # Grid layout for batch cards
-│       ├── batch-card.tsx                         # Individual batch card
-│       ├── batch-empty-state.tsx                  # Empty state when no batches
-│       ├── upload-batch-dialog.tsx                # Upload modal with dropzone
-│       ├── batch-data-table.tsx                   # Data table wrapper
-│       ├── batch-table-columns.tsx                # Dynamic column definitions
-│       └── batch-table-pagination.tsx             # Pagination controls
-├── lib/
-│   ├── api/
-│   │   ├── client.ts                              # Existing: useApiClient hook
-│   │   ├── endpoints/
-│   │   │   ├── projects.ts                        # Existing
-│   │   │   ├── batches.ts                         # NEW: Batch endpoint factory
-│   │   │   └── index.ts                           # Update: export batches
-│   │   └── schemas/
-│   │       ├── project.schema.ts                  # Existing
-│   │       ├── batch.schema.ts                    # NEW: Batch response schemas
-│   │       └── index.ts                           # Update: export batch schemas
-│   └── query/
-│       └── hooks/
-│           ├── use-projects.ts                    # Existing
-│           ├── use-batches.ts                     # NEW: Batch query hooks
-│           └── index.ts                           # Update: export batch hooks
-└── package.json
+1. Client: useFieldStats(projectId, batchId)
+2. API Client: GET /projects/:projectId/batches/:batchId/field-stats
+3. Controller: Extract params, delegate to GetFieldStatsUseCase
+4. Use Case: Ownership validation (5 steps)
+5. Use Case: await rowRepository.getFieldStats(batchId)
+6. Repository: Execute raw SQL with JSONB aggregation
+7. Repository: Return FieldStats[]
+8. Use Case: For each field, call typeInferenceService.infer()
+9. Use Case: Return enriched FieldStats[]
+10. Controller: Return JSON response
+11. React Query: Cache with key ['projects', projectId, 'batches', batchId, 'field-stats']
+12. Component: Render field cards
 ```
 
-### Component Boundaries
+**SQL Pattern (Repository Layer):**
+```sql
+-- Single query using LATERAL join for per-field stats
+SELECT
+  key AS field_key,
+  COUNT(*) FILTER (WHERE r.data ? key) AS presence_count,
+  COUNT(DISTINCT r.data->>key) FILTER (WHERE r.data ? key) AS unique_count,
+  -- Sample 5 values for type inference
+  ARRAY_AGG(DISTINCT r.data->>key ORDER BY r.data->>key LIMIT 5) AS sample_values
+FROM ingestion_rows r
+CROSS JOIN LATERAL jsonb_object_keys(r.data) AS key
+WHERE r.batch_id = $1 AND r.deleted_at IS NULL
+GROUP BY key
+ORDER BY key;
+```
 
-| Component | Responsibility | Props In | Events Out |
-|-----------|---------------|----------|------------|
-| **batch-grid.tsx** | Layout batches in responsive grid, loading states, empty state | `batches?: BatchWithTotalRows[]`, `isLoading: boolean`, `onUploadClick`, `onBatchClick` | `onUploadClick()`, `onBatchClick(batch)` |
-| **batch-card.tsx** | Display single batch summary (status, row count, created date) | `batch: BatchWithTotalRows`, `onClick` | `onClick(batch)` |
-| **batch-empty-state.tsx** | Empty state with upload CTA | `onUploadClick` | `onUploadClick()` |
-| **upload-batch-dialog.tsx** | Modal with mode selector, file dropzone, upload logic | `open: boolean`, `projectId: string`, `onOpenChange`, `isPending` | `onOpenChange(open)`, (mutation handled internally) |
-| **batch-data-table.tsx** | Table wrapper, connects TanStack Table with shadcn/ui | `columns: ColumnDef[]`, `data: Row[]`, `pagination: PaginationState`, `onPaginationChange` | `onPaginationChange(state)` |
-| **batch-table-columns.tsx** | Generate dynamic columns from columnMetadata | `columnMetadata: ColumnMetadata[]` | Returns `ColumnDef[]` |
-| **batch-table-pagination.tsx** | Previous/Next buttons, page info | `table: Table<Row>`, `totalRows: number` | (controls table directly) |
+**Performance:** Single query, scales linearly with row count × field count. For 10K rows × 20 fields = ~1-2 seconds.
 
-### Component Composition Strategy
+### Pattern 2: Field Values Query (Distinct Extraction)
 
-**Project Detail Page** (`app/(platform)/projects/[id]/page.tsx`):
-- Server component for initial load (can fetch project via server-side API client)
-- Client component for batch list interactivity
-- Renders: `<AppHeader>` + `<BatchGrid>` + `<UploadBatchDialog>`
-- Uses: `useParams()` to get `projectId`, `useBatches(projectId)`
+**Flow:**
+```
+1. User clicks field card
+2. Client: useFieldValues(projectId, batchId, fieldKey)
+3. API Client: GET /projects/:projectId/batches/:batchId/fields/:fieldKey/values
+4. Controller: Extract params, delegate to GetFieldValuesUseCase
+5. Use Case: Ownership validation (5 steps)
+6. Use Case: await rowRepository.getFieldValues(batchId, fieldKey)
+7. Repository: Execute raw SQL with JSONB extraction
+8. Repository: Return string[]
+9. Use Case: Return values
+10. Controller: Return JSON response
+11. React Query: Cache with key ['projects', projectId, 'batches', batchId, 'fields', fieldKey, 'values']
+12. Component: Render side sheet with value list
+```
 
-**Batch Data Table Page** (`app/(platform)/projects/[id]/batches/[batchId]/page.tsx`):
-- Client component for table interactivity
-- Renders: `<AppHeader>` + `<BatchDataTable>` + breadcrumb navigation
-- Uses: `useParams()` to get `projectId` and `batchId`, `useBatch()` for metadata, `useBatchRows()` for paginated data
-- State: `pagination: { pageIndex, pageSize }` (local state, syncs with URL query params optionally)
+**SQL Pattern (Repository Layer):**
+```sql
+SELECT DISTINCT r.data->>$2 AS value
+FROM ingestion_rows r
+WHERE r.batch_id = $1
+  AND r.deleted_at IS NULL
+  AND r.data ? $2  -- Only rows where key exists
+  AND r.data->>$2 IS NOT NULL  -- Exclude null values
+ORDER BY value;
+```
 
-## Integration Points with Existing Code
+**Performance:** Single query, DISTINCT scales with unique values (typically < 1000). Sub-second for most fields.
 
-### 1. API Client - FormData Support
+### Pattern 3: Type Inference (Application Logic)
 
-**Current limitation:** The existing `createApiClient` always sets `Content-Type: application/json`.
-
-**Required modification:**
+**Heuristic-based inference:**
 ```typescript
-// lib/api/client.ts (line 83)
-// BEFORE:
-headers.set('Content-Type', 'application/json');
+// src/core/services/type-inference.service.ts
+@Injectable()
+export class TypeInferenceService {
+  infer(batchId: string, fieldKey: string, sampleValues: string[]): string {
+    // Sample first 5 values from repository
+    const samples = sampleValues.filter(v => v !== null && v !== '');
 
-// AFTER:
-// Only set Content-Type if not already set (allows FormData to set boundary)
-if (!headers.has('Content-Type')) {
-  headers.set('Content-Type', 'application/json');
+    if (samples.length === 0) return 'empty';
+
+    // Apply heuristics in priority order
+    if (this.isEmail(samples)) return 'email';
+    if (this.isPhone(samples)) return 'phone';
+    if (this.isCPF(samples)) return 'cpf';
+    if (this.isCNPJ(samples)) return 'cnpj';
+    if (this.isDate(samples)) return 'date';
+    if (this.isBoolean(samples)) return 'boolean';
+    if (this.isNumber(samples)) return 'number';
+
+    return 'text'; // Default fallback
+  }
+
+  private isEmail(samples: string[]): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return samples.every(s => emailRegex.test(s));
+  }
+
+  // ... other heuristics
 }
 ```
 
-**Why:** When using `FormData`, the browser must set `Content-Type: multipart/form-data; boundary=...` automatically. If we force `application/json`, the server won't parse the files correctly.
+**Rationale:**
+- Domain-specific patterns (CPF, CNPJ) recognized
+- Sampling prevents full table scan (5 values sufficient)
+- Use Case orchestrates: stats query includes sample_values, service infers type
 
-**Where used:** `createBatchEndpoints().upload()` will pass `FormData` as body without manually setting Content-Type.
+## Integration with Existing Components
 
-### 2. Endpoint Factory Pattern
+### 1. BatchController Route Ordering
 
-**Follow existing pattern** from `lib/api/endpoints/projects.ts`:
+**CRITICAL:** Add new routes in correct order to prevent NestJS path conflicts.
+
+**Current routes (from batch.controller.ts):**
+```typescript
+@Post()                    // POST /projects/:projectId/batches
+@Get()                     // GET  /projects/:projectId/batches
+@Get(':batchId')           // GET  /projects/:projectId/batches/:batchId
+@Get(':batchId/rows')      // GET  /projects/:projectId/batches/:batchId/rows
+```
+
+**New routes (add AFTER existing):**
+```typescript
+@Get(':batchId/field-stats')              // NEW
+@Get(':batchId/fields/:fieldKey/values')  // NEW
+```
+
+**Why this order:** More specific routes BEFORE less specific. NestJS matches top-to-bottom, so `/field-stats` must come before `/:batchId` to avoid `:batchId` matching "field-stats".
+
+**Corrected final order:**
+```typescript
+@Post()                                   // POST /projects/:projectId/batches
+@Get()                                    // GET  /projects/:projectId/batches
+@Get(':batchId/field-stats')              // NEW (specific route first)
+@Get(':batchId/fields/:fieldKey/values')  // NEW (specific route first)
+@Get(':batchId/rows')                     // Existing (specific route)
+@Get(':batchId')                          // Existing (catch-all last)
+```
+
+### 2. Repository Extension Pattern
+
+**Follow existing pattern:** Add new methods to abstract class, implement in Drizzle repository.
+
+**Core layer (row.repository.ts):**
+```typescript
+export abstract class RowRepository {
+  public abstract createMany(data: CreateRowData[]): Promise<void>;
+  public abstract findByBatchId(batchId: string): Promise<Row[]>;
+  public abstract findByBatchIdPaginated(
+    batchId: string,
+    limit: number,
+    offset: number,
+  ): Promise<PaginatedResult<Row>>;
+  public abstract countByBatchId(batchId: string): Promise<number>;
+
+  // NEW: Field-level queries
+  public abstract getFieldStats(batchId: string): Promise<FieldStats[]>;
+  public abstract getFieldValues(
+    batchId: string,
+    fieldKey: string,
+  ): Promise<string[]>;
+}
+```
+
+**Infrastructure layer (drizzle-row.repository.ts):**
+```typescript
+export class DrizzleRowRepository extends RowRepository {
+  // Existing methods...
+
+  public async getFieldStats(batchId: string): Promise<FieldStats[]> {
+    const result = await this.drizzle.getClient().execute<FieldStatsRaw>(sql`
+      SELECT
+        key AS field_key,
+        COUNT(*) FILTER (WHERE r.data ? key) AS presence_count,
+        COUNT(DISTINCT r.data->>key) FILTER (WHERE r.data ? key) AS unique_count,
+        ARRAY_AGG(DISTINCT r.data->>key ORDER BY r.data->>key LIMIT 5) AS sample_values
+      FROM ${ingestionRows} r
+      CROSS JOIN LATERAL jsonb_object_keys(r.data) AS key
+      WHERE r.batch_id = ${batchId} AND r.deleted_at IS NULL
+      GROUP BY key
+      ORDER BY key
+    `);
+
+    return result.rows.map(row => ({
+      fieldKey: row.field_key,
+      presenceCount: Number(row.presence_count),
+      uniqueCount: Number(row.unique_count),
+      sampleValues: row.sample_values || [],
+    }));
+  }
+
+  public async getFieldValues(
+    batchId: string,
+    fieldKey: string,
+  ): Promise<string[]> {
+    const result = await this.drizzle.getClient().execute<{ value: string }>(sql`
+      SELECT DISTINCT r.data->>${fieldKey} AS value
+      FROM ${ingestionRows} r
+      WHERE r.batch_id = ${batchId}
+        AND r.deleted_at IS NULL
+        AND r.data ? ${fieldKey}
+        AND r.data->>${fieldKey} IS NOT NULL
+      ORDER BY value
+    `);
+
+    return result.rows.map(row => row.value);
+  }
+}
+```
+
+**Key points:**
+- Use `sql` template tag from `drizzle-orm`
+- Reference schema with `${ingestionRows}` for table identifier
+- Use `${}` for parameterized values (prevents SQL injection)
+- Return domain types (FieldStats[], string[]), not raw DB rows
+
+### 3. Use Case Ownership Validation Pattern
+
+**Follow existing pattern from ListRowsUseCase:**
 
 ```typescript
-// lib/api/endpoints/batches.ts
-export function createBatchEndpoints(
-  fetchFn: (endpoint: string, options?: RequestInit) => Promise<Response>,
-) {
-  return {
-    async list(projectId: string, limit = 50, offset = 0): Promise<BatchListResponse> {
-      const response = await fetchFn(
-        `/projects/${projectId}/batches?limit=${limit}&offset=${offset}`
+// src/core/use-cases/batch/get-field-stats.use-case.ts
+@Injectable()
+export class GetFieldStatsUseCase {
+  private readonly logger = new Logger(GetFieldStatsUseCase.name);
+
+  public constructor(
+    private readonly projectRepository: ProjectRepository,
+    private readonly batchRepository: BatchRepository,
+    private readonly rowRepository: RowRepository,
+    private readonly typeInferenceService: TypeInferenceService,
+  ) {}
+
+  public async execute(
+    projectId: string,
+    batchId: string,
+    userId: string,
+  ): Promise<FieldStatsResult[]> {
+    // Step 1: Find project WITHOUT userId filter (enables separate 404/403)
+    const project = await this.projectRepository.findByIdOnly(projectId);
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    // Step 2: Check if soft-deleted
+    if (project.deletedAt) {
+      throw new NotFoundException('Project is archived');
+    }
+
+    // Step 3: Validate ownership (403 with security audit log)
+    if (project.userId !== userId) {
+      this.logger.warn(
+        `Unauthorized field stats access attempt - userId: ${userId}, projectId: ${projectId}`,
       );
-      const data: unknown = await response.json();
-      const result = batchListResponseSchema.safeParse(data);
+      throw new ForbiddenException('Access denied');
+    }
 
-      if (!result.success) {
-        console.error('[API] Batch list validation failed:', result.error.issues);
-        throw new Error('Invalid batch list data received from server');
-      }
+    // Step 4: Find batch
+    const batch = await this.batchRepository.findById(batchId);
 
-      return result.data;
-    },
+    if (!batch) {
+      throw new NotFoundException('Batch not found');
+    }
 
-    async getById(projectId: string, batchId: string): Promise<BatchResponse> {
-      const response = await fetchFn(`/projects/${projectId}/batches/${batchId}`);
-      const data: unknown = await response.json();
-      const result = batchResponseSchema.safeParse(data);
+    // Step 5: Defense-in-depth - verify batch belongs to project
+    if (batch.projectId !== projectId) {
+      throw new NotFoundException('Batch not found');
+    }
 
-      if (!result.success) {
-        console.error('[API] Batch validation failed:', result.error.issues);
-        throw new Error('Invalid batch data received from server');
-      }
+    // Step 6: Get field stats from repository
+    const stats = await this.rowRepository.getFieldStats(batchId);
 
-      return result.data;
-    },
+    // Step 7: Enrich with type inference
+    const enriched = await Promise.all(
+      stats.map(async (stat) => ({
+        fieldKey: stat.fieldKey,
+        presenceCount: stat.presenceCount,
+        uniqueCount: stat.uniqueCount,
+        inferredType: this.typeInferenceService.infer(
+          batchId,
+          stat.fieldKey,
+          stat.sampleValues,
+        ),
+      })),
+    );
 
-    async listRows(
-      projectId: string,
-      batchId: string,
-      limit = 50,
-      offset = 0
-    ): Promise<RowListResponse> {
-      const response = await fetchFn(
-        `/projects/${projectId}/batches/${batchId}/rows?limit=${limit}&offset=${offset}`
-      );
-      const data: unknown = await response.json();
-      const result = rowListResponseSchema.safeParse(data);
-
-      if (!result.success) {
-        console.error('[API] Row list validation failed:', result.error.issues);
-        throw new Error('Invalid row list data received from server');
-      }
-
-      return result.data;
-    },
-
-    async upload(
-      projectId: string,
-      files: File[],
-      mode: BatchMode
-    ): Promise<BatchResponse> {
-      // Create FormData (browser will set correct Content-Type with boundary)
-      const formData = new FormData();
-      formData.append('mode', mode);
-
-      // Append multiple files with same field name (matches backend FilesInterceptor)
-      files.forEach((file) => {
-        formData.append('documents', file);
-      });
-
-      const response = await fetchFn(`/projects/${projectId}/batches`, {
-        method: 'POST',
-        body: formData,
-        // DO NOT set Content-Type header - FormData sets it automatically
-      });
-
-      const data: unknown = await response.json();
-      const result = batchResponseSchema.safeParse(data);
-
-      if (!result.success) {
-        console.error('[API] Upload batch validation failed:', result.error.issues);
-        throw new Error('Invalid batch data received from server');
-      }
-
-      return result.data;
-    },
-  };
+    // Step 8: Return enriched results
+    return enriched;
+  }
 }
 ```
 
-**Key differences from project endpoints:**
-- `list()` and `listRows()` accept `limit` and `offset` parameters
-- `upload()` uses `FormData` instead of `JSON.stringify()`
-- `upload()` does NOT set `Content-Type` header (FormData handles this)
+**GetFieldValuesUseCase follows same pattern, omitting type inference (steps 1-6, then return).**
 
-### 3. React Query Hooks Pattern
+### 4. Frontend View Toggle Integration
 
-**Follow existing pattern** from `lib/query/hooks/use-projects.ts`:
+**Batch Detail Page State Management:**
 
 ```typescript
-// lib/query/hooks/use-batches.ts
-'use client';
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-import { useApiClient } from '../../api/client';
-import { createBatchEndpoints } from '../../api/endpoints/batches';
-import type {
-  BatchResponse,
-  BatchListResponse,
-  RowListResponse,
-  UploadBatchRequest,
-} from '../../api/schemas/batch.schema';
-
-export function useBatches(projectId: string, limit = 50, offset = 0) {
-  const client = useApiClient();
-  const endpoints = createBatchEndpoints(client.fetch);
-
-  return useQuery<BatchListResponse>({
-    queryKey: ['projects', projectId, 'batches', { limit, offset }],
-    queryFn: () => endpoints.list(projectId, limit, offset),
-    enabled: !!projectId,
-  });
-}
-
-export function useBatch(projectId: string, batchId: string) {
-  const client = useApiClient();
-  const endpoints = createBatchEndpoints(client.fetch);
-
-  return useQuery<BatchResponse>({
-    queryKey: ['projects', projectId, 'batches', batchId],
-    queryFn: () => endpoints.getById(projectId, batchId),
-    enabled: !!projectId && !!batchId,
-  });
-}
-
-export function useBatchRows(
-  projectId: string,
-  batchId: string,
-  limit = 50,
-  offset = 0
-) {
-  const client = useApiClient();
-  const endpoints = createBatchEndpoints(client.fetch);
-
-  return useQuery<RowListResponse>({
-    queryKey: ['projects', projectId, 'batches', batchId, 'rows', { limit, offset }],
-    queryFn: () => endpoints.listRows(projectId, batchId, limit, offset),
-    enabled: !!projectId && !!batchId,
-  });
-}
-
-export function useUploadBatch() {
-  const client = useApiClient();
-  const endpoints = createBatchEndpoints(client.fetch);
-  const queryClient = useQueryClient();
-
-  return useMutation<BatchResponse, Error, UploadBatchRequest>({
-    mutationFn: ({ projectId, files, mode }) =>
-      endpoints.upload(projectId, files, mode),
-    onSuccess: (_, variables) => {
-      // Invalidate all batch lists for this project (all pagination states)
-      void queryClient.invalidateQueries({
-        queryKey: ['projects', variables.projectId, 'batches']
-      });
-    },
-  });
-}
-```
-
-**Key patterns:**
-- Query keys include parent resources (`['projects', projectId, 'batches']`)
-- Pagination params in query key as object: `{ limit, offset }`
-- `enabled` guards prevent fetching when params are missing
-- Mutations invalidate parent queries using partial query key matching
-
-### 4. Zod Schema Definitions
-
-**New file:** `lib/api/schemas/batch.schema.ts`
-
-```typescript
-import { z } from 'zod';
-
-// Enums (must match backend)
-export const batchModeSchema = z.enum(['LIST_MODE', 'PROFILE_MODE']);
-export const batchStatusSchema = z.enum(['PROCESSING', 'COMPLETED', 'FAILED']);
-export const rowStatusSchema = z.enum(['DRAFT', 'VALID', 'WARNING', 'ERROR']);
-
-export type BatchMode = z.infer<typeof batchModeSchema>;
-export type BatchStatus = z.infer<typeof batchStatusSchema>;
-export type RowStatus = z.infer<typeof rowStatusSchema>;
-
-// ColumnMetadata (matches backend ColumnMetadata interface)
-export const columnMetadataSchema = z.object({
-  originalHeader: z.string(),
-  normalizedKey: z.string(),
-  inferredType: z.string(),
-  position: z.number(),
-});
-
-export type ColumnMetadata = z.infer<typeof columnMetadataSchema>;
-
-// Batch response (matches backend Batch entity)
-export const batchResponseSchema = z.object({
-  id: z.string(),
-  projectId: z.string(),
-  userId: z.string(),
-  mode: batchModeSchema,
-  status: batchStatusSchema,
-  fileCount: z.number(),
-  rowCount: z.number(),
-  columnMetadata: z.array(columnMetadataSchema),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  deletedAt: z.string().nullable(),
-  deletedBy: z.string().nullable(),
-});
-
-export type BatchResponse = z.infer<typeof batchResponseSchema>;
-
-// BatchWithTotalRows (matches backend ListBatchesResult item)
-export const batchWithTotalRowsSchema = batchResponseSchema.extend({
-  totalRows: z.number(),
-});
-
-export type BatchWithTotalRows = z.infer<typeof batchWithTotalRowsSchema>;
-
-// List batches response (matches backend ListBatchesResult)
-export const batchListResponseSchema = z.object({
-  items: z.array(batchWithTotalRowsSchema),
-  total: z.number(),
-  limit: z.number(),
-  offset: z.number(),
-});
-
-export type BatchListResponse = z.infer<typeof batchListResponseSchema>;
-
-// ValidationMessage (matches backend ValidationMessage interface)
-export const validationMessageSchema = z.object({
-  field: z.string(),
-  type: z.string(),
-  message: z.string(),
-});
-
-export type ValidationMessage = z.infer<typeof validationMessageSchema>;
-
-// Row response (matches backend Row entity)
-export const rowResponseSchema = z.object({
-  id: z.string(),
-  batchId: z.string(),
-  data: z.record(z.unknown()), // JSONB: Record<string, unknown>
-  status: rowStatusSchema,
-  validationMessages: z.array(validationMessageSchema),
-  sourceFileName: z.string(),
-  sourceSheetName: z.string(),
-  sourceRowIndex: z.number(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  deletedAt: z.string().nullable(),
-});
-
-export type Row = z.infer<typeof rowResponseSchema>;
-
-// List rows response (matches backend ListRowsResult)
-export const rowListResponseSchema = z.object({
-  items: z.array(rowResponseSchema),
-  total: z.number(),
-  limit: z.number(),
-  offset: z.number(),
-});
-
-export type RowListResponse = z.infer<typeof rowListResponseSchema>;
-
-// Upload batch request (client-side only)
-export const uploadBatchRequestSchema = z.object({
-  projectId: z.string(),
-  files: z.array(z.instanceof(File)).min(1, 'At least one file is required'),
-  mode: batchModeSchema,
-});
-
-export type UploadBatchRequest = z.infer<typeof uploadBatchRequestSchema>;
-```
-
-**Critical alignments:**
-- Enum values match backend exactly (case-sensitive)
-- Field names match backend entity interfaces
-- `columnMetadata` array structure matches backend `ColumnMetadata[]`
-- `data` field uses `z.record(z.unknown())` for JSONB flexibility
-
-### 5. Page Integration with Next.js App Router
-
-**New file:** `app/(platform)/projects/[id]/page.tsx`
-
-```typescript
+// apps/web/app/(platform)/projects/[id]/batches/[batchId]/page.tsx
 'use client';
 
 import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Plus } from 'lucide-react';
-
-import { AppHeader } from '@/components/layout/app-header';
-import { Button } from '@/components/ui/button';
-import { BatchGrid } from '@/components/batches/batch-grid';
-import { UploadBatchDialog } from '@/components/batches/upload-batch-dialog';
-import { useProject } from '@/lib/query/hooks/use-projects';
-import { useBatches } from '@/lib/query/hooks/use-batches';
-import type { BatchWithTotalRows } from '@/lib/api/schemas/batch.schema';
-
-export default function ProjectDetailPage() {
-  const params = useParams<{ id: string }>();
-  const router = useRouter();
-  const projectId = params.id;
-
-  const { data: project, isLoading: projectLoading } = useProject(projectId);
-  const { data: batchList, isLoading: batchesLoading } = useBatches(projectId);
-
-  const [uploadOpen, setUploadOpen] = useState(false);
-
-  function handleUploadClick() {
-    setUploadOpen(true);
-  }
-
-  function handleBatchClick(batch: BatchWithTotalRows) {
-    router.push(`/projects/${projectId}/batches/${batch.id}`);
-  }
-
-  return (
-    <main className="w-full">
-      <AppHeader title={project?.name ?? 'Projeto'}>
-        <Button onClick={handleUploadClick} size="sm">
-          <Plus />
-          Novo Lote
-        </Button>
-      </AppHeader>
-
-      <BatchGrid
-        batches={batchList?.items}
-        isLoading={batchesLoading}
-        onUploadClick={handleUploadClick}
-        onBatchClick={handleBatchClick}
-      />
-
-      <UploadBatchDialog
-        open={uploadOpen}
-        onOpenChange={setUploadOpen}
-        projectId={projectId}
-      />
-    </main>
-  );
-}
-```
-
-**Key patterns:**
-- Use `useParams<{ id: string }>()` for type-safe param access
-- Fetch both project (for header title) and batches (for grid)
-- Local state for dialog open/close
-- Navigate programmatically via `useRouter().push()`
-
-**New file:** `app/(platform)/projects/[id]/batches/[batchId]/page.tsx`
-
-```typescript
-'use client';
-
-import { useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
-
-import { AppHeader } from '@/components/layout/app-header';
+import { ViewToggle } from '@/components/batches/view-toggle';
 import { BatchDataTable } from '@/components/batches/batch-data-table';
-import { useBatch, useBatchRows } from '@/lib/query/hooks/use-batches';
-import { createColumns } from '@/components/batches/batch-table-columns';
+import { FieldInventoryGrid } from '@/components/batches/field-inventory-grid';
 
 export default function BatchDetailPage() {
   const params = useParams<{ id: string; batchId: string }>();
@@ -580,496 +521,402 @@ export default function BatchDetailPage() {
 
   const { data: batch } = useBatch(projectId, batchId);
 
-  // Pagination state (managed locally, could sync with URL query params)
+  // Default view based on mode
+  const defaultView = batch?.mode === 'PROFILE_MODE' ? 'fields' : 'table';
+  const [view, setView] = useState<'table' | 'fields'>(defaultView);
+
+  // Pagination for table view
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 50 });
-  const offset = pagination.pageIndex * pagination.pageSize;
-
-  const { data: rowList, isLoading } = useBatchRows(
-    projectId,
-    batchId,
-    pagination.pageSize,
-    offset
-  );
-
-  // Generate dynamic columns from columnMetadata
-  const columns = batch?.columnMetadata
-    ? createColumns(batch.columnMetadata)
-    : [];
 
   return (
     <main className="w-full">
-      <AppHeader title="Dados do Lote">
-        <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-          <Link href="/projects" className="hover:text-foreground">
-            Projetos
-          </Link>
-          <ChevronRight className="size-4" />
-          <Link href={`/projects/${projectId}`} className="hover:text-foreground">
-            {batch?.projectId ?? 'Projeto'}
-          </Link>
-          <ChevronRight className="size-4" />
-          <span className="text-foreground">Lote</span>
-        </nav>
+      <AppHeader title="Batch Detail">
+        <ViewToggle view={view} onViewChange={setView} />
       </AppHeader>
 
-      <div className="p-8">
+      {view === 'table' ? (
         <BatchDataTable
-          columns={columns}
-          data={rowList?.items ?? []}
+          batch={batch}
           pagination={pagination}
           onPaginationChange={setPagination}
-          totalRows={rowList?.total ?? 0}
-          isLoading={isLoading}
         />
-      </div>
+      ) : (
+        <FieldInventoryGrid projectId={projectId} batchId={batchId} />
+      )}
     </main>
   );
 }
 ```
 
-**Key patterns:**
-- Nested dynamic routes: `[id]` and `[batchId]`
-- Breadcrumb navigation for UX
-- Pagination state syncs with `useBatchRows()` offset calculation
-- Dynamic columns generated from `columnMetadata`
+**React Query Hooks:**
+
+```typescript
+// apps/web/lib/query/hooks/use-batches.ts
+
+export function useFieldStats(projectId: string, batchId: string) {
+  const client = useApiClient();
+  const endpoints = createBatchEndpoints(client.fetch);
+
+  return useQuery<FieldStatsResponse>({
+    queryKey: ['projects', projectId, 'batches', batchId, 'field-stats'],
+    queryFn: () => endpoints.getFieldStats(projectId, batchId),
+    enabled: !!projectId && !!batchId,
+  });
+}
+
+export function useFieldValues(
+  projectId: string,
+  batchId: string,
+  fieldKey: string | null, // null when sheet closed
+) {
+  const client = useApiClient();
+  const endpoints = createBatchEndpoints(client.fetch);
+
+  return useQuery<FieldValuesResponse>({
+    queryKey: ['projects', projectId, 'batches', batchId, 'fields', fieldKey, 'values'],
+    queryFn: () => endpoints.getFieldValues(projectId, batchId, fieldKey!),
+    enabled: !!projectId && !!batchId && !!fieldKey,
+  });
+}
+```
 
 ## Patterns to Follow
 
-### Pattern 1: Server-Side Pagination State Management
+### Pattern 1: Single Aggregation Query
 
-**Use local component state, derive offset:**
-```typescript
-const [pagination, setPagination] = useState({
-  pageIndex: 0,  // TanStack Table convention
-  pageSize: 50
-});
+**Use LATERAL join for per-field stats in one query:**
 
-const offset = pagination.pageIndex * pagination.pageSize;
-
-const { data } = useBatchRows(projectId, batchId, pagination.pageSize, offset);
+```sql
+-- ONE query replaces N+1 field queries
+SELECT
+  key AS field_key,
+  COUNT(*) FILTER (WHERE r.data ? key) AS presence_count,
+  COUNT(DISTINCT r.data->>key) FILTER (WHERE r.data ? key) AS unique_count
+FROM ingestion_rows r
+CROSS JOIN LATERAL jsonb_object_keys(r.data) AS key
+WHERE r.batch_id = $1 AND r.deleted_at IS NULL
+GROUP BY key;
 ```
 
-**Why:** TanStack Table expects `pageIndex` (0-based), but the API expects `offset` (row number). Calculate offset from pageIndex to keep table logic clean.
+**Why:** Prevents N+1 problem. Single query returns all fields with stats.
 
-**Optional enhancement:** Sync `pageIndex` with URL query params using `useSearchParams()` for shareable links.
+**Performance:** 10K rows × 20 fields = ~1-2 seconds (acceptable for analytics query).
 
-### Pattern 2: Dynamic Columns from Metadata
+### Pattern 2: Type Inference from Samples
 
-**Use factory function to generate column definitions:**
-```typescript
-// components/batches/batch-table-columns.tsx
-import type { ColumnDef } from '@tanstack/react-table';
-import type { ColumnMetadata, Row } from '@/lib/api/schemas/batch.schema';
+**Use ARRAY_AGG LIMIT in SQL, not full-table scan:**
 
-export function createColumns(columnMetadata: ColumnMetadata[]): ColumnDef<Row>[] {
-  // Sort by position to maintain Excel column order
-  const sorted = [...columnMetadata].sort((a, b) => a.position - b.position);
-
-  return sorted.map((meta) => ({
-    accessorFn: (row) => row.data[meta.normalizedKey],
-    id: meta.normalizedKey,
-    header: meta.originalHeader,
-    cell: ({ getValue }) => {
-      const value = getValue();
-      // Format based on inferredType
-      if (value === null || value === undefined) return '-';
-      return String(value);
-    },
-  }));
-}
+```sql
+SELECT
+  key AS field_key,
+  -- Sample 5 values for type inference
+  ARRAY_AGG(DISTINCT r.data->>key ORDER BY r.data->>key LIMIT 5) AS sample_values
+FROM ingestion_rows r
+CROSS JOIN LATERAL jsonb_object_keys(r.data) AS key
+WHERE r.batch_id = $1 AND r.deleted_at IS NULL
+GROUP BY key;
 ```
 
-**Why:** Each batch can have different columns (JSONB schema varies). Generate columns dynamically from `columnMetadata` rather than hardcoding.
+**Why:** 5 values sufficient for heuristic inference (CPF pattern, email format, etc.). Avoids memory overhead of returning all values.
 
-### Pattern 3: File Upload with react-dropzone
+### Pattern 3: Presence Filtering
 
-**Use react-dropzone in upload dialog:**
-```typescript
-// components/batches/upload-batch-dialog.tsx
-import { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { toast } from 'sonner';
+**Use PostgreSQL `?` operator for key existence:**
 
-import { useUploadBatch } from '@/lib/query/hooks/use-batches';
-import type { BatchMode } from '@/lib/api/schemas/batch.schema';
-
-export function UploadBatchDialog({ open, onOpenChange, projectId }) {
-  const [mode, setMode] = useState<BatchMode>('LIST_MODE');
-  const [files, setFiles] = useState<File[]>([]);
-
-  const uploadMutation = useUploadBatch();
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFiles(acceptedFiles);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-      'application/vnd.ms-excel': ['.xls'],
-    },
-    maxSize: 5 * 1024 * 1024, // 5MB
-    maxFiles: 50,
-  });
-
-  async function handleUpload() {
-    if (files.length === 0) {
-      toast.error('Selecione pelo menos um arquivo');
-      return;
-    }
-
-    uploadMutation.mutate(
-      { projectId, files, mode },
-      {
-        onSuccess: () => {
-          toast.success('Lote criado com sucesso');
-          onOpenChange(false);
-          setFiles([]);
-        },
-        onError: () => {
-          toast.error('Erro ao criar lote');
-        },
-      }
-    );
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* Mode selector radio group */}
-      {/* Dropzone with getRootProps/getInputProps */}
-      {/* File list preview */}
-      {/* Upload button with isPending state */}
-    </Dialog>
-  );
-}
+```sql
+WHERE r.data ? $2  -- Only rows where key exists
 ```
 
-**Key points:**
-- `accept` prop validates file types client-side
-- `maxSize` and `maxFiles` match backend limits (5MB, 50 files)
-- Mutation handles API call, cache invalidation, toasts
-- Clear files on success
+**Why:** JSONB keys may exist in some rows but not others (LIST_MODE with inconsistent columns). Prevents counting null as presence.
 
-### Pattern 4: TanStack Table with Server-Side Pagination
+### Pattern 4: Drizzle `sql` Template Tag
 
-**Wire table with pagination state:**
+**Use template tag for raw SQL, embed schema references:**
+
 ```typescript
-// components/batches/batch-data-table.tsx
-import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { BatchTablePagination } from './batch-table-pagination';
+import { sql } from 'drizzle-orm';
+import { ingestionRows } from '../schema';
 
-export function BatchDataTable({
-  columns,
-  data,
-  pagination,
-  onPaginationChange,
-  totalRows,
-  isLoading
-}) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true, // Server-side pagination
-    pageCount: Math.ceil(totalRows / pagination.pageSize),
-    state: { pagination },
-    onPaginationChange,
-  });
-
-  return (
-    <div className="space-y-4">
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length}>Loading...</TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length}>Nenhum dado encontrado</TableCell>
-              </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <BatchTablePagination table={table} totalRows={totalRows} />
-    </div>
-  );
-}
+await this.drizzle.getClient().execute(sql`
+  SELECT key
+  FROM ${ingestionRows} r  -- Table identifier from schema
+  WHERE r.batch_id = ${batchId}  -- Parameterized value
+`);
 ```
 
-**Key configurations:**
-- `manualPagination: true` tells TanStack Table that pagination is server-controlled
-- `pageCount` calculated from `totalRows` and `pageSize`
-- `state: { pagination }` and `onPaginationChange` wire external state
-- `getCoreRowModel()` only (no pagination model, since server-side)
+**Why:** Prevents SQL injection via parameterization, maintains Drizzle type system.
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: Client-Side Pagination with Large Datasets
+### Anti-Pattern 1: N+1 Field Queries
 
-**What goes wrong:** Loading all rows into browser memory, then paginating client-side.
-
-```typescript
-// ❌ WRONG
-const { data: allRows } = useBatchRows(projectId, batchId, 999999, 0); // Fetch all
-const table = useReactTable({
-  data: allRows,
-  getCoreRowModel: getCoreRowModel(),
-  getPaginationRowModel: getPaginationRowModel(), // Client-side pagination
-});
-```
-
-**Why bad:** A batch with 10,000 rows would load 10,000 rows into memory, causing:
-- Slow initial load
-- Browser memory issues
-- Wasted bandwidth
-
-**Instead:** Use server-side pagination with `manualPagination: true` and fetch only the current page.
-
-### Anti-Pattern 2: Setting Content-Type for FormData
-
-**What goes wrong:** Manually setting `Content-Type: multipart/form-data` breaks file upload.
+**What goes wrong:** Loop through fields, query stats for each individually.
 
 ```typescript
 // ❌ WRONG
-const formData = new FormData();
-formData.append('documents', file);
-
-await fetch('/api/upload', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'multipart/form-data', // Missing boundary!
-  },
-  body: formData,
-});
-```
-
-**Why bad:** The browser must set `Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...` with a generated boundary. If you set it manually without the boundary, the server can't parse the multipart data.
-
-**Instead:** Let the browser set `Content-Type` automatically when using `FormData`. Modify API client to NOT force `application/json` when `Content-Type` is already set.
-
-### Anti-Pattern 3: Invalidating Specific Pagination Queries
-
-**What goes wrong:** Only invalidating the current page after upload, causing stale data on other pages.
-
-```typescript
-// ❌ WRONG
-onSuccess: () => {
-  queryClient.invalidateQueries({
-    queryKey: ['projects', projectId, 'batches', { limit: 50, offset: 0 }]
-  });
+const fields = await getFieldKeys(batchId); // Query 1
+const stats = [];
+for (const field of fields) {
+  const count = await countFieldPresence(batchId, field); // Query 2, 3, 4...
+  stats.push({ field, count });
 }
 ```
 
-**Why bad:** If the user is on page 2 (offset: 50), that query won't be invalidated. When they navigate back to page 1, they'll see stale data.
+**Why bad:** 20 fields = 21 queries. Slow, high database load.
 
-**Instead:** Use partial query key matching to invalidate ALL pagination states:
-```typescript
-queryClient.invalidateQueries({
-  queryKey: ['projects', projectId, 'batches'] // Matches all sub-queries
-});
-```
+**Instead:** Use LATERAL join to get all field stats in ONE query.
 
-### Anti-Pattern 4: Hardcoded Column Definitions
+### Anti-Pattern 2: Full-Table Type Inference
 
-**What goes wrong:** Defining table columns in code instead of deriving from `columnMetadata`.
+**What goes wrong:** Fetch all values to infer type.
 
 ```typescript
 // ❌ WRONG
-const columns = [
-  { accessorKey: 'cnpj', header: 'CNPJ' },
-  { accessorKey: 'razaoSocial', header: 'Razão Social' },
-  // ... hardcoded columns
-];
+const allValues = await getFieldValues(batchId, fieldKey); // 10K values
+const type = inferType(allValues); // Analyze 10K values
 ```
 
-**Why bad:** Each batch can have different columns (user uploads different Excel files). Hardcoded columns won't match the actual data structure.
+**Why bad:** 10K values × 20 fields = 200K values in memory. Slow, wasteful.
 
-**Instead:** Generate columns dynamically from `batch.columnMetadata` using a factory function.
+**Instead:** Sample 5 values in SQL with `LIMIT 5`, infer from samples.
+
+### Anti-Pattern 3: Type Inference in Repository
+
+**What goes wrong:** Repository method infers types, not just fetches data.
+
+```typescript
+// ❌ WRONG (Repository doing application logic)
+export class DrizzleRowRepository {
+  async getFieldStats(batchId: string): Promise<FieldStats[]> {
+    const rawStats = await this.query(...);
+
+    // Type inference in repository layer violates Clean Architecture
+    return rawStats.map(stat => ({
+      ...stat,
+      inferredType: this.detectType(stat.sampleValues), // Application logic in Infrastructure!
+    }));
+  }
+}
+```
+
+**Why bad:** Repository contains application logic (type detection heuristics). Violates separation of concerns.
+
+**Instead:** Repository returns raw stats with samples. Use Case orchestrates type inference via dedicated service.
+
+### Anti-Pattern 4: Client-Side Field Stats Computation
+
+**What goes wrong:** Fetch all rows to client, compute stats in JavaScript.
+
+```typescript
+// ❌ WRONG
+const allRows = await useBatchRows(projectId, batchId, 999999, 0); // Fetch all
+const stats = computeStatsClientSide(allRows); // JS aggregation
+```
+
+**Why bad:** 10K rows downloaded to browser, slow initial load, memory issues.
+
+**Instead:** Server-side SQL aggregation with dedicated endpoint.
 
 ## Scalability Considerations
 
 | Concern | At 100 rows | At 10K rows | At 1M rows |
 |---------|-------------|-------------|------------|
-| **Pagination** | Client-side OK | Server-side required | Server-side + cursor-based pagination |
-| **Column count** | All columns visible | Horizontal scroll | Virtual scrolling + column hiding controls |
-| **Initial load** | Fetch first page | Fetch first page | Fetch first page + streaming (future) |
-| **Search/Filter** | Client-side | Server-side via query params | Server-side with debounced input |
-| **Export** | Browser download | Server-side export job | Background job + email link |
+| **Field stats query** | Sub-second | 1-2 seconds | 10-30 seconds (consider GIN index on `data` column) |
+| **Field values query** | Sub-second | Sub-second (if DISTINCT < 1000) | 1-5 seconds (consider index on specific keys) |
+| **Type inference** | Instant (sample-based) | Instant (sample-based) | Instant (sample-based) |
+| **Field count** | All fields loaded | All fields loaded | Paginate field list if > 100 fields |
+| **Memory** | Negligible | < 10MB per query | Consider streaming response |
 
-**Current implementation targets:** 10K rows per batch (server-side pagination, no virtualization needed yet).
+**Current implementation targets:** 10K rows per batch, 20-50 fields. No optimization needed yet.
 
 **Future optimizations:**
-- Add column visibility controls for wide tables (20+ columns)
-- Add server-side search/filter via API query params
-- Add virtual scrolling for batches with 50+ columns
-- Add cursor-based pagination for batches with 100K+ rows
+- Add GIN index on `data` column: `CREATE INDEX idx_rows_data_gin ON ingestion_rows USING GIN (data);`
+- Add expression index for frequently queried keys: `CREATE INDEX idx_rows_cpf ON ingestion_rows ((data->>'cpf'));`
+- Paginate field list if batches consistently have > 100 fields
+- Cache field stats with TTL (stats rarely change after batch completion)
 
 ## Build Order (Recommended Implementation Sequence)
 
-### Phase 1: Foundation (Backend Integration)
+### Phase 1: Backend Foundation
 
-1. **Add shadcn/ui table component:**
-   ```bash
-   cd apps/web
-   pnpm dlx shadcn@latest add table
-   ```
+**Goal:** Field stats endpoint functional, testable via HTTP client.
 
-2. **Create Zod schemas:**
-   - `lib/api/schemas/batch.schema.ts` (all schemas above)
-   - Export in `lib/api/schemas/index.ts`
+1. **Add FieldStats types to Core:**
+   - `src/core/entities/field-stats.types.ts` (FieldStats interface)
+   - Export in `src/core/entities/index.ts`
 
-3. **Modify API client for FormData:**
-   - Update `lib/api/client.ts` to conditionally set `Content-Type`
+2. **Create TypeInferenceService:**
+   - `src/core/services/type-inference.service.ts` (heuristic-based inference)
+   - Add to CoreModule providers
 
-4. **Create batch endpoints:**
-   - `lib/api/endpoints/batches.ts` (endpoint factory)
-   - Export in `lib/api/endpoints/index.ts`
+3. **Extend RowRepository interface:**
+   - Add `getFieldStats(batchId)` abstract method to `src/core/repositories/row.repository.ts`
 
-5. **Create React Query hooks:**
-   - `lib/query/hooks/use-batches.ts` (all hooks above)
-   - Export in `lib/query/hooks/index.ts`
+4. **Implement in DrizzleRowRepository:**
+   - Add `getFieldStats()` method with raw SQL (LATERAL join pattern)
+   - Test SQL directly in Drizzle Studio or psql
 
-**Test:** Verify hooks work in isolation (browser console or Storybook).
+5. **Create GetFieldStatsUseCase:**
+   - `src/core/use-cases/batch/get-field-stats.use-case.ts`
+   - Implement 5-step ownership validation (copy from ListRowsUseCase)
+   - Delegate to repository, enrich with type inference
+   - Export in `src/core/use-cases/batch/index.ts`
 
-### Phase 2: Batch List Page
+6. **Add BatchController endpoint:**
+   - Add `@Get(':batchId/field-stats')` handler
+   - Inject GetFieldStatsUseCase
+   - Add route BEFORE `@Get(':batchId')` to prevent conflicts
 
-6. **Create empty state component:**
-   - `components/batches/batch-empty-state.tsx`
+7. **Add DTO schema:**
+   - `src/presentation/dto/batch.dto.ts`: fieldStatsResponseSchema with Zod
 
-7. **Create batch card component:**
-   - `components/batches/batch-card.tsx`
-   - Display: status badge, row count, created date, mode
+**Test:** `GET /projects/{id}/batches/{batchId}/field-stats` returns stats array.
 
-8. **Create batch grid component:**
-   - `components/batches/batch-grid.tsx`
-   - Layout: responsive grid (same as project-grid)
-   - States: loading skeleton, empty state, populated grid
+### Phase 2: Field Values Endpoint
 
-9. **Create project detail page:**
-   - `app/(platform)/projects/[id]/page.tsx`
-   - Wire up: `useBatches()`, `BatchGrid`
+**Goal:** Field values endpoint functional.
 
-**Test:** Navigate to `/projects/{id}`, verify batch list loads and displays.
+8. **Extend RowRepository interface:**
+   - Add `getFieldValues(batchId, fieldKey)` abstract method
 
-### Phase 3: Upload Modal
+9. **Implement in DrizzleRowRepository:**
+   - Add `getFieldValues()` method with raw SQL (DISTINCT + ORDER BY pattern)
 
-10. **Install react-dropzone:**
-    ```bash
-    cd apps/web
-    npm install react-dropzone
-    ```
+10. **Create GetFieldValuesUseCase:**
+    - `src/core/use-cases/batch/get-field-values.use-case.ts`
+    - Same ownership validation pattern
+    - Delegate to repository (no type inference needed)
 
-11. **Create upload dialog component:**
-    - `components/batches/upload-batch-dialog.tsx`
-    - Features: mode selector (radio group), dropzone, file list preview, upload button
-    - Wire up: `useUploadBatch()` mutation
+11. **Add BatchController endpoint:**
+    - Add `@Get(':batchId/fields/:fieldKey/values')` handler
+    - Inject GetFieldValuesUseCase
 
-12. **Integrate upload dialog into project detail page:**
-    - Add "Novo Lote" button in `AppHeader`
-    - Wire dialog open/close state
+12. **Add DTO schema:**
+    - `src/presentation/dto/batch.dto.ts`: fieldValuesResponseSchema with Zod
 
-**Test:** Upload files, verify batch appears in list after successful upload.
+**Test:** `GET /projects/{id}/batches/{batchId}/fields/cpf/values` returns distinct values.
 
-### Phase 4: Data Table Page
+### Phase 3: Frontend Integration
 
-13. **Create dynamic column factory:**
-    - `components/batches/batch-table-columns.tsx`
-    - Function: `createColumns(columnMetadata)`
+**Goal:** Field Inventory view visible, data fetching works.
 
-14. **Create pagination component:**
-    - `components/batches/batch-table-pagination.tsx`
-    - Buttons: Previous, Next, page info
+13. **Add Zod schemas (frontend):**
+    - `apps/web/lib/api/schemas/batch.schema.ts`: fieldStatsSchema, fieldValuesSchema
 
-15. **Create data table component:**
-    - `components/batches/batch-data-table.tsx`
-    - Integrate: TanStack Table, shadcn/ui Table, pagination controls
+14. **Extend batch endpoints factory:**
+    - `apps/web/lib/api/endpoints/batches.ts`: add `getFieldStats()`, `getFieldValues()` methods
 
-16. **Create batch detail page:**
-    - `app/(platform)/projects/[id]/batches/[batchId]/page.tsx`
-    - Wire up: `useBatch()`, `useBatchRows()`, `BatchDataTable`
-    - Add: breadcrumb navigation
+15. **Create React Query hooks:**
+    - `apps/web/lib/query/hooks/use-batches.ts`: add `useFieldStats()`, `useFieldValues()`
 
-**Test:** Click batch card, verify data table loads with correct columns and pagination.
+16. **Create FieldCard component:**
+    - `apps/web/components/batches/field-card.tsx`
+    - Display: field name, type badge, presence stats, unique count
+    - Click handler to open side sheet
+
+17. **Create FieldInventoryGrid component:**
+    - `apps/web/components/batches/field-inventory-grid.tsx`
+    - Fetch stats with `useFieldStats()`
+    - Render grid of FieldCard components
+
+18. **Add ViewToggle component:**
+    - `apps/web/components/batches/view-toggle.tsx`
+    - Segmented control: Table | Field Inventory
+
+19. **Integrate into Batch Detail Page:**
+    - Modify `apps/web/app/(platform)/projects/[id]/batches/[batchId]/page.tsx`
+    - Add view state with default based on batch mode
+    - Conditional render: table vs field inventory
+
+**Test:** Navigate to batch detail, toggle to Field Inventory view, see field cards.
+
+### Phase 4: View Values Side Sheet
+
+**Goal:** Click field card → side sheet opens with all values.
+
+20. **Create ViewValuesSheet component:**
+    - `apps/web/components/batches/view-values-sheet.tsx`
+    - Sheet with field name header, searchable value list
+    - Fetch values with `useFieldValues(projectId, batchId, fieldKey)`
+    - Enable query only when fieldKey is non-null (sheet open)
+
+21. **Wire up FieldCard click handler:**
+    - FieldCard onClick sets selectedField state
+    - ViewValuesSheet controlled by selectedField !== null
+
+**Test:** Click field card, side sheet opens, shows all values for that field.
 
 ### Phase 5: Polish
 
-17. **Add loading states:**
-    - Skeleton loaders for batch cards
-    - Table loading state (spinner or skeleton rows)
+**Goal:** UX edge cases handled.
 
-18. **Add error states:**
-    - Error boundaries for pages
-    - Toast notifications for mutation errors
+22. **Add loading states:**
+    - Skeleton loaders for field cards while fetching stats
+    - Loading indicator in side sheet while fetching values
 
-19. **Add empty states:**
-    - "No batches yet" for project detail
-    - "No rows found" for data table
+23. **Add empty states:**
+    - "No fields found" for batches with 0 rows
+    - "No values" for fields with all nulls
 
-20. **Add accessibility:**
-    - ARIA labels for buttons
-    - Keyboard navigation for pagination
-    - Focus management in dialogs
+24. **Add search in side sheet:**
+    - Client-side filtering of values array with input debouncing
 
-**Test:** Manual QA for UX edge cases.
+25. **Add copy button:**
+    - Copy all values to clipboard (newline-separated)
+
+26. **Add error handling:**
+    - Toast on query error
+    - Retry button for failed queries
+
+**Test:** Manual QA for loading, empty, error states.
+
+## Confidence Assessment
+
+| Area | Confidence | Notes |
+|------|------------|-------|
+| **JSONB Querying** | HIGH | PostgreSQL JSONB operators documented, Drizzle `sql` pattern verified |
+| **Repository Extension** | HIGH | Existing pattern established (RowRepository abstract class → Drizzle implementation) |
+| **Ownership Validation** | HIGH | Exact pattern copy from ListRowsUseCase (5-step validation) |
+| **Type Inference Placement** | MEDIUM | Use Case layer is correct per Clean Architecture, but heuristic quality needs validation |
+| **SQL Performance** | MEDIUM | LATERAL join scales linearly, but GIN index may be needed at 100K+ rows |
+| **Route Ordering** | HIGH | NestJS route specificity rules verified, order critical for correct matching |
+| **Frontend Integration** | HIGH | Existing patterns (React Query hooks, endpoint factory) well-established |
+
+## Gaps to Address
+
+1. **Type Inference Heuristics:** Sample-based inference may misclassify edge cases (e.g., numeric strings like ZIP codes classified as numbers). Needs testing with real data.
+
+2. **GIN Index Performance:** No benchmark for JSONB aggregation on large batches. May need index tuning if field stats query exceeds 5 seconds at scale.
+
+3. **Field Cardinality Handling:** Endpoint assumes reasonable field count (< 100 fields per batch). Profile mode with sparse keys could generate 1000+ fields. May need pagination.
+
+4. **Value Cardinality Handling:** Field values endpoint assumes reasonable unique count (< 10K distinct values). High-cardinality fields (e.g., free-text comments) could return 100K+ values. May need pagination or limit.
 
 ## Sources
 
-**Next.js App Router:**
-- [Next.js Dynamic Routes Documentation](https://nextjs.org/docs/pages/building-your-application/routing/dynamic-routes)
-- [Next.js useParams Hook](https://nextjs.org/docs/app/api-reference/functions/use-params)
-- [Next.js Dynamic Route Segments Guide 2026](https://thelinuxcode.com/nextjs-dynamic-route-segments-in-the-app-router-2026-guide/)
+**PostgreSQL JSONB Documentation:**
+- [How to Query a JSON Column in PostgreSQL - PopSQL](https://popsql.com/learn-sql/postgresql/how-to-query-a-json-column-in-postgresql)
+- [PostgreSQL JSON Extract Operators - Neon](https://neon.com/postgresql/postgresql-json-functions/postgresql-json-extract)
+- [PostgreSQL jsonb_object_keys() Function - Neon](https://neon.com/postgresql/postgresql-json-functions/postgresql-jsonb_object_keys)
 
-**TanStack Query (React Query):**
-- [TanStack Query Mutations Guide](https://tanstack.com/query/latest/docs/react/guides/mutations)
-- [React Query useMutation for File Upload Discussion](https://github.com/TanStack/query/discussions/1098)
-- [TanStack Query Better Upload Integration](https://better-upload.com/docs/guides/tanstack-query)
+**PostgreSQL JSONB Performance:**
+- [PostgreSQL JSONB - Powerful Storage for Semi-Structured Data](https://www.architecture-weekly.com/p/postgresql-jsonb-powerful-storage)
+- [Postgres JSONB Usage and Performance Analysis - Medium](https://medium.com/geekculture/postgres-jsonb-usage-and-performance-analysis-cdbd1242a018)
 
-**TanStack Table:**
-- [TanStack Table Pagination Guide](https://tanstack.com/table/v8/docs/guide/pagination)
-- [TanStack Table Pagination Example](https://tanstack.com/table/v8/docs/framework/react/examples/pagination)
-- [Server-Side Pagination with TanStack Table](https://medium.com/@aylo.srd/server-side-pagination-and-sorting-with-tanstack-table-and-react-bd493170125e)
+**Drizzle ORM Raw SQL:**
+- [Drizzle ORM - Query Documentation](https://orm.drizzle.team/docs/rqb-v2)
+- [Best way to query jsonb field - Drizzle Team](https://www.answeroverflow.com/m/1188144616541802506)
+- [Custom SQL function (json_agg & json_build_object) - Drizzle Team](https://www.answeroverflow.com/m/1091675515565387867)
 
-**shadcn/ui:**
-- [shadcn/ui Data Table Guide](https://ui.shadcn.com/docs/components/data-table)
-- [shadcn/ui Table Component](https://ui.shadcn.com/docs/components/table)
-
-**File Upload:**
-- [react-dropzone Official Documentation](https://react-dropzone.js.org/)
-- [Building File Upload with react-dropzone](https://medium.com/@basavarajavyadav/building-a-file-upload-component-with-react-and-react-dropzone-a28afc075e4d)
-- [React-Dropzone File Upload Tutorial](https://dev.to/nnnirajn/how-to-use-react-dropzone-for-uploading-files-hm2)
+**Clean Architecture Use Cases:**
+- [Clean Architecture: Use Cases - Nanosoft](https://nanosoft.co.za/blog/post/clean-architecture-use-cases)
+- [Building Your First Use Case With Clean Architecture - Milan Jovanovic](https://www.milanjovanovic.tech/blog/building-your-first-use-case-with-clean-architecture)
+- [Domain Layer - Android Developers](https://developer.android.com/topic/architecture/domain-layer)
 
 **Existing Codebase:**
-- `apps/web/lib/api/client.ts` (API client implementation)
-- `apps/web/lib/api/endpoints/projects.ts` (endpoint factory pattern)
-- `apps/web/lib/query/hooks/use-projects.ts` (React Query hooks pattern)
-- `apps/web/app/(platform)/projects/page.tsx` (page structure pattern)
-- `apps/api/src/presentation/controllers/batch.controller.ts` (backend API structure)
-- `apps/api/src/presentation/dto/batch.dto.ts` (backend pagination schema)
-- `apps/api/src/core/entities/batch.entity.ts` (backend entity definitions)
+- `apps/api/src/core/entities/batch.entity.ts` (domain model reference)
+- `apps/api/src/core/entities/row.entity.ts` (JSONB data structure)
+- `apps/api/src/core/repositories/row.repository.ts` (repository interface pattern)
+- `apps/api/src/infrastructure/database/drizzle/repositories/drizzle-row.repository.ts` (Drizzle implementation)
+- `apps/api/src/core/use-cases/batch/list-rows.use-case.ts` (ownership validation pattern)
+- `apps/api/src/presentation/controllers/batch.controller.ts` (route ordering reference)

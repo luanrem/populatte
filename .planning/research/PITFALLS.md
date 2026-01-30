@@ -1,421 +1,637 @@
-# Domain Pitfalls: Dashboard Upload & Listing UI
+# Domain Pitfalls: Field Inventory & Analytics
 
-**Domain:** File upload UI, dynamic data tables, and paginated views in Next.js 16 with React Query v5
+**Domain:** Adding field-level analytics and inventory UIs to existing JSONB batch data system
 **Researched:** 2026-01-30
-**Project Context:** Adding frontend features to existing Populatte Next.js dashboard
+**Project Context:** v2.3 milestone - adding Field Inventory visualization to existing batch detail system (subsequent feature addition)
 
 ---
 
 ## Critical Pitfalls
 
-These mistakes cause rewrites, major bugs, or data integrity issues.
+These mistakes cause rewrites, major performance issues, or data integrity problems.
 
-### Pitfall 1: Manual Content-Type Header with FormData
+### Pitfall 1: JSONB Aggregation Without Indexes Causes Table Scans
 
-**What goes wrong:** Setting `Content-Type: multipart/form-data` manually when uploading files causes the upload to fail. The browser/fetch needs to set the boundary parameter automatically.
+**What goes wrong:** Aggregating field statistics across all rows in a batch (distinct values, null counts, type inference) triggers full table scans. With 65K rows, queries timeout or take 10+ seconds.
 
-**Why it happens:** Developers familiar with JSON APIs apply the same pattern (manually setting Content-Type) to file uploads without understanding multipart encoding requires a dynamically generated boundary.
+**Why it happens:** JSONB columns don't have statistics in PostgreSQL. Queries like `SELECT DISTINCT jsonb_extract_path(data, 'fieldName') FROM ingestion_rows WHERE batch_id = ?` scan every row because PostgreSQL can't optimize JSONB key access without indexes.
 
 **Consequences:**
-- Upload fails with 400/422 errors
-- Server cannot parse the request body
-- Hard to debug because error messages are generic ("Invalid request body")
+- Field stats endpoint times out on batches with >5K rows
+- Database CPU spikes to 100% during field inventory queries
+- Memory exhaustion when aggregating across 65K rows (PostgreSQL parameter limit)
+- N+1 query pattern if fetching stats per field instead of all fields at once
 
 **Prevention:**
-```typescript
-// ❌ WRONG: Manual Content-Type breaks multipart uploads
-const formData = new FormData();
-formData.append('files', file);
+```sql
+-- ❌ WRONG: No indexes - full table scan for every field
+CREATE TABLE ingestion_rows (
+  id UUID PRIMARY KEY,
+  batch_id UUID REFERENCES ingestion_batches(id),
+  data JSONB NOT NULL,
+  -- Missing GIN index on JSONB column
+);
 
-await fetch('/api/upload', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'multipart/form-data', // ← BREAKS UPLOAD
-  },
-  body: formData,
-});
+SELECT DISTINCT jsonb_object_keys(data) FROM ingestion_rows WHERE batch_id = ?;
+-- Scans all 65K rows
 
-// ✅ CORRECT: Let browser set Content-Type with boundary
-await fetch('/api/upload', {
-  method: 'POST',
-  // No Content-Type header - browser adds it automatically
-  body: formData,
-});
+-- ✅ CORRECT: GIN index on JSONB data column
+CREATE TABLE ingestion_rows (
+  id UUID PRIMARY KEY,
+  batch_id UUID REFERENCES ingestion_batches(id),
+  data JSONB NOT NULL
+);
+
+CREATE INDEX idx_ingestion_rows_data_gin ON ingestion_rows USING GIN (data jsonb_path_ops);
+CREATE INDEX idx_ingestion_rows_batch_data ON ingestion_rows (batch_id) INCLUDE (data);
+
+-- Query optimization: Use batch_id index + JSONB operators
+SELECT DISTINCT jsonb_object_keys(data)
+FROM ingestion_rows
+WHERE batch_id = ?;
+-- Uses idx_ingestion_rows_batch_data for fast filtering
 ```
 
-**Detection:** Upload endpoint returns 400/422, browser DevTools shows missing boundary in Content-Type header.
+```typescript
+// ❌ WRONG: Fetch stats per field (N+1 pattern)
+async getFieldStats(batchId: string, fieldName: string) {
+  // Called 20 times for 20 fields = 20 queries
+  const result = await db
+    .select({
+      distinctCount: sql`COUNT(DISTINCT data->${fieldName})`
+    })
+    .from(ingestionRows)
+    .where(eq(ingestionRows.batchId, batchId));
 
-**Which phase:** Phase 1 (Upload UI implementation) - must be addressed in initial upload form.
+  return result[0];
+}
+
+// ✅ CORRECT: Aggregate all fields in one query
+async getAllFieldStats(batchId: string) {
+  // Single query aggregates all field statistics
+  const result = await db.execute(sql`
+    WITH field_keys AS (
+      SELECT DISTINCT jsonb_object_keys(data) as key
+      FROM ingestion_rows
+      WHERE batch_id = ${batchId}
+    ),
+    field_stats AS (
+      SELECT
+        f.key,
+        COUNT(*) as total_rows,
+        COUNT(data->f.key) as non_null_count,
+        COUNT(DISTINCT data->f.key) as distinct_count,
+        COUNT(*) - COUNT(data->f.key) as null_count
+      FROM ingestion_rows r
+      CROSS JOIN field_keys f
+      WHERE r.batch_id = ${batchId}
+      GROUP BY f.key
+    )
+    SELECT * FROM field_stats;
+  `);
+
+  return result.rows;
+}
+```
+
+**Detection:**
+- Field stats endpoint takes >2 seconds on batches with 10K+ rows
+- PostgreSQL logs show "Seq Scan on ingestion_rows" instead of "Index Scan"
+- Database CPU spikes when opening field inventory view
+
+**Which phase:** Phase 1 (Backend Field Stats) - add GIN index in migration before implementing stats endpoint.
 
 **Sources:**
-- [GitHub: vercel/next.js Discussion #39957](https://github.com/vercel/next.js/discussions/39957)
-- [DEV Community: Handling multipart/form-data in Next.js](https://dev.to/mazinashfaq/handling-multipartform-data-in-nextjs-26ea)
+- [PostgreSQL JSONB and Statistics](https://blog.anayrat.info/en/2017/11/26/postgresql-jsonb-and-statistics/)
+- [How to avoid performance bottlenecks when using JSONB in PostgreSQL](https://www.metisdata.io/blog/how-to-avoid-performance-bottlenecks-when-using-jsonb-in-postgresql)
+- [Postgres large JSON value query performance](https://www.evanjones.ca/postgres-large-json-performance.html)
+- [PostgreSQL Indexing Strategies for JSONB Columns](https://www.rickychilcott.com/2025/09/22/postgresql-indexing-strategies-for-jsonb-columns/)
 
 ---
 
-### Pitfall 2: useApiClient Sets Content-Type to JSON
+### Pitfall 2: Type Inference on Mixed-Type Fields Causes Runtime Errors
 
-**What goes wrong:** The existing `useApiClient` hook in Populatte automatically sets `Content-Type: application/json` in all requests. This breaks file uploads which require the browser to set multipart/form-data with boundary.
+**What goes wrong:** A JSONB field contains mixed types across rows (e.g., row 1 has `"123"` as string, row 2 has `123` as number). Frontend assumes all values are strings, crashes when rendering number, or vice versa.
 
-**Why it happens:** The client was designed for JSON APIs (projects, users). When file upload is added, the hardcoded JSON header conflicts with FormData.
+**Why it happens:** Excel parsing can produce inconsistent types (empty cells become `null`, numbers become strings if formatted as text). PostgreSQL JSONB stores primitives without type enforcement per key.
 
 **Consequences:**
-- File uploads fail despite correct FormData usage elsewhere
-- Debugging is confusing because the fetch call looks correct
-- Error only appears when using the project's standard API client
+- Type inference endpoint returns "string" but 10% of values are actually numbers
+- Card grid crashes when rendering: `Cannot read property 'toString' of null`
+- Copy-to-clipboard fails: `navigator.clipboard.writeText(value)` throws when value is number
+- Search filter breaks when comparing string to number
 
 **Prevention:**
 ```typescript
-// Current implementation (apps/web/lib/api/client.ts):
-const headers = new Headers(requestOptions.headers);
-headers.set('Content-Type', 'application/json'); // ← Always sets JSON
-
-// Solution 1: Skip header for FormData
-const headers = new Headers(requestOptions.headers);
-if (!(requestOptions.body instanceof FormData)) {
-  headers.set('Content-Type', 'application/json');
+// ❌ WRONG: Assume all values have same type
+interface FieldStats {
+  fieldName: string;
+  inferredType: 'string' | 'number' | 'boolean'; // Single type
+  distinctValues: string[]; // Wrong: values might be numbers
 }
 
-// Solution 2: Allow override via skipContentType flag
-const { skipAuth, skipContentType, ...requestOptions } = options;
-const headers = new Headers(requestOptions.headers);
-if (!skipContentType) {
-  headers.set('Content-Type', 'application/json');
+function renderValue(value: string) {
+  return value.toUpperCase(); // Crashes if value is number
 }
 
-// Solution 3: Create separate upload client (RECOMMENDED for Populatte)
-// Keep useApiClient for JSON, create useUploadClient for multipart
-export function useUploadClient(): UploadClient {
-  const { getToken } = useAuth();
-  // No Content-Type header set - browser handles it
-}
-```
-
-**Detection:** File upload fails even though FormData is used. DevTools shows `Content-Type: application/json` instead of `multipart/form-data`.
-
-**Which phase:** Phase 1 (Upload UI) - architectural decision needed before implementing upload form.
-
-**Project-specific note:** This is a **Populatte-specific integration pitfall**. The codebase's existing API client pattern conflicts with file upload requirements.
-
----
-
-### Pitfall 3: React Query Cache Not Invalidated After Upload
-
-**What goes wrong:** After a successful file upload, the batch list doesn't update automatically because React Query's cache still contains stale data. Users see old data until manual refresh.
-
-**Why it happens:** Mutations don't automatically invalidate related queries. Developers forget to call `invalidateQueries` in the mutation's `onSuccess` callback.
-
-**Consequences:**
-- Stale UI showing old batch list after upload
-- User confusion ("I just uploaded, why don't I see it?")
-- Trust issues with the application
-- Manual page refresh required
-
-**Prevention:**
-```typescript
-// ❌ WRONG: No cache invalidation
-export function useUploadBatch() {
-  const client = useUploadClient();
-
-  return useMutation({
-    mutationFn: (data) => client.upload(data),
-    // Missing onSuccess - cache stays stale
-  });
-}
-
-// ✅ CORRECT: Invalidate batch list on success
-export function useUploadBatch(projectId: string) {
-  const client = useUploadClient();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data) => client.upload(projectId, data),
-    onSuccess: () => {
-      // Invalidate ALL batch-related queries for this project
-      void queryClient.invalidateQueries({
-        queryKey: ['projects', projectId, 'batches']
-      });
-    },
-  });
-}
-```
-
-**Detection:** After upload succeeds (201 response), list doesn't show new item. Refreshing page shows new data.
-
-**Which phase:** Phase 1 (Upload UI) - implement invalidation immediately with upload mutation.
-
-**Sources:**
-- [TanStack Query: Query Invalidation](https://tanstack.com/query/v5/docs/framework/react/guides/query-invalidation)
-- [TkDodo's Blog: Automatic Query Invalidation](https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations)
-- [Medium: React Query Cache Invalidation](https://medium.com/@kennediowusu/react-query-cache-invalidation-why-your-mutations-work-but-your-ui-doesnt-update-a1ad23bc7ef1)
-
----
-
-### Pitfall 4: Dynamic Table Columns Cause Expensive Re-renders
-
-**What goes wrong:** JSONB data has different keys per batch. Creating column definitions from `Object.keys()` on every render causes the entire table to re-mount, destroying scroll position and selection state.
-
-**Why it happens:** Developers derive columns from data without memoization. Each render creates new column objects with new references, triggering TanStack Table to rebuild.
-
-**Consequences:**
-- Table flickers on every state change
-- Scroll position resets
-- Selected rows clear
-- Terrible UX with large datasets
-- Performance degrades significantly
-
-**Prevention:**
-```typescript
-// ❌ WRONG: Columns recreated every render
-function BatchDataTable({ data }: { data: BatchRow[] }) {
-  // New columns array EVERY render - new object references
-  const columns = Object.keys(data[0]?.data ?? {}).map(key => ({
-    accessorKey: `data.${key}`,
-    header: key,
-  }));
-
-  return <DataTable columns={columns} data={data} />;
-}
-
-// ✅ CORRECT: Memoize columns, recompute only when keys change
-function BatchDataTable({ data }: { data: BatchRow[] }) {
-  const columns = useMemo(() => {
-    const firstRow = data[0];
-    if (!firstRow) return [];
-
-    return Object.keys(firstRow.data).map(key => ({
-      accessorKey: `data.${key}`,
-      header: key,
-    }));
-  }, [
-    // Stable key: recompute only when column set changes
-    JSON.stringify(Object.keys(data[0]?.data ?? {}))
-  ]);
-
-  const table = useReactTable({ columns, data });
-  return <Table />;
-}
-```
-
-**Detection:** Table visibly flickers when typing in search, changing filters, or any state update. React DevTools Profiler shows DataTable re-rendering on every keystroke.
-
-**Which phase:** Phase 2 (Batch Data Table) - must implement memoization from the start, very hard to fix later.
-
-**Sources:**
-- [GitHub TanStack/table: Dynamic columns work on first load but fail when columns change](https://github.com/TanStack/table/discussions/3705)
-- [GitHub TanStack/table: React-Table crashes with dynamic columns](https://github.com/TanStack/table/issues/1147)
-
----
-
-### Pitfall 5: react-hook-form File Not Persisted on Re-render
-
-**What goes wrong:** File selected via react-dropzone is lost from form state after component re-renders (e.g., validation error, parent state change). Upload button becomes disabled, form shows "no file selected."
-
-**Why it happens:** File objects don't persist properly in react-hook-form without explicit `setValue` calls. Using Controller's `onChange` incorrectly or relying on automatic field registration fails.
-
-**Consequences:**
-- User selects file, sees preview, but submission fails ("no file")
-- File lost after validation error shown
-- Confusing UX: "I selected a file, why is it gone?"
-- Multiple bug reports from users
-
-**Prevention:**
-```typescript
-// ❌ WRONG: Relying on automatic registration
-function UploadForm() {
-  const { register } = useForm();
-
-  const onDrop = (files: File[]) => {
-    // register() doesn't handle File objects well
-    // Files lost on re-render
+// ✅ CORRECT: Handle mixed types explicitly
+interface FieldStats {
+  fieldName: string;
+  inferredType: 'string' | 'number' | 'boolean' | 'mixed' | 'null';
+  typeDistribution: {
+    string: number;
+    number: number;
+    boolean: number;
+    null: number;
   };
-
-  const { getRootProps } = useDropzone({ onDrop });
-  return <div {...getRootProps()} {...register('files')} />;
+  distinctValues: Array<string | number | boolean | null>;
 }
 
-// ✅ CORRECT: Explicit setValue in Controller + watch
-function UploadForm() {
-  const { control, watch, setValue } = useForm();
-  const files = watch('files');
+function renderValue(value: unknown): string {
+  if (value === null || value === undefined) {
+    return '(empty)';
+  }
+  if (typeof value === 'number') {
+    return value.toString();
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+  return String(value);
+}
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Explicit setValue persists files across re-renders
-    setValue('files', acceptedFiles, {
-      shouldValidate: true,
-      shouldDirty: true
-    });
-  }, [setValue]);
+// Backend type inference with distribution
+async getFieldTypeDistribution(batchId: string, fieldName: string) {
+  const result = await db.execute(sql`
+    SELECT
+      jsonb_typeof(data->${fieldName}) as json_type,
+      COUNT(*) as count
+    FROM ingestion_rows
+    WHERE batch_id = ${batchId}
+      AND data ? ${fieldName}
+    GROUP BY jsonb_typeof(data->${fieldName})
+  `);
 
+  // Returns: [{ json_type: 'string', count: 900 }, { json_type: 'number', count: 100 }]
+  return result.rows;
+}
+```
+
+**Detection:**
+- Field inventory shows type "string" but values render as numbers
+- Copy-to-clipboard throws `writeText requires string` error
+- Search filter returns inconsistent results (string comparison on numeric values)
+
+**Which phase:** Phase 1 (Backend Field Stats) - implement type distribution analysis, not single inferred type.
+
+**Sources:**
+- [PostgreSQL JSON Functions and Operators](https://www.postgresql.org/docs/current/functions-json.html)
+- [PostgreSQL: NULL values in JSONB](https://mbork.pl/2020-02-15_PostgreSQL_and_null_values_in_jsonb)
+
+---
+
+### Pitfall 3: Large Value Lists Overwhelm Memory and Rendering
+
+**What goes wrong:** A field has 10,000+ distinct values (e.g., transaction IDs, timestamps). Loading all values into side sheet crashes browser tab or freezes UI for 30+ seconds.
+
+**Why it happens:** Backend returns all distinct values without pagination. Frontend loads entire array into memory, tries to render 10K DOM nodes, and browser grinds to a halt.
+
+**Consequences:**
+- Browser tab crashes with "Aw, Snap! Out of memory" on fields with >20K distinct values
+- Side sheet takes 15+ seconds to open, freezes UI
+- Search input lags (filtering 10K items on every keystroke)
+- Memory leak if user opens/closes multiple high-cardinality fields
+
+**Prevention:**
+```typescript
+// ❌ WRONG: Fetch all distinct values without limit
+async getFieldValues(batchId: string, fieldName: string) {
+  const result = await db.execute(sql`
+    SELECT DISTINCT data->${fieldName} as value
+    FROM ingestion_rows
+    WHERE batch_id = ${batchId}
+      AND data ? ${fieldName}
+    ORDER BY value
+  `);
+
+  return result.rows; // Could be 65K rows!
+}
+
+// Frontend: Render all 10K values at once
+function ValueList({ values }: { values: string[] }) {
   return (
-    <Controller
-      control={control}
-      name="files"
-      render={({ field: { onChange, value } }) => (
-        <Dropzone
-          onDrop={(files) => {
-            onChange(files);
-            onDrop(files);
-          }}
-        />
+    <ul>
+      {values.map(v => <li key={v}>{v}</li>)} {/* 10K DOM nodes */}
+    </ul>
+  );
+}
+
+// ✅ CORRECT: Paginate backend, virtualize frontend
+async getFieldValues(
+  batchId: string,
+  fieldName: string,
+  limit = 100,
+  offset = 0,
+  search?: string
+) {
+  const searchCondition = search
+    ? sql`AND (data->${fieldName})::text ILIKE ${`%${search}%`}`
+    : sql``;
+
+  const result = await db.execute(sql`
+    SELECT DISTINCT data->${fieldName} as value
+    FROM ingestion_rows
+    WHERE batch_id = ${batchId}
+      AND data ? ${fieldName}
+      ${searchCondition}
+    ORDER BY value
+    LIMIT ${limit}
+    OFFSET ${offset}
+  `);
+
+  const countResult = await db.execute(sql`
+    SELECT COUNT(DISTINCT data->${fieldName}) as total
+    FROM ingestion_rows
+    WHERE batch_id = ${batchId}
+      AND data ? ${fieldName}
+      ${searchCondition}
+  `);
+
+  return {
+    values: result.rows,
+    total: countResult.rows[0].total,
+    hasMore: offset + limit < countResult.rows[0].total
+  };
+}
+
+// Frontend: Virtualize with react-window or limit display
+import { FixedSizeList } from 'react-window';
+
+function ValueList({ values }: { values: string[] }) {
+  // Only render visible items in viewport
+  return (
+    <FixedSizeList
+      height={400}
+      itemCount={values.length}
+      itemSize={35}
+      width="100%"
+    >
+      {({ index, style }) => (
+        <div style={style}>{values[index]}</div>
       )}
-    />
+    </FixedSizeList>
   );
 }
 ```
 
-**Detection:** File preview shows, but form submission logs "files: undefined". Re-rendering the parent component clears file selection.
+**Detection:**
+- Browser DevTools Memory profiler shows >500MB heap when side sheet opens
+- UI freezes for 10+ seconds when clicking field with high distinct count
+- Network tab shows 5+ MB JSON payload for value list
 
-**Which phase:** Phase 1 (Upload UI) - critical for dropzone integration, must be correct from start.
+**Which phase:** Phase 1 (Backend Field Values) - implement pagination BEFORE testing with large batches.
+
+**Project-specific note:** With 65K row limit, a field could theoretically have 65K distinct values. Must paginate.
 
 **Sources:**
-- [GitHub react-hook-form: Integration with react-dropzone Discussion #2146](https://github.com/orgs/react-hook-form/discussions/2146)
-- [DEV Community: How to use react-dropzone with react-hook-form](https://dev.to/vibhanshu909/how-to-use-react-dropzone-with-react-hook-form-1omc)
-- [Bacancy: React Dropzone with React Hook Form Guide](https://www.bacancytechnology.com/qanda/react/react-dropzone-with-react-hook-form)
+- [React Virtualized: Improving Performance for Large Lists](https://medium.com/@ignatovich.dm/virtualization-in-react-improving-performance-for-large-lists-3df0800022ef)
+- [How to Optimize React Dashboard Rendering Performance with Virtualization](https://www.zigpoll.com/content/how-can-i-optimize-the-rendering-performance-of-large-datasets-in-a-react-dashboard-using-virtualization-techniques)
+- [Efficient rendering of large lists with react-select](https://fasterthanlight.me/blog/post/react-select)
 
 ---
 
-### Pitfall 6: Fetch API Upload Progress Not Tracked
+### Pitfall 4: View Toggle State Management Causes Data Refetch
 
-**What goes wrong:** Fetch API doesn't emit upload progress events like XMLHttpRequest. Developers try to show upload progress but the UI never updates (stuck at 0%).
+**What goes wrong:** Switching between table view and inventory view refetches batch data from server instead of using existing React Query cache, causing flickering and wasted requests.
 
-**Why it happens:** Common misconception that fetch supports progress tracking. It only supports download progress (via response.body ReadableStream), not upload progress.
+**Why it happens:** View state (`table` vs `inventory`) stored in component state or URL, but not properly synced with React Query cache. Each view uses different query keys or doesn't share data.
 
 **Consequences:**
-- Upload progress bar stuck at 0% during large uploads
-- No user feedback for slow uploads
-- Users refresh page thinking upload failed
-- Poor UX for multi-file uploads
+- Switching views shows loading spinner (bad UX)
+- Double the API calls (fetch once for table, again for inventory)
+- Stale data issues if batch updated while in other view
+- View transition feels slow despite data already loaded
 
 **Prevention:**
 ```typescript
-// ❌ WRONG: fetch has NO upload progress
-async function uploadWithProgress(formData: FormData) {
-  // fetch API doesn't expose upload progress
-  // This code can't track upload progress:
-  const response = await fetch('/upload', {
-    method: 'POST',
-    body: formData,
-  });
-  // No way to get upload progress here
-}
-
-// ✅ SOLUTION 1: Use XMLHttpRequest for uploads
-function uploadWithProgress(
-  formData: FormData,
-  onProgress: (percent: number) => void
-): Promise<Response> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-
-    xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable) {
-        onProgress((e.loaded / e.total) * 100);
-      }
-    });
-
-    xhr.addEventListener('load', () => {
-      resolve(new Response(xhr.response, { status: xhr.status }));
-    });
-
-    xhr.open('POST', '/upload');
-    xhr.send(formData);
+// ❌ WRONG: Different query keys per view (duplicates cache)
+function BatchTableView({ batchId }: Props) {
+  const { data } = useQuery({
+    queryKey: ['batch', batchId, 'table'], // Separate cache entry
+    queryFn: () => fetchBatchRows(batchId)
   });
 }
 
-// ✅ SOLUTION 2: Fake progress with timer (MVP acceptable)
-function uploadWithFakeProgress(formData: FormData) {
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress = Math.min(progress + 10, 90); // Stop at 90%
-    setUploadProgress(progress);
-  }, 500);
-
-  const promise = fetch('/upload', { method: 'POST', body: formData });
-
-  promise.finally(() => {
-    clearInterval(interval);
-    setUploadProgress(100);
+function BatchInventoryView({ batchId }: Props) {
+  const { data } = useQuery({
+    queryKey: ['batch', batchId, 'inventory'], // Different cache entry
+    queryFn: () => fetchBatchRows(batchId) // Duplicate request!
   });
-
-  return promise;
 }
 
-// ✅ SOLUTION 3: Indeterminate progress (RECOMMENDED for Populatte)
-// Show spinner/indeterminate progress instead of percentage
-// Simpler, no XMLHttpRequest, good UX for typical file sizes
+// ❌ WRONG: Toggle state causes cache invalidation
+function BatchDetail({ batchId }: Props) {
+  const [view, setView] = useState<'table' | 'inventory'>('table');
+
+  useEffect(() => {
+    // Invalidates cache on every toggle!
+    queryClient.invalidateQueries({ queryKey: ['batch', batchId] });
+  }, [view]);
+}
+
+// ✅ CORRECT: Shared query key, view state in URL
+function BatchDetail({ batchId }: Props) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const view = searchParams.get('view') ?? 'table';
+
+  // Single query key - shared cache between views
+  const { data: rows } = useQuery({
+    queryKey: ['batches', batchId, 'rows'],
+    queryFn: () => fetchBatchRows(batchId)
+  });
+
+  const { data: stats } = useQuery({
+    queryKey: ['batches', batchId, 'stats'],
+    queryFn: () => fetchFieldStats(batchId),
+    enabled: view === 'inventory' // Only fetch stats when needed
+  });
+
+  function toggleView(newView: 'table' | 'inventory') {
+    const params = new URLSearchParams(searchParams);
+    params.set('view', newView);
+    router.push(`?${params.toString()}`);
+    // No invalidation needed - cache persists
+  }
+
+  return (
+    <>
+      <ViewToggle value={view} onChange={toggleView} />
+      {view === 'table' ? (
+        <DataTable data={rows} />
+      ) : (
+        <FieldInventory rows={rows} stats={stats} />
+      )}
+    </>
+  );
+}
 ```
 
-**Detection:** Upload progress bar added but never updates from 0%. Console has no errors.
+**Detection:**
+- Network tab shows duplicate requests when toggling views
+- UI shows loading spinner during view transition despite data already loaded
+- React Query Devtools shows multiple cache entries for same batch
 
-**Which phase:** Phase 1 (Upload UI) - decide on progress strategy during upload form implementation.
-
-**Project-specific note:** Given Populatte's 5MB max per file limit and fetch API preference, **indeterminate progress** (spinner) is recommended over switching to XMLHttpRequest.
+**Which phase:** Phase 2 (Frontend View Toggle) - design shared cache strategy before implementing views.
 
 **Sources:**
-- [JakeArchibald.com: Fetch streams are great, but not for measuring upload progress](https://jakearchibald.com/2025/fetch-streams-not-for-progress/)
-- [Medium: Upload and Download progress tracking with Fetch and Axios](https://medium.com/@msingh.mayank/upload-and-download-progress-tracking-with-fetch-and-axios-f6212b64b703)
-- [GitHub Gist: How to follow upload progress with fetch()](https://gist.github.com/adinan-cenci/9fc1d9785700d58f63055bc8d02a54d0)
+- [React State Management in 2025](https://www.developerway.com/posts/react-state-management-2025)
+- [Top State Management Pitfalls in Modern UI](https://logicloom.in/state-management-gone-wrong-avoiding-common-pitfalls-in-modern-ui-development/)
 
 ---
 
-### Pitfall 7: Non-ASCII Filenames Fail FormData Parsing
+### Pitfall 5: Side Sheet Blocks Interaction with Main Content
 
-**What goes wrong:** Files with Chinese, emoji, or other non-ASCII characters in filenames cause "Failed to parse body as FormData" errors on the server, even though the upload code is correct.
+**What goes wrong:** Opening side sheet to view field values sets `modal: true` on Dialog/Sheet component, trapping focus and preventing interaction with main batch table. Users can't compare field values with table data.
 
-**Why it happens:** Known Next.js/Node.js issue with how FormData handles non-ASCII filenames in Content-Type headers. The boundary parsing fails with certain character encodings.
+**Why it happens:** Misusing shadcn Sheet component in modal mode when non-modal side panel is needed. Default Sheet behavior is modal (blocks background).
 
 **Consequences:**
-- Upload fails for international users
-- Random-looking failures (depends on filename)
-- Hard to reproduce in testing (depends on locale)
-- Requires filename sanitization workaround
+- Users can't scroll batch table while side sheet open
+- Can't click field cards in background to open different field
+- Poor UX for data exploration (forced to close/reopen repeatedly)
+- Accessibility issue: focus trap prevents keyboard navigation
 
 **Prevention:**
 ```typescript
-// ❌ WRONG: Allow any filename (breaks with non-ASCII)
-function UploadForm() {
-  const onDrop = (files: File[]) => {
-    const formData = new FormData();
-    files.forEach(file => {
-      formData.append('files', file); // Original filename may break
-    });
-    upload(formData);
-  };
+// ❌ WRONG: Modal Sheet blocks interaction
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+
+function FieldInventory() {
+  const [selectedField, setSelectedField] = useState<string | null>(null);
+
+  return (
+    <>
+      <FieldCards onFieldClick={setSelectedField} />
+      <Sheet open={!!selectedField} onOpenChange={() => setSelectedField(null)}>
+        <SheetContent>
+          {/* Modal overlay blocks clicking other field cards */}
+          <FieldValueList field={selectedField} />
+        </SheetContent>
+      </Sheet>
+    </>
+  );
 }
 
-// ✅ CORRECT: Sanitize filenames to ASCII
-function UploadForm() {
-  const onDrop = (files: File[]) => {
-    const formData = new FormData();
+// ✅ CORRECT: Non-modal side panel allows interaction
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 
-    files.forEach(file => {
-      // Sanitize filename: remove non-ASCII, replace with underscores
-      const sanitized = file.name
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-        .replace(/[^\x00-\x7F]/g, '_'); // Replace non-ASCII
+function FieldInventory() {
+  const [selectedField, setSelectedField] = useState<string | null>(null);
 
-      // Create new File with sanitized name
-      const sanitizedFile = new File([file], sanitized, {
-        type: file.type
-      });
-
-      formData.append('files', sanitizedFile);
-    });
-
-    upload(formData);
-  };
+  return (
+    <>
+      <FieldCards onFieldClick={setSelectedField} />
+      <Sheet
+        open={!!selectedField}
+        onOpenChange={() => setSelectedField(null)}
+        modal={false} // ← Allows interaction with background
+      >
+        <SheetContent
+          side="right"
+          className="pointer-events-auto" // Sheet is interactive
+          onInteractOutside={(e) => {
+            // Don't close when clicking field cards
+            e.preventDefault();
+          }}
+        >
+          <FieldValueList field={selectedField} />
+        </SheetContent>
+      </Sheet>
+      {/* No overlay, background remains interactive */}
+    </>
+  );
 }
 ```
 
-**Detection:** Upload fails with 400/500 "Failed to parse body as FormData" for files with Chinese/emoji names, but succeeds for ASCII-only filenames.
+**Detection:**
+- Side sheet overlay dims and blocks interaction with field cards
+- Clicking field card in background doesn't change selected field
+- Focus trapped in side sheet, can't tab to main content
 
-**Which phase:** Phase 1 (Upload UI) - add sanitization in dropzone handler before FormData creation.
+**Which phase:** Phase 2 (Frontend Side Sheet) - configure non-modal mode during Sheet implementation.
+
+**Project-specific note:** shadcn Sheet supports `modal={false}` prop. Use it for exploratory data UIs.
 
 **Sources:**
-- [GitHub vercel/next.js Issue #76893: Failed to parse body as FormData with non-ASCII filenames](https://github.com/vercel/next.js/issues/76893)
-- [GitHub vercel/next.js Issue #73220: Upload error with formData in App Router](https://github.com/vercel/next.js/issues/73220)
+- [Modal vs Drawer: When to use the right component](https://medium.com/@ninad.kotasthane/modal-vs-drawer-when-to-use-the-right-component-af0a76b952da)
+- [Modal and Non-Modal components in UI design](https://medium.com/design-bootcamp/ux-blueprint-09-modal-and-non-modal-components-in-ui-design-why-they-matter-75e6ffb62946)
+- [Exploring Drawer and Sheet Components in shadcn UI](https://medium.com/@enayetflweb/exploring-drawer-and-sheet-components-in-shadcn-ui-cf2332e91c40)
+
+---
+
+### Pitfall 6: Copy-to-Clipboard Fails Without User Interaction
+
+**What goes wrong:** Copy button in side sheet works in development (localhost) but fails in production with "NotAllowedError: Write permission denied" due to browser security policies.
+
+**Why it happens:** Clipboard API requires HTTPS and recent user interaction (transient activation). Copying values after async operation (fetch field values) loses user activation context.
+
+**Consequences:**
+- Copy button silently fails in production
+- No error shown to user (clipboard API throws in background)
+- Feature appears broken on mobile browsers (stricter clipboard policies)
+- Fallback to `document.execCommand` needed but not implemented
+
+**Prevention:**
+```typescript
+// ❌ WRONG: Async copy loses user activation
+async function copyFieldValue(value: string) {
+  // Simulate async operation (e.g., formatting value)
+  await new Promise(resolve => setTimeout(resolve, 100));
+
+  // User activation expired - clipboard write fails
+  await navigator.clipboard.writeText(value); // Throws NotAllowedError
+}
+
+// ✅ CORRECT: Synchronous copy with fallback
+function copyToClipboard(text: string): boolean {
+  try {
+    // Modern Clipboard API (requires HTTPS + user activation)
+    if (navigator.clipboard && window.isSecureContext) {
+      // Must be synchronous to preserve user activation
+      navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    // Fallback for older browsers or non-HTTPS
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    const success = document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    return success;
+  } catch (error) {
+    console.error('Copy failed:', error);
+    return false;
+  }
+}
+
+// Usage in component
+function CopyButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    const success = copyToClipboard(String(value)); // Convert to string first
+
+    if (success) {
+      setCopied(true);
+      toast.success('Copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    } else {
+      toast.error('Failed to copy');
+    }
+  }
+
+  return (
+    <Button onClick={handleCopy}>
+      {copied ? 'Copied!' : 'Copy'}
+    </Button>
+  );
+}
+```
+
+**Detection:**
+- Copy button works on localhost but fails on production HTTPS
+- Browser console shows "NotAllowedError" when clicking copy
+- Mobile Safari copy fails silently
+
+**Which phase:** Phase 2 (Frontend Side Sheet) - implement fallback pattern in CopyButton component.
+
+**Sources:**
+- [Clipboard API - Web APIs](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API)
+- [Unblocking clipboard access](https://web.dev/articles/async-clipboard)
+- [JavaScript Clipboard API with fallback](https://www.sitelint.com/blog/javascript-clipboard-api-with-fallback)
+
+---
+
+### Pitfall 7: Special Characters in Field Names Break JSONB Queries
+
+**What goes wrong:** Excel columns with special characters (spaces, dots, brackets) become JSONB keys. Queries using `data->'Column Name'` fail with syntax errors or return null unexpectedly.
+
+**Why it happens:** JSONB operators use PostgreSQL syntax where special characters need escaping. Field names like "A1", "Column.Name", or "Price ($)" break `->>` operator queries.
+
+**Consequences:**
+- Field stats query returns empty for fields with spaces in name
+- Frontend receives `null` stats for fields that exist in data
+- SQL injection risk if field names used in raw SQL without sanitization
+- A1 notation (Excel cell addresses) conflicts with reserved patterns
+
+**Prevention:**
+```typescript
+// ❌ WRONG: Using field names directly in JSONB query
+async getFieldStats(batchId: string, fieldName: string) {
+  // Breaks if fieldName is "Column Name" (space) or "A1" (reserved)
+  const result = await db.execute(sql`
+    SELECT COUNT(DISTINCT data->>${fieldName}) as count
+    FROM ingestion_rows
+    WHERE batch_id = ${batchId}
+  `);
+
+  return result.rows[0];
+}
+
+// ✅ CORRECT: Use parameterized queries with proper escaping
+async getFieldStats(batchId: string, fieldName: string) {
+  // sql template tag handles JSONB key escaping
+  const result = await db.execute(sql`
+    SELECT
+      COUNT(DISTINCT data->${sql.param(fieldName)}) as distinct_count,
+      COUNT(*) - COUNT(data->${sql.param(fieldName)}) as null_count
+    FROM ingestion_rows
+    WHERE batch_id = ${batchId}
+      AND data ? ${sql.param(fieldName)}
+  `);
+
+  return result.rows[0];
+}
+
+// Backend: Sanitize field names during Excel parsing
+function sanitizeFieldName(rawName: string): string {
+  // Remove special characters that break JSONB operators
+  return rawName
+    .trim()
+    .replace(/\s+/g, '_') // Spaces to underscores
+    .replace(/[.$\[\]]/g, '_') // Remove JSONB-breaking chars
+    .replace(/^(\d)/, '_$1') // Prefix if starts with number
+    .substring(0, 255); // PostgreSQL identifier limit
+}
+
+// Alternative: Store mapping of original → sanitized names
+interface ColumnMetadata {
+  originalName: string;
+  sanitizedName: string;
+  columnIndex: number;
+}
+```
+
+**Detection:**
+- Field stats return null for fields visible in JSONB data
+- SQL syntax errors in logs: `syntax error at or near "$"`
+- Fields with spaces/special chars missing from inventory
+
+**Which phase:** Phase 0 (Architecture Decision) - decide field name sanitization strategy before v2.3 implementation.
+
+**Project-specific note:** Existing `columnMetadata` JSONB in `ingestion_batches` table could store original→sanitized mapping.
+
+**Sources:**
+- [PostgreSQL JSONB key special characters](https://www.postgresql.org/docs/current/datatype-json.html)
+- [Excel Named Ranges: What characters are allowed](https://www.excelforum.com/excel-general/568288-named-ranges-what-characters-are-or-are-not-allowed-in-the-nam.html)
+- [Using A1 or R1C1 Reference Notation in Excel](https://trumpexcel.com/a1-r1c1-reference-notation-excel/)
 
 ---
 
@@ -423,390 +639,248 @@ function UploadForm() {
 
 These mistakes cause delays, bugs, or technical debt but are recoverable.
 
-### Pitfall 8: Pagination State in URL Params vs React Query
+### Pitfall 8: Search Input Lags on High-Cardinality Fields
 
-**What goes wrong:** Using URL search params (`?page=2`) for pagination conflicts with React Query's cache when navigating with browser back/forward. Cache shows wrong page or flashes old data.
+**What goes wrong:** Typing in search input in side sheet value list triggers re-filtering on every keystroke. With 10K values, UI freezes for 200-500ms per character.
 
-**Why it happens:** Two sources of truth: URL params and React Query cache. React Query doesn't automatically sync with URL changes, leading to desync.
+**Why it happens:** Frontend filters large array in memory on every onChange event without debouncing. React re-renders entire virtualized list for each keystroke.
 
 **Consequences:**
-- Back button shows wrong page of results
-- URL says page=2, table shows page=1 data
-- Confusing UX during navigation
-- Cache invalidation complexity increases
+- Search input feels sluggish (characters appear delayed)
+- UI freezes briefly on every keystroke
+- Poor UX on mobile devices (even worse performance)
+- Users think feature is broken
 
 **Prevention:**
 ```typescript
-// ❌ PATTERN 1: URL params only (loses cache on navigation)
-function BatchList() {
-  const searchParams = useSearchParams();
-  const page = Number(searchParams.get('page') ?? '1');
+// ❌ WRONG: Filter on every keystroke
+function ValueList({ values }: { values: string[] }) {
+  const [search, setSearch] = useState('');
 
-  // Every URL change refetches - no cache benefit
-  const { data } = useQuery({
-    queryKey: ['batches', page],
-    queryFn: () => fetchBatches({ page }),
-  });
+  // Filters 10K items on EVERY keystroke
+  const filtered = values.filter(v =>
+    v.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <>
+      <Input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)} // Instant re-filter
+      />
+      <ul>
+        {filtered.map(v => <li key={v}>{v}</li>)}
+      </ul>
+    </>
+  );
 }
 
-// ❌ PATTERN 2: React Query state only (not shareable/bookmarkable)
-function BatchList() {
-  const [page, setPage] = useState(1);
+// ✅ CORRECT: Debounce search, server-side filter for large lists
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
 
-  const { data } = useQuery({
-    queryKey: ['batches', page],
-    queryFn: () => fetchBatches({ page }),
-  });
-  // URL doesn't update - can't share link to specific page
-}
+function ValueList({ batchId, fieldName }: Props) {
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebouncedValue(searchInput, 300); // 300ms delay
 
-// ✅ CORRECT: Sync URL with React Query via queryKey
-function BatchList() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const page = Number(searchParams.get('page') ?? '1');
-
-  const { data } = useQuery({
-    queryKey: ['batches', { page }], // URL state in queryKey
-    queryFn: () => fetchBatches({ page }),
-    placeholderData: keepPreviousData, // Show old data while loading new page
-  });
-
-  function goToPage(newPage: number) {
-    const params = new URLSearchParams(searchParams);
-    params.set('page', String(newPage));
-    router.push(`?${params.toString()}`);
-    // React Query automatically refetches due to queryKey change
-  }
-
-  return <Pagination page={page} onPageChange={goToPage} />;
-}
-```
-
-**Detection:** Browser back button shows wrong page. URL and displayed data don't match. Hard refresh required to fix state.
-
-**Which phase:** Phase 2 (Batch Data Table) - implement during pagination component creation.
-
-**Sources:**
-- [Next.js Learn: Adding Search and Pagination](https://nextjs.org/learn/dashboard-app/adding-search-and-pagination)
-- [Medium: Mastering State in Next.js App Router with URL Query Parameters](https://medium.com/@roman_j/mastering-state-in-next-js-app-router-with-url-query-parameters-a-practical-guide-03939921d09c)
-- [LogRocket: Why URL state matters - useSearchParams guide](https://blog.logrocket.com/url-state-usesearchparams/)
-
----
-
-### Pitfall 9: keepPreviousData Replaced by placeholderData in v5
-
-**What goes wrong:** Using `keepPreviousData: true` in React Query v5 causes TypeScript errors or runtime failures because the option was removed in the v5 migration.
-
-**Why it happens:** React Query v5 changed the API. `keepPreviousData` is now a function passed to `placeholderData`, not a boolean flag.
-
-**Consequences:**
-- TypeScript compilation errors
-- Pagination shows loading spinner instead of previous data
-- Flash of empty state between pages
-- Poor UX during page transitions
-
-**Prevention:**
-```typescript
-import { keepPreviousData } from '@tanstack/react-query';
-
-// ❌ WRONG: v4 syntax doesn't work in v5
-const { data } = useQuery({
-  queryKey: ['batches', page],
-  queryFn: () => fetchBatches(page),
-  keepPreviousData: true, // ← TypeScript error in v5
-});
-
-// ✅ CORRECT: v5 syntax with placeholderData
-const { data } = useQuery({
-  queryKey: ['batches', page],
-  queryFn: () => fetchBatches(page),
-  placeholderData: keepPreviousData, // ← Import function, use as value
-});
-```
-
-**Detection:** TypeScript error "Property 'keepPreviousData' does not exist". Pagination shows loading state instead of previous page data.
-
-**Which phase:** Phase 2 (Batch Data Table) - use correct v5 syntax from the start.
-
-**Sources:**
-- [TanStack Query: Paginated Queries Guide](https://tanstack.com/query/latest/docs/framework/react/guides/paginated-queries)
-- [GitHub TanStack/query Discussion #6460: keepPreviousData deprecated - what now?](https://github.com/TanStack/query/discussions/6460)
-- [TanStack Query: Migrating to v5](https://tanstack.com/query/latest/docs/framework/react/guides/migrating-to-v5)
-
----
-
-### Pitfall 10: Zod File Validation MIME Type Errors Hidden
-
-**What goes wrong:** Using Zod v4's `.mime()` method to validate file types works (rejects invalid files), but the custom error message doesn't appear in react-hook-form's field errors.
-
-**Why it happens:** Known issue in Zod v4 where `.mime()` error messages don't surface properly when integrated with react-hook-form's zodResolver.
-
-**Consequences:**
-- File type validation works (wrong types rejected)
-- But user sees generic "Invalid input" instead of "Only PNG and JPEG allowed"
-- Confusing UX - user doesn't know WHY file was rejected
-- Extra debugging needed
-
-**Prevention:**
-```typescript
-import { z } from 'zod';
-
-// ❌ PARTIALLY WORKING: Validates but error message missing
-const schema = z.object({
-  files: z
-    .array(z.instanceof(File))
-    .refine((files) => files.length > 0, 'At least one file required')
-    .refine(
-      (files) => files.every(f => f.size <= 5_000_000),
-      { message: 'File too large (max 5MB)' } // ← Works
-    )
-    .refine(
-      (files) => files.every(f => f.type.match(/image\/(png|jpeg)/)),
-      { message: 'Only PNG and JPEG allowed' } // ← ALSO WORKS (custom refine)
-    ),
-});
-
-// ❌ DOESN'T SHOW MESSAGE: Zod v4 .mime() issue
-const schema = z.object({
-  files: z
-    .array(z.instanceof(File))
-    .refine((files) => files.length > 0, 'At least one file required')
-    .refine(
-      (files) => files.every(f => f.size <= 5_000_000),
-      { message: 'File too large (max 5MB)' } // ← Works
-    ),
-  // Using .mime() directly on File instance doesn't integrate well
-});
-
-// ✅ RECOMMENDED: Use custom refine() with type.match()
-const uploadSchema = z.object({
-  files: z
-    .array(z.instanceof(File))
-    .min(1, 'At least one file required')
-    .refine(
-      (files) => files.every(file => file.size <= 5_000_000),
-      { message: 'Each file must be under 5MB' }
-    )
-    .refine(
-      (files) => files.every(file =>
-        file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-        file.type === 'application/vnd.ms-excel'
-      ),
-      { message: 'Only Excel files (.xlsx, .xls) are allowed' }
-    ),
-  mode: z.enum(['list_mode', 'profile_mode']),
-});
-```
-
-**Detection:** File validation works but error message is generic. Console shows Zod validation passed, but field error message is wrong.
-
-**Which phase:** Phase 1 (Upload UI) - use `.refine()` with custom logic instead of `.mime()`.
-
-**Sources:**
-- [GitHub colinhacks/zod Issue #4686: Zod v4 .mime() error message not displaying with react-hook-form](https://github.com/colinhacks/zod/issues/4686)
-- [Medium: React Hook Form with Zod: Complete Guide for 2026](https://dev.to/marufrahmanlive/react-hook-form-with-zod-complete-guide-for-2026-1em1)
-- [Medium: Adding File Upload using React-Hook-Form and Zod](https://medium.com/@christianovik009/adding-file-upload-using-react-hook-form-and-zod-using-nextks-f6def5d6881f)
-
----
-
-### Pitfall 11: Large Table Re-renders on Every Pagination Click
-
-**What goes wrong:** Clicking to the next page causes the entire table component to re-render unnecessarily, creating a flash of loading state even though previous data could be shown.
-
-**Why it happens:** Without `placeholderData: keepPreviousData`, React Query returns `undefined` while fetching the new page, causing table to show empty/loading state.
-
-**Consequences:**
-- Jarring UX - table flashes empty between pages
-- Scroll position may reset
-- Feels slower than it is
-- Users think data is loading from scratch
-
-**Prevention:**
-```typescript
-import { keepPreviousData } from '@tanstack/react-query';
-
-// ❌ WRONG: No placeholder data - flashes empty
-function BatchDataTable({ batchId, page }: Props) {
+  // Server-side filtering with debounced search
   const { data, isLoading } = useQuery({
-    queryKey: ['batches', batchId, 'rows', { page }],
-    queryFn: () => fetchRows(batchId, page),
-  });
-
-  if (isLoading) return <Spinner />; // Shows on EVERY page change
-
-  return <Table data={data.items} />;
-}
-
-// ✅ CORRECT: Keep previous data while loading next page
-function BatchDataTable({ batchId, page }: Props) {
-  const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
-    queryKey: ['batches', batchId, 'rows', { page }],
-    queryFn: () => fetchRows(batchId, page),
-    placeholderData: keepPreviousData, // ← Shows previous page while loading
+    queryKey: ['batches', batchId, 'fields', fieldName, 'values', { search: debouncedSearch }],
+    queryFn: () => fetchFieldValues(batchId, fieldName, { search: debouncedSearch, limit: 100 })
   });
 
   return (
     <>
-      {isFetching && <LoadingIndicator />} {/* Subtle indicator */}
-      <Table
-        data={data?.items ?? []}
-        opacity={isPlaceholderData ? 0.5 : 1} // Dim during load
+      <Input
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)} // Fast input
+        placeholder="Search values..."
       />
+      {isLoading ? (
+        <Skeleton count={5} />
+      ) : (
+        <VirtualizedList values={data?.values ?? []} />
+      )}
     </>
   );
 }
 ```
 
-**Detection:** Table shows loading spinner on every page change instead of keeping previous data visible.
+**Detection:**
+- Typing in search input shows visible lag
+- React DevTools Profiler shows 200+ ms render time per keystroke
+- CPU usage spikes when typing in search
 
-**Which phase:** Phase 2 (Batch Data Table) - add during initial pagination implementation.
+**Which phase:** Phase 2 (Frontend Side Sheet) - implement debouncing from start, upgrade to server-side filter if needed.
 
 **Sources:**
-- [TanStack Query: Paginated Queries Guide](https://tanstack.com/query/latest/docs/framework/react/guides/paginated-queries)
-- [TkDodo's Blog: Placeholder and Initial Data in React Query](https://tkdodo.eu/blog/placeholder-and-initial-data-in-react-query)
+- [React select is slow when you have more than 1000 items](https://github.com/JedWatson/react-select/issues/3128)
+- [Optimize react-select to smoothly render 10k+ data](https://www.botsplash.com/post/optimize-your-react-select-component-to-smoothly-render-10k-data)
 
 ---
 
-### Pitfall 12: shadcn/ui Table vs DataTable Confusion
+### Pitfall 9: Card Grid Re-renders on Every Field Click
 
-**What goes wrong:** Using shadcn/ui's basic `<Table>` component for complex data when `<DataTable>` pattern is needed. Results in manual pagination logic, no sorting, no filtering.
+**What goes wrong:** Clicking a field card to open side sheet causes entire card grid to re-render, creating visible flicker and poor UX.
 
-**Why it happens:** shadcn/ui provides both a basic Table (HTML semantic wrapper) and a DataTable pattern (TanStack Table integration). Developers pick the wrong one.
+**Why it happens:** Selected field state in parent component triggers re-render of all child FieldCard components without memoization.
 
 **Consequences:**
-- Manual pagination implementation required
-- No built-in sorting/filtering
-- Poor accessibility for complex data
-- Reinventing features TanStack Table provides
+- Visible flicker when clicking field cards
+- Scroll position may jump
+- Feels sluggish with 50+ field cards
+- Selected card highlight flashes
 
 **Prevention:**
 ```typescript
-// ❌ WRONG: Using basic Table for complex data
-import { Table, TableHeader, TableBody, TableRow, TableCell } from '@/components/ui/table';
-
-function BatchDataTable({ data }: { data: BatchRow[] }) {
-  // Manual pagination logic
-  const [page, setPage] = useState(1);
-  const paginatedData = data.slice((page - 1) * 10, page * 10);
+// ❌ WRONG: No memoization, all cards re-render
+function FieldInventory({ stats }: { stats: FieldStats[] }) {
+  const [selectedField, setSelectedField] = useState<string | null>(null);
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>ID</TableHead>
-          <TableHead>Data</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {paginatedData.map(row => (
-          <TableRow key={row.id}>
-            <TableCell>{row.id}</TableCell>
-            <TableCell>{JSON.stringify(row.data)}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div className="grid grid-cols-3 gap-4">
+      {stats.map(field => (
+        <FieldCard
+          key={field.name}
+          field={field}
+          isSelected={selectedField === field.name}
+          onClick={() => setSelectedField(field.name)}
+        />
+      ))}
+    </div>
   );
 }
 
-// ✅ CORRECT: Use DataTable pattern with TanStack Table
-import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
-import { Table } from '@/components/ui/table';
-
-function BatchDataTable({ data }: { data: BatchRow[] }) {
-  const columns = useMemo(() => [
-    { accessorKey: 'id', header: 'ID' },
-    { accessorKey: 'data', header: 'Data' },
-  ], []);
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    // TanStack Table handles pagination, sorting, filtering
-  });
-
-  // Use shadcn Table components for rendering
-  return <DataTableImplementation table={table} />;
+function FieldCard({ field, isSelected, onClick }: Props) {
+  // Re-renders on EVERY click (any field clicked)
+  return (
+    <Card onClick={onClick} className={isSelected ? 'border-blue-500' : ''}>
+      <CardHeader>{field.name}</CardHeader>
+      <CardContent>{field.distinctCount} unique values</CardContent>
+    </Card>
+  );
 }
+
+// ✅ CORRECT: Memoize cards, prevent unnecessary re-renders
+import { memo } from 'react';
+
+function FieldInventory({ stats }: { stats: FieldStats[] }) {
+  const [selectedField, setSelectedField] = useState<string | null>(null);
+
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      {stats.map(field => (
+        <MemoizedFieldCard
+          key={field.name}
+          field={field}
+          isSelected={selectedField === field.name}
+          onSelect={setSelectedField}
+        />
+      ))}
+    </div>
+  );
+}
+
+const MemoizedFieldCard = memo(function FieldCard({
+  field,
+  isSelected,
+  onSelect
+}: Props) {
+  // Only re-renders when field or isSelected changes
+  return (
+    <Card
+      onClick={() => onSelect(field.name)}
+      className={isSelected ? 'border-blue-500' : ''}
+    >
+      <CardHeader>{field.name}</CardHeader>
+      <CardContent>{field.distinctCount} unique values</CardContent>
+    </Card>
+  );
+}, (prev, next) => {
+  // Custom comparison: only re-render if selection state changes
+  return prev.isSelected === next.isSelected && prev.field.name === next.field.name;
+});
 ```
 
-**Detection:** Implementing manual pagination, sorting, filtering when it should be built-in. Lots of useState for table features.
+**Detection:**
+- React DevTools Profiler shows all FieldCard components re-rendering on click
+- Visible flicker when clicking cards
+- Slower performance with 50+ fields
 
-**Which phase:** Phase 2 (Batch Data Table) - use correct pattern from architecture planning.
-
-**Sources:**
-- [shadcn/ui: Data Table Component](https://ui.shadcn.com/docs/components/data-table)
-- [Shadcraft Blog: Building production ready data tables with shadcn/ui](https://shadcraft.com/blog/building-production-ready-data-tables-with-shadcn-ui)
+**Which phase:** Phase 2 (Frontend Card Grid) - add memoization during FieldCard component creation.
 
 ---
 
-### Pitfall 13: Dynamic Route Params Not Validated
+### Pitfall 10: Drizzle ORM Lacks Native JSONB Query Helpers
 
-**What goes wrong:** Using route params like `[projectId]` and `[batchId]` directly without validation. Malicious or malformed IDs cause database errors or expose security issues.
+**What goes wrong:** Drizzle ORM doesn't have type-safe helpers for JSONB queries (`->`, `->>`, `?` operators). Developers resort to raw SQL strings, losing type safety and increasing SQL injection risk.
 
-**Why it happens:** Next.js types params as `string | string[] | undefined`, but developers assume they're always valid UUIDs. No runtime validation at component boundary.
+**Why it happens:** Drizzle ORM's JSONB support is limited compared to ORMs like Prisma. Complex JSONB operations require `sql` template literals.
 
 **Consequences:**
-- SQL injection risk if IDs used in raw queries
-- Crashes with "invalid UUID format" from database
-- Poor error messages for users
-- Security logging doesn't catch attempted exploits
+- No autocomplete for JSONB field names
+- Type safety lost for field stats queries
+- Harder to maintain (raw SQL scattered in codebase)
+- Potential SQL injection if not using `sql.param()`
 
 **Prevention:**
 ```typescript
-import { z } from 'zod';
-
-// ❌ WRONG: Using params directly without validation
-export default function BatchPage({
-  params
-}: {
-  params: { projectId: string; batchId: string }
-}) {
-  // params.projectId could be malicious input
-  const { data } = useBatch(params.projectId, params.batchId);
-
-  return <BatchDataTable batchId={params.batchId} />;
+// ❌ WRONG: String interpolation (SQL injection risk)
+async getFieldStats(batchId: string, fieldName: string) {
+  // DANGEROUS: fieldName not escaped
+  const result = await db.execute(
+    `SELECT COUNT(DISTINCT data->>'${fieldName}') FROM ingestion_rows WHERE batch_id = '${batchId}'`
+  );
 }
 
-// ✅ CORRECT: Validate params at component boundary
-const routeParamsSchema = z.object({
-  projectId: z.string().uuid('Invalid project ID'),
-  batchId: z.string().uuid('Invalid batch ID'),
+// ❌ PARTIALLY WRONG: sql template but no type safety
+async getFieldStats(batchId: string, fieldName: string) {
+  const result = await db.execute(sql`
+    SELECT COUNT(DISTINCT data->>${fieldName}) as count
+    FROM ingestion_rows
+    WHERE batch_id = ${batchId}
+  `);
+
+  return result.rows[0].count; // Type is 'any', no type safety
+}
+
+// ✅ CORRECT: sql template with manual typing
+import { z } from 'zod';
+
+const fieldStatsSchema = z.object({
+  distinct_count: z.number(),
+  null_count: z.number(),
+  total_rows: z.number(),
 });
 
-export default function BatchPage({
-  params
-}: {
-  params: Promise<{ projectId: string; batchId: string }> // Next.js 15+ async params
-}) {
-  const resolvedParams = use(params);
+async getFieldStats(batchId: string, fieldName: string): Promise<FieldStats> {
+  const result = await db.execute(sql`
+    SELECT
+      COUNT(DISTINCT data->${sql.param(fieldName)}) as distinct_count,
+      COUNT(*) - COUNT(data->${sql.param(fieldName)}) as null_count,
+      COUNT(*) as total_rows
+    FROM ingestion_rows
+    WHERE batch_id = ${batchId}
+  `);
 
-  // Validate at boundary
-  const validationResult = routeParamsSchema.safeParse(resolvedParams);
-
-  if (!validationResult.success) {
-    notFound(); // Next.js 404 page
-  }
-
-  const { projectId, batchId } = validationResult.data;
-
-  // Now safe to use
-  const { data } = useBatch(projectId, batchId);
-
-  return <BatchDataTable batchId={batchId} />;
+  // Runtime validation with Zod
+  const parsed = fieldStatsSchema.parse(result.rows[0]);
+  return parsed;
 }
 ```
 
-**Detection:** Database errors like "invalid input syntax for type uuid" in logs. No validation errors in user-facing UI.
+**Detection:**
+- Type errors in IDE when accessing query results
+- No autocomplete for field names in JSONB queries
+- Runtime errors due to unexpected null values
 
-**Which phase:** Phase 2 (Batch Data Table) - add validation wrapper during page component creation.
+**Which phase:** Phase 1 (Backend Field Stats) - establish pattern of `sql` + Zod validation for all JSONB queries.
+
+**Project-specific note:** Existing Populatte codebase already uses Zod extensively. Apply same pattern to JSONB queries.
 
 **Sources:**
-- [Next.js: Dynamic Routes](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
-- [Vercel Blog: Common mistakes with Next.js App Router](https://vercel.com/blog/common-mistakes-with-the-next-js-app-router-and-how-to-fix-them)
-- [TheLinuxCode: Next.js Dynamic Route Segments 2026 Guide](https://thelinuxcode.com/nextjs-dynamic-route-segments-in-the-app-router-2026-guide/)
+- [Drizzle ORM: Custom types](https://orm.drizzle.team/docs/custom-types)
+- [Best way to query jsonb field - Drizzle Team](https://www.answeroverflow.com/m/1188144616541802506)
+- [GitHub Drizzle: Native JSONB query support](https://github.com/drizzle-team/drizzle-orm/issues/1690)
 
 ---
 
@@ -814,192 +888,102 @@ export default function BatchPage({
 
 These mistakes cause annoyance or minor UX issues but are easily fixable.
 
-### Pitfall 14: Upload Button Enabled During Upload
+### Pitfall 11: Field Cards Show Raw JSON for Null Values
 
-**What goes wrong:** User clicks "Upload" and can immediately click it again before the first upload completes, triggering duplicate uploads.
+**What goes wrong:** Fields with null values display "null" (string) or blank space instead of user-friendly "(empty)" text.
 
-**Why it happens:** Forgot to disable button during mutation's `isPending` state.
-
-**Consequences:**
-- Duplicate batch creation
-- Wasted API calls
-- User confusion (why two batches?)
-- Easy to fix but embarrassing
+**Why it happens:** Rendering `null` directly in JSX converts to empty string, or `JSON.stringify(null)` returns `"null"`.
 
 **Prevention:**
 ```typescript
-// ❌ WRONG: No disabled state
-function UploadForm() {
-  const { mutate } = useUploadBatch();
-
+// ❌ WRONG: Null renders as blank
+function FieldCard({ field }: { field: FieldStats }) {
   return (
-    <Button onClick={() => mutate(formData)}>
-      Upload
-    </Button>
+    <Card>
+      <CardHeader>{field.name}</CardHeader>
+      <CardContent>
+        <p>{field.sampleValue}</p> {/* null → blank space */}
+      </CardContent>
+    </Card>
   );
 }
 
-// ✅ CORRECT: Disable during upload
-function UploadForm() {
-  const { mutate, isPending } = useUploadBatch();
+// ✅ CORRECT: Explicit null handling
+function FieldCard({ field }: { field: FieldStats }) {
+  const displayValue = field.sampleValue === null
+    ? '(empty)'
+    : String(field.sampleValue);
 
   return (
-    <Button
-      onClick={() => mutate(formData)}
-      disabled={isPending}
-    >
-      {isPending ? 'Uploading...' : 'Upload'}
-    </Button>
+    <Card>
+      <CardHeader>{field.name}</CardHeader>
+      <CardContent>
+        <p className={field.sampleValue === null ? 'text-muted-foreground' : ''}>
+          {displayValue}
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 ```
 
-**Detection:** Clicking upload button multiple times creates duplicate batches.
-
-**Which phase:** Phase 1 (Upload UI) - add during button implementation.
+**Which phase:** Phase 2 (Frontend Card Grid) - add during FieldCard rendering.
 
 ---
 
-### Pitfall 15: Empty State Not Handled in Table
+### Pitfall 12: Side Sheet Doesn't Close on Escape Key
 
-**What goes wrong:** When no batches exist for a project, table shows nothing or broken layout instead of helpful empty state.
+**What goes wrong:** Users expect Escape key to close side sheet but it doesn't work because Sheet component not configured for keyboard events.
 
-**Why it happens:** Only implemented the "data exists" path, forgot edge case.
-
-**Consequences:**
-- Confusing UX for new users
-- Looks broken instead of intentional
-- No call-to-action to upload first batch
+**Why it happens:** Forgot to enable keyboard event handling or prevent default Escape behavior.
 
 **Prevention:**
 ```typescript
-// ❌ WRONG: No empty state
-function BatchList({ projectId }: Props) {
-  const { data } = useBatches(projectId);
+// ❌ WRONG: No keyboard handling
+<Sheet open={!!selectedField} onOpenChange={() => setSelectedField(null)}>
+  <SheetContent>
+    <FieldValueList field={selectedField} />
+  </SheetContent>
+</Sheet>
 
-  return <DataTable data={data?.items ?? []} />;
-  // Shows empty table headers with no explanation
-}
+// ✅ CORRECT: Handle Escape key
+<Sheet
+  open={!!selectedField}
+  onOpenChange={(open) => {
+    if (!open) setSelectedField(null);
+  }}
+>
+  <SheetContent onEscapeKeyDown={() => setSelectedField(null)}>
+    <FieldValueList field={selectedField} />
+  </SheetContent>
+</Sheet>
+```
 
-// ✅ CORRECT: Explicit empty state
-function BatchList({ projectId }: Props) {
-  const { data, isLoading } = useBatches(projectId);
+**Which phase:** Phase 2 (Frontend Side Sheet) - configure during Sheet setup.
 
-  if (isLoading) return <Spinner />;
+---
 
-  if (!data?.items.length) {
+### Pitfall 13: No Empty State for Fields with Zero Values
+
+**What goes wrong:** Field with all null values shows empty side sheet with no explanation when clicked.
+
+**Prevention:**
+```typescript
+function FieldValueList({ values }: { values: unknown[] }) {
+  if (values.length === 0) {
     return (
-      <EmptyState
-        icon={<UploadIcon />}
-        title="No batches yet"
-        description="Upload your first Excel file to get started"
-        action={<UploadButton />}
-      />
+      <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+        <p>No values found</p>
+        <p className="text-sm">All rows have empty values for this field</p>
+      </div>
     );
   }
 
-  return <DataTable data={data.items} />;
+  return <VirtualizedList values={values} />;
 }
 ```
 
-**Detection:** New project shows empty table with headers but no rows, no explanation.
-
-**Which phase:** Phase 1 (Upload UI) and Phase 2 (Batch Data Table) - add empty states to both views.
-
----
-
-### Pitfall 16: Missing Loading States for Slow Networks
-
-**What goes wrong:** On slow networks, table/list appears empty for several seconds with no loading indicator, then suddenly populates.
-
-**Why it happens:** Not checking `isLoading` or `isFetching` states from React Query.
-
-**Consequences:**
-- Users think page is broken
-- Multiple refreshes attempting to fix "broken" page
-- Poor mobile UX
-
-**Prevention:**
-```typescript
-// ❌ WRONG: No loading state
-function BatchList({ projectId }: Props) {
-  const { data } = useBatches(projectId);
-
-  return <DataTable data={data?.items ?? []} />;
-}
-
-// ✅ CORRECT: Show skeleton during load
-function BatchList({ projectId }: Props) {
-  const { data, isLoading } = useBatches(projectId);
-
-  if (isLoading) {
-    return <TableSkeleton rows={5} />;
-  }
-
-  return <DataTable data={data?.items ?? []} />;
-}
-```
-
-**Detection:** Throttle network in DevTools - page shows blank for 3+ seconds before content appears.
-
-**Which phase:** Phase 2 (Batch Data Table) - add during initial query implementation.
-
----
-
-### Pitfall 17: Success Toast Not Shown After Upload
-
-**What goes wrong:** File upload succeeds (201 response) but user gets no confirmation. They don't know if upload worked.
-
-**Why it happens:** Forgot to trigger toast notification in mutation's `onSuccess`.
-
-**Consequences:**
-- User re-uploads same file thinking first failed
-- No feedback loop = poor UX
-- Undermines trust in application
-
-**Prevention:**
-```typescript
-import { toast } from 'sonner';
-
-// ❌ WRONG: No user feedback
-export function useUploadBatch(projectId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data) => uploadBatch(projectId, data),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: ['projects', projectId, 'batches']
-      });
-      // No toast - user doesn't know upload succeeded
-    },
-  });
-}
-
-// ✅ CORRECT: Toast confirmation
-export function useUploadBatch(projectId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data) => uploadBatch(projectId, data),
-    onSuccess: (response) => {
-      toast.success(`Batch uploaded successfully (${response.totalRows} rows)`);
-      void queryClient.invalidateQueries({
-        queryKey: ['projects', projectId, 'batches']
-      });
-    },
-    onError: (error) => {
-      toast.error(`Upload failed: ${error.message}`);
-    },
-  });
-}
-```
-
-**Detection:** Upload succeeds but user sees no confirmation message.
-
-**Which phase:** Phase 1 (Upload UI) - add during mutation implementation.
-
-**Project-specific note:** Populatte already uses `sonner` for toasts (in package.json), use it consistently.
+**Which phase:** Phase 2 (Frontend Side Sheet) - add during ValueList component creation.
 
 ---
 
@@ -1007,47 +991,92 @@ export function useUploadBatch(projectId: string) {
 
 | Phase | Likely Pitfall | Mitigation |
 |-------|---------------|------------|
-| Phase 1: Upload Modal | useApiClient breaks multipart uploads | Create separate upload client OR skip Content-Type header for FormData |
-| Phase 1: Upload Modal | File lost on re-render in react-hook-form | Use Controller + explicit setValue in dropzone onDrop |
-| Phase 1: Upload Modal | Non-ASCII filenames break upload | Sanitize filenames before FormData creation |
-| Phase 1: Upload Modal | No progress indicator for upload | Use indeterminate spinner (recommended for 5MB limit) |
-| Phase 1: Upload Modal | Cache not invalidated after upload | invalidateQueries in onSuccess with correct queryKey |
-| Phase 2: Batch Data Table | Dynamic columns cause re-renders | useMemo columns with stable dependency (JSON.stringify keys) |
-| Phase 2: Batch Data Table | Pagination flashes empty between pages | placeholderData: keepPreviousData |
-| Phase 2: Batch Data Table | URL params and React Query desync | Use searchParams in queryKey, update URL on page change |
-| Phase 2: Batch Data Table | Route params not validated | Zod validation at page component boundary, notFound() on invalid |
-| Phase 2: Batch Data Table | Used basic Table instead of DataTable | Use TanStack Table with shadcn DataTable pattern |
+| Phase 0: Architecture | Field name encoding strategy undefined | Decide: sanitize during Excel parsing OR store original→sanitized mapping in columnMetadata |
+| Phase 1: Backend Field Stats | No GIN index on JSONB data column | Add GIN index in migration before implementing stats endpoint |
+| Phase 1: Backend Field Stats | N+1 query pattern (stats per field) | Aggregate all fields in single CTE query |
+| Phase 1: Backend Field Stats | Type inference returns single type | Implement type distribution (string: 90%, number: 10%) not single inferred type |
+| Phase 1: Backend Field Values | Fetch all distinct values without limit | Paginate backend: limit=100, offset, search parameter |
+| Phase 2: Frontend View Toggle | Different query keys per view | Use shared queryKey, toggle view via URL param |
+| Phase 2: Frontend Card Grid | All cards re-render on selection | Memo FieldCard with custom comparison function |
+| Phase 2: Frontend Side Sheet | Modal Sheet blocks interaction | Set `modal={false}` on Sheet component |
+| Phase 2: Frontend Side Sheet | Copy fails without fallback | Implement textarea fallback for clipboard API |
+| Phase 2: Frontend Side Sheet | Search lags on large lists | Debounce search input (300ms), server-side filter if >1000 values |
+| Phase 2: Frontend Side Sheet | Large value list overwhelms DOM | Use react-window FixedSizeList for virtualization |
 
 ---
 
 ## Integration Warnings with Existing System
 
-### Existing Pattern: Factory Functions for Endpoints
+### Existing Pattern: JSONB data Column Without Indexes
 
-**Current pattern:** Endpoints use factory functions (`createProjectEndpoints(fetchFn)`) that compose with any fetch implementation.
+**Current state:** `ingestion_rows.data` is JSONB but has no GIN index (verified in schema).
 
-**Upload integration challenge:** File upload requires different Content-Type handling than JSON endpoints.
+**Field Inventory challenge:** Aggregating field stats will trigger table scans.
 
 **Recommendation:**
-- **Option 1:** Add `skipContentType` flag to ApiRequestOptions, modify client.ts to skip JSON header when flag set
-- **Option 2:** Create separate `createBatchEndpoints` that doesn't set Content-Type (cleaner separation)
-- **Option 3:** Create dedicated `useUploadClient` hook without Content-Type (RECOMMENDED - keeps JSON/upload concerns separated)
+```sql
+-- Migration: Add GIN index before v2.3
+CREATE INDEX idx_ingestion_rows_data_gin
+ON ingestion_rows USING GIN (data jsonb_path_ops);
 
-### Existing Pattern: Zod Validation on Response
+-- Optional: Expression index for frequent field access
+CREATE INDEX idx_ingestion_rows_batch_data
+ON ingestion_rows (batch_id) INCLUDE (data);
+```
 
-**Current pattern:** All endpoint responses validated with `.safeParse()` and detailed error logging.
+### Existing Pattern: columnMetadata JSONB in ingestion_batches
 
-**Upload integration challenge:** Upload response is still JSON (batch metadata), but request is multipart.
+**Current state:** `ingestion_batches.columnMetadata` stores array of column info (type unknown, not verified).
 
-**Recommendation:** Follow existing pattern - validate response with `batchResponseSchema.safeParse()` same as projects.
+**Field Inventory opportunity:** Could store field name sanitization mapping here.
 
-### Existing Pattern: invalidateQueries with void Prefix
+**Recommendation:**
+```typescript
+interface ColumnMetadata {
+  columnIndex: number;
+  originalName: string; // "Column Name" (spaces, special chars)
+  sanitizedName: string; // "column_name" (safe for JSONB queries)
+  excelColumn: string; // "A", "B", "C" (original Excel letter)
+}
 
-**Current pattern:** `void queryClient.invalidateQueries(...)` used in project mutations.
+// Store in batch creation, use in field stats queries
+const columnMetadata: ColumnMetadata[] = [
+  { columnIndex: 0, originalName: "Client Name", sanitizedName: "client_name", excelColumn: "A" },
+  { columnIndex: 1, originalName: "Price ($)", sanitizedName: "price", excelColumn: "B" }
+];
+```
 
-**Upload integration challenge:** Same pattern applies.
+### Existing Pattern: N+1 Query in ListBatchesUseCase
 
-**Recommendation:** Follow existing convention - `void queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'batches'] })`.
+**Current state:** Known N+1 pattern in batch listing (accepted technical debt at limit=100).
+
+**Field Inventory challenge:** Field stats adds another N+1 risk (stats per field).
+
+**Recommendation:** Don't repeat the pattern. Use CTE aggregation for all fields in one query.
+
+### Existing Pattern: Drizzle ORM with sql Template Literals
+
+**Current state:** Codebase uses Drizzle but raw SQL for complex queries (verified in existing migrations).
+
+**Field Inventory integration:** JSONB queries will need `sql` template + Zod validation.
+
+**Recommendation:** Establish reusable helper:
+```typescript
+// packages/commons/src/utils/jsonb.utils.ts
+export class JsonbQueryUtils {
+  static fieldStats(batchId: string, fieldName: string) {
+    return sql`
+      SELECT
+        COUNT(DISTINCT data->${sql.param(fieldName)}) as distinct_count,
+        COUNT(*) - COUNT(data->${sql.param(fieldName)}) as null_count,
+        jsonb_typeof(data->${sql.param(fieldName)}) as inferred_type
+      FROM ingestion_rows
+      WHERE batch_id = ${batchId}
+        AND data ? ${sql.param(fieldName)}
+    `;
+  }
+}
+```
 
 ---
 
@@ -1055,65 +1084,69 @@ export function useUploadBatch(projectId: string) {
 
 | Pitfall Category | Confidence | Notes |
 |------------------|-----------|-------|
-| File upload with FormData | HIGH | Well-documented Next.js/fetch issues, official sources |
-| React Query v5 cache invalidation | HIGH | Official TanStack docs + authoritative blog posts |
-| react-hook-form + dropzone | MEDIUM | Community patterns verified across multiple sources |
-| TanStack Table dynamic columns | MEDIUM | GitHub issues confirm pattern, but JSONB-specific not documented |
-| Fetch upload progress | HIGH | Recent authoritative source (JakeArchibald.com Jan 2025) |
-| Pagination with URL params | HIGH | Official Next.js docs + multiple community guides |
-| Zod file validation | MEDIUM | GitHub issue confirms .mime() problem, workaround verified |
-| shadcn/ui Table patterns | HIGH | Official shadcn docs + production guides |
-| Next.js dynamic routes | HIGH | Official Vercel sources + security best practices |
-| Integration with Populatte | HIGH | Direct codebase analysis (client.ts, endpoints patterns) |
+| JSONB aggregation performance | HIGH | Official PostgreSQL docs + multiple authoritative sources on GIN indexes |
+| Type inference on mixed types | HIGH | PostgreSQL jsonb_typeof() documented, null handling verified |
+| Large value list rendering | HIGH | React virtualization well-documented, react-window established pattern |
+| View toggle state management | MEDIUM | React Query caching patterns verified, but view-specific less documented |
+| Side sheet modal behavior | MEDIUM | shadcn Sheet docs confirm modal prop, UX sources on non-modal patterns |
+| Clipboard API browser security | HIGH | MDN documentation + recent 2026 articles on permissions |
+| Field name special characters | MEDIUM | PostgreSQL JSONB docs clear, Excel A1 notation documented, but integration scenarios less common |
+| Search input debouncing | HIGH | Standard React performance pattern, well-documented |
+| Drizzle JSONB limitations | MEDIUM | GitHub issues confirm lack of native helpers, sql template workaround verified |
+| Integration with Populatte | HIGH | Direct codebase analysis (schema files, existing patterns) |
 
 ---
 
 ## Sources
 
-### File Upload & FormData
-- [GitHub vercel/next.js Issue #76893: Failed to parse body as FormData with non-ASCII filenames](https://github.com/vercel/next.js/issues/76893)
-- [GitHub vercel/next.js Issue #73220: Upload error with formData in App Router](https://github.com/vercel/next.js/issues/73220)
-- [GitHub vercel/next.js Discussion #39957: File upload from Next.js API route using multipart form](https://github.com/vercel/next.js/discussions/39957)
-- [DEV Community: Handling multipart/form-data in Next.js](https://dev.to/mazinashfaq/handling-multipartform-data-in-nextjs-26ea)
+### PostgreSQL JSONB Performance
+- [PostgreSQL JSONB and Statistics](https://blog.anayrat.info/en/2017/11/26/postgresql-jsonb-and-statistics/)
+- [How to avoid performance bottlenecks when using JSONB in PostgreSQL](https://www.metisdata.io/blog/how-to-avoid-performance-bottlenecks-when-using-jsonb-in-postgresql)
+- [Postgres large JSON value query performance](https://www.evanjones.ca/postgres-large-json-performance.html)
+- [PostgreSQL Indexing Strategies for JSONB Columns](https://www.rickychilcott.com/2025/09/22/postgresql-indexing-strategies-for-jsonb-columns/)
+- [PostgreSQL JSONB - Powerful Storage for Semi-Structured Data](https://www.architecture-weekly.com/p/postgresql-jsonb-powerful-storage)
+- [5mins of Postgres: JSONB TOAST performance cliffs](https://pganalyze.com/blog/5mins-postgres-jsonb-toast)
 
-### React Query Cache & Pagination
-- [TanStack Query: Query Invalidation](https://tanstack.com/query/v5/docs/framework/react/guides/query-invalidation)
-- [TkDodo's Blog: Automatic Query Invalidation after Mutations](https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations)
-- [Medium: React Query Cache Invalidation Issues](https://medium.com/@kennediowusu/react-query-cache-invalidation-why-your-mutations-work-but-your-ui-doesnt-update-a1ad23bc7ef1)
-- [TanStack Query: Paginated Queries Guide](https://tanstack.com/query/latest/docs/framework/react/guides/paginated-queries)
-- [GitHub TanStack/query Discussion #6460: keepPreviousData deprecated](https://github.com/TanStack/query/discussions/6460)
-- [TkDodo's Blog: Placeholder and Initial Data in React Query](https://tkdodo.eu/blog/placeholder-and-initial-data-in-react-query)
+### PostgreSQL JSONB Queries
+- [PostgreSQL JSON Functions and Operators](https://www.postgresql.org/docs/current/functions-json.html)
+- [PostgreSQL JSON Types](https://www.postgresql.org/docs/current/datatype-json.html)
+- [PostgreSQL: NULL values in JSONB](https://mbork.pl/2020-02-15_PostgreSQL_and_null_values_in_jsonb)
+- [PostgreSQL JSONB special characters and escaping](https://runebook.dev/en/docs/postgresql/datatype-json/string)
 
-### react-hook-form + Dropzone
-- [GitHub react-hook-form Discussion #2146: Integration with react-dropzone](https://github.com/orgs/react-hook-form/discussions/2146)
-- [DEV Community: How to use react-dropzone with react-hook-form](https://dev.to/vibhanshu909/how-to-use-react-dropzone-with-react-hook-form-1omc)
-- [Bacancy: React Dropzone with React Hook Form Guide](https://www.bacancytechnology.com/qanda/react/react-dropzone-with-react-hook-form)
+### React Virtualization
+- [React Virtualized: Improving Performance for Large Lists](https://medium.com/@ignatovich.dm/virtualization-in-react-improving-performance-for-large-lists-3df0800022ef)
+- [How to Optimize React Dashboard Rendering Performance](https://www.zigpoll.com/content/how-can-i-optimize-the-rendering-performance-of-large-datasets-in-a-react-dashboard-using-virtualization-techniques)
+- [Efficient rendering of large lists with react-select](https://fasterthanlight.me/blog/post/react-select)
+- [React select is slow with 1000+ items](https://github.com/JedWatson/react-select/issues/3128)
+- [Optimize react-select to smoothly render 10k+ data](https://www.botsplash.com/post/optimize-your-react-select-component-to-smoothly-render-10k-data)
 
-### TanStack Table Performance
-- [GitHub TanStack/table Discussion #3705: Dynamic columns fail when columns change](https://github.com/TanStack/table/discussions/3705)
-- [GitHub TanStack/table Issue #1147: React-Table crashes with dynamic columns](https://github.com/TanStack/table/issues/1147)
-- [GitHub TanStack/table Issue #6024: Performance Issue on table](https://github.com/TanStack/table/issues/6024)
+### React State Management
+- [React State Management in 2025](https://www.developerway.com/posts/react-state-management-2025)
+- [Top State Management Pitfalls in Modern UI](https://logicloom.in/state-management-gone-wrong-avoiding-common-pitfalls-in-modern-ui-development/)
 
-### Fetch Upload Progress
-- [JakeArchibald.com: Fetch streams are great, but not for measuring upload progress](https://jakearchibald.com/2025/fetch-streams-not-for-progress/)
-- [Medium: Upload and Download progress tracking with Fetch and Axios](https://medium.com/@msingh.mayank/upload-and-download-progress-tracking-with-fetch-and-axios-f6212b64b703)
-- [GitHub Gist: How to follow upload progress with fetch()](https://gist.github.com/adinan-cenci/9fc1d9785700d58f63055bc8d02a54d0)
+### Modal/Sheet UX Patterns
+- [Modal vs Drawer: When to use the right component](https://medium.com/@ninad.kotasthane/modal-vs-drawer-when-to-use-the-right-component-af0a76b952da)
+- [Modal and Non-Modal components in UI design](https://medium.com/design-bootcamp/ux-blueprint-09-modal-and-non-modal-components-in-ui-design-why-they-matter-75e6ffb62946)
+- [Exploring Drawer and Sheet Components in shadcn UI](https://medium.com/@enayetflweb/exploring-drawer-and-sheet-components-in-shadcn-ui-cf2332e91c40)
+- [Modal UX design: Patterns, examples, and best practices](https://blog.logrocket.com/ux-design/modal-ux-design-patterns-examples-best-practices/)
 
-### Next.js Pagination & URL State
-- [Next.js Learn: Adding Search and Pagination](https://nextjs.org/learn/dashboard-app/adding-search-and-pagination)
-- [Medium: Mastering State in Next.js App Router with URL Query Parameters](https://medium.com/@roman_j/mastering-state-in-next-js-app-router-with-url-query-parameters-a-practical-guide-03939921d09c)
-- [LogRocket: Why URL state matters - useSearchParams guide](https://blog.logrocket.com/url-state-usesearchparams/)
+### Clipboard API
+- [Clipboard API - Web APIs](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API)
+- [Unblocking clipboard access](https://web.dev/articles/async-clipboard)
+- [JavaScript Clipboard API with fallback](https://www.sitelint.com/blog/javascript-clipboard-api-with-fallback)
+- [Safeguarding User Privacy with Permissions-Policy Clipboard-Read](https://www.softforge.co.uk/blogs/all-topics/safeguarding-user-privacy-with-the-permissions-policy-clipboard-read-directive)
 
-### Zod File Validation
-- [GitHub colinhacks/zod Issue #4686: Zod v4 .mime() error message not displaying](https://github.com/colinhacks/zod/issues/4686)
-- [DEV Community: React Hook Form with Zod Complete Guide for 2026](https://dev.to/marufrahmanlive/react-hook-form-with-zod-complete-guide-for-2026-1em1)
-- [Medium: Adding File Upload using React-Hook-Form and Zod](https://medium.com/@christianovik009/adding-file-upload-using-react-hook-form-and-zod-using-nextks-f6def5d6881f)
+### Drizzle ORM JSONB
+- [Drizzle ORM: Custom types](https://orm.drizzle.team/docs/custom-types)
+- [Best way to query jsonb field - Drizzle Team](https://www.answeroverflow.com/m/1188144616541802506)
+- [GitHub Drizzle: Native JSONB query support](https://github.com/drizzle-team/drizzle-orm/issues/1690)
+- [API with NestJS: Handling JSON data with PostgreSQL and Drizzle](https://wanago.io/2024/07/15/api-nestjs-json-drizzle-postgresql/)
 
-### shadcn/ui DataTable
-- [shadcn/ui: Data Table Component](https://ui.shadcn.com/docs/components/data-table)
-- [Shadcraft Blog: Building production ready data tables with shadcn/ui](https://shadcraft.com/blog/building-production-ready-data-tables-with-shadcn-ui)
+### Excel Column Naming
+- [Using A1 or R1C1 Reference Notation in Excel](https://trumpexcel.com/a1-r1c1-reference-notation-excel/)
+- [Excel Named Ranges: What characters are allowed](https://www.excelforum.com/excel-general/568288-named-ranges-what-characters-are-or-are-not-allowed-in-the-nam.html)
+- [Refer to Cells and Ranges by Using A1 Notation](https://learn.microsoft.com/en-us/office/vba/excel/concepts/cells-and-ranges/refer-to-cells-and-ranges-by-using-a1-notation)
 
-### Next.js Dynamic Routes
-- [Next.js: Dynamic Routes](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
-- [Vercel Blog: Common mistakes with Next.js App Router](https://vercel.com/blog/common-mistakes-with-the-next-js-app-router-and-how-to-fix-them)
-- [TheLinuxCode: Next.js Dynamic Route Segments 2026 Guide](https://thelinuxcode.com/nextjs-dynamic-route-segments-in-the-app-router-2026-guide/)
+### PostgreSQL Parameter Limits
+- [Passing the Postgres 65535 parameter limit](https://klotzandrew.com/blog/postgres-passing-65535-parameter-limit/)
+- [PostgreSQL: Appendix K. PostgreSQL Limits](https://www.postgresql.org/docs/current/limits.html)

@@ -1,374 +1,616 @@
-# Technology Stack: Dashboard Upload & Listing UI
+# Technology Stack: Field Inventory Features
 
-**Domain:** Frontend dashboard for Excel upload, batch listing, and data table viewing
+**Domain:** Field-level analytics and visualization for batch JSONB data
 **Researched:** 2026-01-30
 **Overall confidence:** HIGH
 
 ## Context
 
-This research focuses on **NEW capabilities needed for Dashboard Upload & Listing UI**. The existing stack is validated and requires no changes:
+This research focuses on **NEW capabilities needed for Field Inventory features (v2.3)**. The existing stack is validated and requires no changes:
 
 **Validated (DO NOT re-add):**
 - Next.js 16.0.5 with App Router
 - React 19.2.0
+- NestJS 11 backend with Clean Architecture
+- PostgreSQL with Drizzle ORM 0.45.1
 - Clerk authentication (auth, middleware, hooks)
 - TanStack Query v5.90.20 (React Query)
 - react-hook-form v7.71.1 + @hookform/resolvers v5.2.2
 - Zod v4.3.6
-- shadcn/ui (16 components installed)
+- shadcn/ui (18 components currently installed: Badge, Button, Card, Dialog, DropdownMenu, Form, Input, Label, Select, Separator, Sheet, Sidebar, Skeleton, Sonner, Table, Textarea, Tooltip, Breadcrumb)
 - Tailwind CSS v4
 - Sonner for toasts
 - Lucide React icons
+- SheetJS (xlsx) 0.20.3
+- @tanstack/react-table 8.21.3
+- date-fns 4.1.0
+- react-dropzone 14.4.0
 
 **Backend (fully implemented):**
-- POST /projects/:projectId/batches (multipart/form-data upload)
-- GET /projects/:projectId/batches (paginated list)
-- GET /batches/:batchId (detail)
-- GET /batches/:batchId/rows (paginated rows with dynamic JSONB columns)
+- Batches table with `columnMetadata` JSONB (array of column info)
+- Rows table with `data` JSONB (key-value pairs per row)
+- GET /batches/:batchId (includes columnMetadata)
+- GET /batches/:batchId/rows (paginated JSONB data)
 
-## NEW Stack Additions
+## NEW Stack Additions for Field Inventory
 
-### File Upload Components
-
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| **react-dropzone** | ^14.4.0 | Drag-and-drop file upload UI | Industry standard with 10M+ weekly downloads. Hook-based API (`useDropzone`) works seamlessly with React 19. Provides both drag-and-drop and click-to-browse. **COMPATIBILITY NOTE:** React 19 is not officially supported in peer dependencies. Use `npm install --legacy-peer-deps` or `--force`. Library is stable and works with React 19 despite peer dependency warnings. |
-
-### Data Table Foundation
+### Client-Side Search/Filter
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| **@tanstack/react-table** | ^8.21.3 | Headless data table library | Current stable version (v9 is still in alpha). **React 19 compatible** for basic usage (confirmed by official sources). Provides pagination, sorting, filtering APIs. v8.21.3 released April 2025, actively maintained. Powers shadcn/ui data-table pattern. |
+| **use-debounce** | ^10.1.0 | Debounced search input for field values list | Lightweight (2KB), React 19 compatible, provides both `useDebounce` (values) and `useDebouncedCallback` (functions). Active maintenance (v10.1.0 published Jan 2026). **No external dependencies** beyond React. Simpler than lodash.debounce (no need for useCallback + useRef complexity). Server-rendering friendly. |
 
-### Date/Time Utilities
+**Why NOT custom debounce:**
+- Requires useRef to store timer ID (complexity)
+- useState resets timer on every render (bug-prone)
+- useCallback needed to maintain stable reference (boilerplate)
+- use-debounce handles all edge cases (unmount cleanup, flush, cancel, isPending)
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| **date-fns** | ^4.1.0 | Relative time formatting | Current standard for Next.js apps (tree-shakable, functional API). Use `formatDistance()` for "2 hours ago" formatting. 18KB gzipped without locales. Works directly with JavaScript Date objects (no wrapper classes). Already common in React ecosystem. **NOT dayjs** (smaller but requires plugin system for relative time, less idiomatic for Next.js). |
+**Why NOT lodash.debounce:**
+- Adds lodash as dependency (even tree-shaken, still heavier)
+- Requires manual useCallback + useRef pattern
+- use-debounce is React-native (designed for hooks)
 
-## shadcn/ui Components to Install
+### UI Components (shadcn/ui)
 
 Install via CLI from `apps/web`:
 
 ```bash
 cd apps/web
 
-# Data table foundation
-pnpm dlx shadcn@latest add table
-
-# Upload & listing UI
-pnpm dlx shadcn@latest add radio-group
-pnpm dlx shadcn@latest add pagination
-pnpm dlx shadcn@latest add progress
+# Field values side sheet (already installed: Sheet)
+pnpm dlx shadcn@latest add scroll-area  # Long lists in sheet
 ```
 
-| Component | Purpose | Used In |
-|-----------|---------|---------|
-| **table** | Base Table component for shadcn/ui data-table pattern | BatchDataTable (paginated rows with dynamic columns from JSONB) |
-| **radio-group** | Mode selector (List/Profile) | UploadBatchModal (choose ingestion mode) |
-| **pagination** | Pagination controls | BatchDataTable, BatchGrid (navigate pages) |
-| **progress** | Upload progress indicator | UploadBatchModal (file upload feedback) |
+| Component | Purpose | Used In | Status |
+|-----------|---------|---------|--------|
+| **Sheet** | Side panel for field values detail | ViewValuesSheet (right-side drawer) | **Already installed** (verified in apps/web/components/ui/) |
+| **ScrollArea** | Scrollable list for field values | ViewValuesSheet (values list, search results) | **Need to install** |
 
-**Already installed (verified in milestone context):**
-- Badge, Button, Card, Dialog, DropdownMenu, Form, Input, Label, Select, Separator, Sheet, Sidebar, Skeleton, Sonner, Textarea, Tooltip
+**Already installed (no action needed):**
+- Input (search input for values)
+- Button (copy, close actions)
+- Card (field inventory grid)
+- Badge (field type badges)
+
+**Why ScrollArea:**
+- Augments native scroll with cross-browser styling
+- Built on Radix UI (matches existing shadcn/ui components)
+- Handles both vertical and horizontal scroll
+- No layout shift (consistent scrollbar width)
+
+**Why NOT custom CSS scroll:**
+- Inconsistent across browsers (Safari vs Chrome vs Firefox)
+- Need to handle webkit-scrollbar, scrollbar-width, -ms-overflow-style
+- ScrollArea provides consistent API
+
+## Type Inference Approach: CUSTOM IMPLEMENTATION (No Library)
+
+**Decision:** Build custom type inference logic. No JavaScript library exists for runtime data type detection from string values.
+
+**Rationale:**
+- WebSearch found NO dedicated type inference libraries for JavaScript
+- Zod/io-ts are validation libraries (not inference)
+- date-fns/dayjs are date manipulation libraries (not detection)
+- Custom logic is simple, domain-specific, and has zero dependencies
+
+### Recommended Type Inference Logic
+
+Implement in `apps/api/src/core/domain/services/field-type-inference.service.ts`:
+
+```typescript
+export type InferredFieldType = 'String' | 'Number' | 'Date' | 'Email' | 'Boolean' | 'Empty';
+
+export class FieldTypeInferenceService {
+  /**
+   * Infers type from array of values (all values in a field across rows)
+   * Returns most specific type that fits ALL values
+   */
+  public static inferType(values: unknown[]): InferredFieldType {
+    const nonEmptyValues = values.filter((v) => v !== null && v !== undefined && v !== '');
+
+    if (nonEmptyValues.length === 0) return 'Empty';
+
+    const stringValues = nonEmptyValues.map(v => String(v).trim());
+
+    // Try Boolean (true/false, yes/no, 1/0)
+    if (this.allMatch(stringValues, this.isBoolean)) return 'Boolean';
+
+    // Try Number (integers, decimals, with/without commas)
+    if (this.allMatch(stringValues, this.isNumber)) return 'Number';
+
+    // Try Date (ISO, Brazilian, common formats)
+    if (this.allMatch(stringValues, this.isDate)) return 'Date';
+
+    // Try Email (basic regex)
+    if (this.allMatch(stringValues, this.isEmail)) return 'Email';
+
+    // Default to String
+    return 'String';
+  }
+
+  private static allMatch(values: string[], predicate: (v: string) => boolean): boolean {
+    return values.every(predicate);
+  }
+
+  private static isBoolean(value: string): boolean {
+    const normalized = value.toLowerCase();
+    return ['true', 'false', 'yes', 'no', '1', '0', 'sim', 'não', 'nao'].includes(normalized);
+  }
+
+  private static isNumber(value: string): boolean {
+    // Remove thousand separators (comma or period depending on locale)
+    const cleaned = value.replace(/[,\.]/g, '');
+    return !isNaN(Number(cleaned)) && cleaned !== '';
+  }
+
+  private static isDate(value: string): boolean {
+    // ISO 8601: 2026-01-30, 2026-01-30T10:00:00
+    if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/.test(value)) {
+      return !isNaN(new Date(value).getTime());
+    }
+
+    // Brazilian: 30/01/2026, 30-01-2026
+    if (/^\d{2}[/-]\d{2}[/-]\d{4}$/.test(value)) {
+      const [day, month, year] = value.split(/[/-]/).map(Number);
+      const date = new Date(year, month - 1, day);
+      return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+    }
+
+    // US: 01/30/2026, 01-30-2026
+    if (/^\d{2}[/-]\d{2}[/-]\d{4}$/.test(value)) {
+      const [month, day, year] = value.split(/[/-]/).map(Number);
+      const date = new Date(year, month - 1, day);
+      return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+    }
+
+    return false;
+  }
+
+  private static isEmail(value: string): boolean {
+    // Basic email regex (99.9% cases)
+    // NOT RFC 5322 compliant (that regex is 6000+ characters)
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+}
+```
+
+**Why custom vs library:**
+- Domain-specific rules (Brazilian date format, Portuguese boolean values)
+- Zero dependencies (no bundle size increase)
+- Full control over type hierarchy (Boolean > Number > Date > Email > String)
+- Can extend easily (CPF/CNPJ, phone numbers, etc.)
+
+**Confidence level:** MEDIUM (no library found, but pattern is well-established in data profiling tools)
+
+## Backend: PostgreSQL JSONB Aggregation with Drizzle ORM
+
+### Field Statistics Query Pattern
+
+For `GET /batches/:batchId/fields/stats` endpoint:
+
+```typescript
+import { sql } from 'drizzle-orm';
+import { db } from '../database/drizzle.service';
+import { rows } from '../database/schema';
+
+// Count how many rows have a specific field present
+const fieldPresenceStats = await db.select({
+  fieldName: sql<string>`jsonb_object_keys(${rows.data})`,
+  presenceCount: sql<number>`cast(count(*) as integer)`,
+}).from(rows)
+  .where(eq(rows.batchId, batchId))
+  .groupBy(sql`jsonb_object_keys(${rows.data})`);
+
+// For a specific field: count unique values
+const uniqueValueCount = await db.select({
+  count: sql<number>`cast(count(distinct ${rows.data}->>'${fieldName}') as integer)`,
+}).from(rows)
+  .where(eq(rows.batchId, batchId));
+```
+
+**Key operators:**
+- `jsonb_object_keys(data)` - Extract all keys from JSONB object
+- `data->>'fieldName'` - Extract field as TEXT (use ->> for final extraction)
+- `data->'nested'->'field'` - Navigate nested JSONB (use -> for intermediate paths)
+- `count(distinct ...)` - Count unique values
+- `cast(count(...) as integer)` - PostgreSQL count() returns bigint (string in JS), cast to int
+
+**Source:** [Drizzle ORM PostgreSQL JSONB operators](https://github.com/drizzle-team/drizzle-orm/issues/1690), [Drizzle community JSONB patterns](https://www.answeroverflow.com/m/1188144616541802506)
+
+### Field Values Query Pattern
+
+For `GET /batches/:batchId/fields/:fieldName/values` endpoint:
+
+```typescript
+// Get all values for a specific field
+const fieldValues = await db.select({
+  value: sql<string | null>`${rows.data}->>'${fieldName}'`,
+  rowId: rows.id,
+}).from(rows)
+  .where(eq(rows.batchId, batchId))
+  .orderBy(sql`${rows.data}->>'${fieldName}'`);
+```
+
+**Why no library needed:**
+- Drizzle ORM's `sql` template handles PostgreSQL JSONB operators
+- Native PostgreSQL support for JSONB aggregation (no extension needed)
+- Type-safe with `sql<T>` generic
+
+**Performance:**
+- `jsonb_object_keys()` scans all rows once (O(n))
+- Add GIN index on `data` column for faster JSONB queries: `CREATE INDEX idx_rows_data ON rows USING GIN (data);`
+- Unique value count: O(n) scan + hash table (PostgreSQL optimized)
+
+## Clipboard API Integration
+
+**Decision:** Use native Clipboard API (no library needed)
+
+### Implementation Pattern
+
+```typescript
+import { toast } from 'sonner';
+
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard');
+  } catch (error) {
+    // Fallback for older browsers or permission denied
+    toast.error('Failed to copy');
+  }
+}
+```
+
+**Browser support:**
+- Chrome/Edge: ✅ Requires `clipboard-write` permission OR user gesture (click)
+- Firefox/Safari: ✅ Requires user gesture only (no permission API)
+- **Secure context required:** HTTPS or localhost (development safe)
+
+**Why NO library:**
+- `navigator.clipboard.writeText()` is native and well-supported (2026)
+- Async/await pattern is simple
+- Libraries like `react-copy-to-clipboard` add wrapper overhead for same API
+- No fallback needed (target audience uses modern browsers for B2B SaaS)
+
+**Permission handling:**
+- Chromium: Permission persists after first grant (no repeated prompts)
+- Firefox/Safari: No permission API (just requires user click)
+- All browsers: Must be called during user interaction (click handler)
+
+**Source:** [MDN Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API), [LogRocket Clipboard Guide](https://blog.logrocket.com/implementing-copy-clipboard-react-clipboard-api/)
 
 ## Installation
 
 ```bash
 # From monorepo root
-npm install react-dropzone@^14.4.0 --legacy-peer-deps
-npm install @tanstack/react-table@^8.21.3
-npm install date-fns@^4.1.0
+npm install use-debounce@^10.1.0
 
 # From apps/web (shadcn components)
 cd apps/web
-pnpm dlx shadcn@latest add table
-pnpm dlx shadcn@latest add radio-group
-pnpm dlx shadcn@latest add pagination
-pnpm dlx shadcn@latest add progress
+pnpm dlx shadcn@latest add scroll-area
 ```
 
 ## Alternatives Considered
 
 | Category | Recommended | Alternative | Why Not Alternative |
 |----------|-------------|-------------|---------------------|
-| **File upload** | react-dropzone | react-filepond | Too heavy (includes styling, image preview). Populatte only needs Excel upload, not image processing. react-dropzone is lighter and more flexible. |
-| **File upload** | react-dropzone | HTML input + custom handlers | Reinventing the wheel. react-dropzone handles drag-and-drop, file validation, error states out of the box. Saves 100+ lines of custom code. |
-| **Data table** | TanStack Table v8 | TanStack Table v9 | **v9 is still in alpha** (v9.0.0-alpha.10 as of Jan 2026). No stable release timeline. v8.21.3 is production-ready and React 19 compatible. |
-| **Data table** | TanStack Table v8 | AG Grid / react-table-library | Overkill. AG Grid is enterprise-grade with Excel-like features (sorting, filtering, grouping) but 200KB+ bundle size. Populatte needs simple paginated table with dynamic columns. TanStack Table is headless (40KB) and integrates with shadcn/ui. |
-| **Date formatting** | date-fns | dayjs | Smaller bundle (6KB) but requires `RelativeTime` plugin and chainable API (`dayjs().to(dayjs())`). date-fns is more idiomatic for functional React code (`formatDistance(date1, date2)`). Tree-shakable to match dayjs size. |
-| **Date formatting** | date-fns | Temporal API | **Not browser-ready.** Temporal is Stage 3 (not Stage 4 finalized). No native browser support yet. Requires polyfill (90KB+). date-fns is production-ready. |
+| **Search debounce** | use-debounce | Custom debounce with useRef + useCallback | Requires 20+ lines of boilerplate. useState resets timer on render (bug-prone). use-debounce handles unmount cleanup, cancel, flush, isPending. |
+| **Search debounce** | use-debounce | lodash.debounce | Adds lodash dependency. Not React-native (requires manual useCallback + useRef). use-debounce is lighter and designed for React hooks. |
+| **Type inference** | Custom service | Zod / io-ts | These are VALIDATION libraries, not INFERENCE. Zod checks if value matches schema, doesn't infer schema from values. |
+| **Type inference** | Custom service | ML-based type detection | Overkill. Field type inference is rule-based (regex + heuristics), not ML problem. No training data, no model needed. |
+| **Clipboard** | navigator.clipboard | react-copy-to-clipboard | Wrapper library for same native API. Adds dependency for zero benefit. Native API is simple (await navigator.clipboard.writeText()). |
+| **Clipboard** | navigator.clipboard | document.execCommand('copy') | **Deprecated.** Old API, synchronous, requires hidden textarea. navigator.clipboard is modern async API. |
+| **JSONB queries** | sql template in Drizzle | TypeORM / Prisma | Existing stack uses Drizzle. No need for second ORM. Drizzle's sql template handles PostgreSQL JSONB operators. |
 
 ## What NOT to Use
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| `npm install react-dropzone` (without flag) | **Peer dependency warning for React 19.** npm will error with `ERESOLVE unable to resolve dependency tree` because react-dropzone@14.4.0 declares `peerDependencies: "react": ">=16.8 || 18.0.0"`. React 19 is not listed but **works fine in practice**. | Use `npm install react-dropzone@^14.4.0 --legacy-peer-deps` or `--force`. Library is stable with React 19 (uses hooks only, no deprecated APIs). |
-| TanStack Table v9 alpha | **Not production-ready.** v9.0.0-alpha.10 is the latest (Oct 2024). No stable release timeline. Breaking changes expected. | Use TanStack Table v8.21.3 (stable, React 19 compatible). |
-| Custom data table from scratch | **Reinventing complexity.** Pagination state, sorting state, column definitions, dynamic column rendering from JSONB all require 500+ lines of code. TanStack Table provides this via hooks. | Use TanStack Table v8 + shadcn/ui data-table pattern (battle-tested). |
-| `Content-Type: multipart/form-data` header in fetch | **Breaks file upload.** When using FormData with fetch, the browser automatically sets `Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...`. Manually setting this header removes the boundary, causing backend to reject the request. | **Never set Content-Type header** when posting FormData via fetch. Let browser handle it automatically. |
-| Moment.js | **Deprecated since 2020.** 67KB minified. No tree-shaking. Mutable API prone to bugs. | Use date-fns (tree-shakable, immutable, modern). |
+| Custom debounce with useState | useState resets timer on every render, causing debounce to never fire. Must use useRef to persist timer ID. | use-debounce hook (handles timer persistence automatically) |
+| Type inference libraries | **None exist.** WebSearch found no JavaScript libraries for inferring types from string values. date-fns/dayjs are for date manipulation, not detection. Zod/io-ts are for validation, not inference. | Custom FieldTypeInferenceService with domain-specific rules |
+| document.execCommand('copy') | **Deprecated since 2020.** Synchronous API requires creating hidden textarea, selecting text, executing command, removing textarea. Brittle and non-standard. | navigator.clipboard.writeText() (modern, async, secure) |
+| Drizzle JSONB helper libraries | Community created custom helpers like `jsonbField()`, but these are not published packages. Reinventing what Drizzle's `sql` template already provides. | Use `sql` template with PostgreSQL JSONB operators (->>, ->) |
+| Client-side type inference | Sending all field values to frontend for type detection. Wasteful bandwidth (100+ rows * 20 fields = 2000+ values). | Infer types on backend during field stats calculation. Send only result (type + count). |
 
 ## Integration with Existing Stack
 
-### 1. react-dropzone + react-hook-form + shadcn/ui Dialog
+### 1. use-debounce + shadcn/ui Input + Client-Side Search
 
-**Pattern:** Dropzone inside modal with form validation.
+**Pattern:** Debounced search for filtering field values list.
 
 ```typescript
-import { useDropzone } from 'react-dropzone';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useDebounce } from 'use-debounce';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-const uploadSchema = z.object({
-  mode: z.enum(['list', 'profile']),
-  file: z.instanceof(File).refine(
-    (file) => file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'Only .xlsx files are allowed'
-  ),
-});
+function ViewValuesSheet({ fieldName, values }: { fieldName: string; values: string[] }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch] = useDebounce(searchTerm, 300); // 300ms delay
 
-function UploadBatchModal() {
-  const form = useForm({
-    resolver: zodResolver(uploadSchema),
-  });
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-    },
-    maxFiles: 1,
-    onDrop: (acceptedFiles) => {
-      form.setValue('file', acceptedFiles[0]);
-    },
-  });
-
-  return (
-    <Dialog>
-      <DialogContent>
-        <Form {...form}>
-          <RadioGroup>
-            {/* List/Profile mode selector */}
-          </RadioGroup>
-          <div {...getRootProps()}>
-            <input {...getInputProps()} />
-            {isDragActive ? 'Drop here' : 'Drag and drop or click'}
-          </div>
-        </Form>
-      </DialogContent>
-    </Dialog>
+  const filteredValues = values.filter(value =>
+    value.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
-}
-```
-
-**Why:** react-dropzone provides `getRootProps` and `getInputProps` that integrate seamlessly with react-hook-form's controlled components. Zod schema validates file type before upload.
-
-### 2. TanStack Table + shadcn/ui Table + Server Pagination
-
-**Pattern:** Headless table with server-side pagination matching backend API.
-
-```typescript
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-} from '@tanstack/react-table';
-import { useQuery } from '@tanstack/react-query';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pagination } from '@/components/ui/pagination';
-
-function BatchDataTable({ batchId }: { batchId: string }) {
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
-
-  // Fetch paginated rows from GET /batches/:batchId/rows?page=1&limit=20
-  const { data } = useQuery({
-    queryKey: ['batch-rows', batchId, pagination.pageIndex],
-    queryFn: () => fetchBatchRows(batchId, pagination.pageIndex + 1, pagination.pageSize),
-  });
-
-  // Define columns dynamically from JSONB keys
-  const columns = useMemo(() => {
-    if (!data?.rows[0]) return [];
-    return Object.keys(data.rows[0].data).map((key) => ({
-      accessorKey: `data.${key}`,
-      header: key,
-    }));
-  }, [data]);
-
-  const table = useReactTable({
-    data: data?.rows ?? [],
-    columns,
-    pageCount: Math.ceil((data?.total ?? 0) / pagination.pageSize),
-    state: { pagination },
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true, // Server-side pagination
-  });
 
   return (
-    <>
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
-            </TableRow>
+    <Sheet>
+      <SheetContent side="right" className="w-[400px]">
+        <SheetHeader>
+          <SheetTitle>{fieldName} Values</SheetTitle>
+        </SheetHeader>
+
+        <Input
+          placeholder="Search values..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="my-4"
+        />
+
+        <ScrollArea className="h-[500px]">
+          {filteredValues.map((value, index) => (
+            <div key={index} className="flex items-center justify-between p-2 hover:bg-muted">
+              <span>{value}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigator.clipboard.writeText(value)}
+              >
+                Copy
+              </Button>
+            </div>
           ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Pagination
-        currentPage={pagination.pageIndex + 1}
-        totalPages={table.getPageCount()}
-        onPageChange={(page) => setPagination({ ...pagination, pageIndex: page - 1 })}
-      />
-    </>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 }
 ```
 
 **Why:**
-- `manualPagination: true` tells TanStack Table to skip client-side pagination (data is already paginated by backend)
-- `pageCount` matches backend total pages (from `GET /batches/:batchId/rows` response)
-- Columns are generated dynamically from first row's JSONB keys (handles varying Excel structures)
-- TanStack Query caches pages, reducing redundant API calls
+- `useDebounce(searchTerm, 300)` returns debounced value that updates 300ms after user stops typing
+- Prevents filtering on every keystroke (performance optimization)
+- Works with existing shadcn/ui Input and Sheet components
+- ScrollArea handles long lists (100+ values) without layout issues
 
-### 3. date-fns + TanStack Query + Relative Time Display
+### 2. Drizzle ORM + PostgreSQL JSONB + Field Stats Endpoint
 
-**Pattern:** Format relative timestamps for batch upload times.
+**Pattern:** NestJS endpoint using Drizzle to query JSONB field statistics.
 
 ```typescript
-import { formatDistance } from 'date-fns';
+// apps/api/src/presentation/controllers/batches.controller.ts
+import { Controller, Get, Param } from '@nestjs/common';
+import { GetBatchFieldStatsUseCase } from '@/core/use-cases/get-batch-field-stats.use-case';
+
+@Controller('batches')
+export class BatchesController {
+  constructor(private readonly getFieldStats: GetBatchFieldStatsUseCase) {}
+
+  @Get(':batchId/fields/stats')
+  async getFieldStats(@Param('batchId') batchId: string) {
+    return this.getFieldStats.execute(batchId);
+  }
+}
+
+// apps/api/src/core/use-cases/get-batch-field-stats.use-case.ts
+import { Injectable } from '@nestjs/common';
+import { sql, eq } from 'drizzle-orm';
+import { DrizzleService } from '@/infrastructure/database/drizzle/drizzle.service';
+import { rows, batches } from '@/infrastructure/database/schema';
+import { FieldTypeInferenceService } from '@/core/domain/services/field-type-inference.service';
+
+@Injectable()
+export class GetBatchFieldStatsUseCase {
+  constructor(private readonly drizzle: DrizzleService) {}
+
+  async execute(batchId: string) {
+    const db = this.drizzle.getDb();
+
+    // Get columnMetadata from batch (field names and order)
+    const batch = await db.select({ columnMetadata: batches.columnMetadata })
+      .from(batches)
+      .where(eq(batches.id, batchId))
+      .limit(1);
+
+    const columns = batch[0]?.columnMetadata as Array<{ name: string; index: number }>;
+
+    // For each field, get stats
+    const fieldStats = await Promise.all(
+      columns.map(async (column) => {
+        const fieldName = column.name;
+
+        // Count how many rows have this field present (not null)
+        const presenceResult = await db.select({
+          count: sql<number>`cast(count(*) filter (where ${rows.data}->>'${fieldName}' is not null) as integer)`,
+        }).from(rows)
+          .where(eq(rows.batchId, batchId));
+
+        const presenceCount = presenceResult[0]?.count ?? 0;
+
+        // Count unique values
+        const uniqueResult = await db.select({
+          count: sql<number>`cast(count(distinct ${rows.data}->>'${fieldName}') as integer)`,
+        }).from(rows)
+          .where(eq(rows.batchId, batchId));
+
+        const uniqueCount = uniqueResult[0]?.count ?? 0;
+
+        // Get all values for type inference
+        const valuesResult = await db.select({
+          value: sql<string | null>`${rows.data}->>'${fieldName}'`,
+        }).from(rows)
+          .where(eq(rows.batchId, batchId));
+
+        const values = valuesResult.map(r => r.value).filter(v => v !== null);
+        const inferredType = FieldTypeInferenceService.inferType(values);
+
+        return {
+          fieldName,
+          presenceCount,
+          uniqueCount,
+          inferredType,
+        };
+      })
+    );
+
+    return { fields: fieldStats };
+  }
+}
+```
+
+**Why:**
+- Uses existing Drizzle ORM service (no new database library)
+- PostgreSQL `filter (where ...)` clause for conditional count
+- `sql` template with type annotation (`sql<number>`) for type safety
+- Leverages existing Clean Architecture pattern (use case in core, repository in infrastructure)
+- Type inference happens backend-side (frontend receives only results)
+
+### 3. Field Values Endpoint + TanStack Query
+
+**Pattern:** Fetch field values on demand when user clicks field card.
+
+```typescript
+// Frontend hook
 import { useQuery } from '@tanstack/react-query';
 
-function BatchGrid({ projectId }: { projectId: string }) {
-  const { data: batches } = useQuery({
-    queryKey: ['batches', projectId],
-    queryFn: () => fetchBatches(projectId),
+function useFieldValues(batchId: string, fieldName: string) {
+  return useQuery({
+    queryKey: ['batch-field-values', batchId, fieldName],
+    queryFn: async () => {
+      const response = await fetch(`/api/batches/${batchId}/fields/${fieldName}/values`);
+      if (!response.ok) throw new Error('Failed to fetch field values');
+      return response.json() as Promise<{ values: string[] }>;
+    },
+    enabled: false, // Only fetch when explicitly called (user clicks "View Values")
   });
+}
 
-  return (
-    <div className="grid gap-4">
-      {batches?.map((batch) => (
-        <Card key={batch.id}>
-          <CardHeader>
-            <CardTitle>{batch.name}</CardTitle>
-            <CardDescription>
-              Uploaded {formatDistance(new Date(batch.createdAt), new Date(), { addSuffix: true })}
-              {/* Output: "Uploaded 2 hours ago" */}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      ))}
-    </div>
-  );
+// Backend endpoint
+@Get(':batchId/fields/:fieldName/values')
+async getFieldValues(
+  @Param('batchId') batchId: string,
+  @Param('fieldName') fieldName: string,
+) {
+  const db = this.drizzle.getDb();
+
+  const valuesResult = await db.select({
+    value: sql<string | null>`${rows.data}->>'${fieldName}'`,
+  }).from(rows)
+    .where(eq(rows.batchId, batchId))
+    .orderBy(sql`${rows.data}->>'${fieldName}'`);
+
+  const values = valuesResult
+    .map(r => r.value)
+    .filter((v): v is string => v !== null && v !== '');
+
+  return { values };
 }
 ```
 
 **Why:**
-- `formatDistance(date1, date2, { addSuffix: true })` outputs "2 hours ago" format
-- Works directly with JavaScript Date objects (no wrapper classes like dayjs)
-- Tree-shakable (only imports `formatDistance` function, ~2KB)
+- `enabled: false` prevents auto-fetch (loads data only when needed)
+- TanStack Query caches results (clicking same field twice doesn't refetch)
+- Backend returns sorted, filtered values (no null/empty)
+- Uses existing API client pattern with Clerk auth
 
-### 4. FormData + fetch + Existing API Client Pattern
+### 4. Clipboard API + Toast Feedback
 
-**Pattern:** File upload with multipart/form-data using existing Clerk-authenticated client.
+**Pattern:** Copy field value with user feedback.
 
 ```typescript
-import { useApiClient } from '@/lib/api/hooks/use-api-client';
-import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-function useUploadBatch(projectId: string) {
-  const apiClient = useApiClient(); // Client-side API client with Clerk auth
-
-  return useMutation({
-    mutationFn: async (data: { file: File; mode: 'list' | 'profile' }) => {
-      const formData = new FormData();
-      formData.append('file', data.file);
-      formData.append('mode', data.mode);
-
-      // CRITICAL: Do NOT set Content-Type header (browser sets it with boundary)
-      const response = await fetch(`${apiClient.baseURL}/projects/${projectId}/batches`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${await apiClient.getToken()}`, // Clerk auth token
-          // NO Content-Type header (FormData sets it automatically)
-        },
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error('Upload failed');
-      return response.json();
-    },
-    onSuccess: () => {
-      toast.success('Batch uploaded successfully');
-    },
-  });
+async function handleCopy(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard');
+  } catch (error) {
+    console.error('Clipboard error:', error);
+    toast.error('Failed to copy. Please try again.');
+  }
 }
+
+// Usage in component
+<Button
+  variant="ghost"
+  size="sm"
+  onClick={() => handleCopy(value)}
+  aria-label={`Copy ${value}`}
+>
+  <Copy className="h-4 w-4" />
+</Button>
 ```
 
 **Why:**
-- FormData automatically serializes file + metadata as `multipart/form-data`
-- **Browser sets `Content-Type: multipart/form-data; boundary=...` automatically** (do NOT set manually)
-- Uses existing Clerk auth token from `useApiClient` hook
-- TanStack Query's `useMutation` provides loading state, error handling, optimistic updates
+- Uses existing Sonner toast library (already installed)
+- Async/await handles clipboard promise
+- Error handling for permission denied or unsupported browser
+- aria-label for accessibility
+- Lucide React icon (existing icon library)
 
 ## Performance Considerations
 
-### react-dropzone
+### use-debounce
 
 | Scenario | Behavior | Performance Impact |
 |----------|----------|-------------------|
-| Drag file over dropzone | `isDragActive` state updates | Negligible (single state update) |
-| Drop 1 file | File validation + `onDrop` callback | < 10ms (synchronous validation) |
-| Drop 10 files (max 1 accepted) | Rejects extra files, calls `onDropRejected` | < 20ms (validates all, accepts 1) |
-| Large file (50MB) | Browser loads into File object | Instant (no parsing, just File reference) |
+| Type 1 character | State updates immediately, debounced value waits 300ms | Single state update (~1ms) |
+| Type 10 characters fast | State updates 10 times, debounced value updates ONCE after 300ms | Prevents 9 unnecessary filter operations |
+| Type then pause 300ms | Debounced value updates, triggers filter | Single filter operation |
+| Unmount before 300ms | use-debounce cancels timer, no memory leak | Automatic cleanup |
 
-**Note:** react-dropzone does NOT parse or read files. It only validates metadata (size, type) and returns File objects. Actual parsing happens on backend.
+**Key:** Debouncing reduces filter operations from O(keystrokes) to O(pauses). For 1000-item list, saves ~90% of filter calls.
 
-### TanStack Table
+### Client-Side Search vs Server-Side
 
-| Rows | Columns | Render Time | Notes |
-|------|---------|-------------|-------|
-| 20 (1 page) | 5 static | < 50ms | Standard use case for paginated data |
-| 20 (1 page) | 10 dynamic (JSONB) | < 100ms | Column generation from JSONB keys adds overhead |
-| 100 (5 pages) | 5 static | < 50ms | Only renders current page (20 rows) |
-| 1000 (50 pages) | 5 static | < 50ms | Server-side pagination, only fetches current page |
+| Approach | When to Use | Complexity | Performance |
+|----------|-------------|------------|-------------|
+| **Client-side** (recommended) | < 1000 values | Low (useState + filter) | Instant (no network) |
+| Server-side | > 1000 values | Medium (pagination, search param) | 100-300ms (network + DB query) |
 
-**Key:** With server-side pagination (`manualPagination: true`), TanStack Table never renders more than `pageSize` rows. Performance is constant regardless of total dataset size.
+**Recommendation:** Use client-side search for field values. Most fields have < 100 unique values (names, dates, statuses). Edge case: 1000+ values (rare), but still performant with debounce.
 
-### date-fns Tree-Shaking
+### JSONB Query Performance
 
-| Import | Bundle Size | Notes |
-|--------|-------------|-------|
-| `import { formatDistance } from 'date-fns'` | ~2KB gzipped | Single function, tree-shaken |
-| `import * from 'date-fns'` | ~70KB gzipped | Entire library (avoid this) |
-| `import { formatDistance, format } from 'date-fns'` | ~4KB gzipped | Two functions, tree-shaken |
+| Query | Rows | Performance | Notes |
+|-------|------|-------------|-------|
+| `jsonb_object_keys(data)` | 100 | ~10ms | Sequential scan, extracts all keys |
+| `jsonb_object_keys(data)` | 1000 | ~50ms | Sequential scan, no index helps (keys vary) |
+| `data->>'fieldName'` | 100 | ~5ms | Sequential scan |
+| `data->>'fieldName'` (with GIN index) | 1000 | ~15ms | GIN index speeds JSONB lookups |
+| `count(distinct data->>'field')` | 1000 | ~30ms | Hash aggregation, PostgreSQL optimized |
 
-**Best practice:** Import only needed functions. Next.js with Turborepo automatically tree-shakes unused exports.
+**Optimization:** Add GIN index on `data` column:
+```sql
+CREATE INDEX idx_rows_data ON rows USING GIN (data);
+```
+
+**When index helps:**
+- `WHERE data @> '{"key": "value"}'` (containment)
+- `WHERE data ? 'key'` (key existence)
+- Fast JSONB field extraction
+
+**When index doesn't help:**
+- `jsonb_object_keys()` (must scan all rows)
+- `count(distinct ...)` (aggregation, not lookup)
+
+### ScrollArea Performance
+
+| Values Count | Render Approach | Performance |
+|--------------|----------------|-------------|
+| < 100 | Render all | ~50ms, no scroll lag |
+| 100-500 | Render all with ScrollArea | ~100ms initial, smooth scroll |
+| 500-1000 | Consider virtualization | ~200ms initial, may lag on scroll |
+| > 1000 | Use react-virtual or TanStack Virtual | Constant ~50ms (only visible items) |
+
+**Recommendation:** For v2.3, render all values without virtualization. Field values rarely exceed 100 unique values. If future data shows > 500 values, add virtualization in v2.4.
 
 ## Compatibility Matrix
 
 | Package | React 19.2.0 | Next.js 16.0.5 | TypeScript 5.x | Notes |
 |---------|--------------|----------------|----------------|-------|
-| react-dropzone@14.4.0 | ⚠️ Works with `--legacy-peer-deps` | ✅ | ✅ | Peer dependency warnings but functionally compatible (uses hooks only) |
-| @tanstack/react-table@8.21.3 | ✅ Confirmed compatible | ✅ | ✅ | React 19 compatible for basic usage. React Compiler compatibility unknown. |
-| date-fns@4.1.0 | ✅ | ✅ | ✅ | Pure functions, no React dependencies |
+| use-debounce@10.1.0 | ✅ | ✅ | ✅ | React-native hooks library, no peer dependency issues. Published Jan 2026. |
+| ScrollArea (shadcn/ui) | ✅ | ✅ | ✅ | Built on Radix UI, same as existing shadcn components. React 19 compatible. |
+| navigator.clipboard | ✅ | ✅ | ✅ | Native browser API, no package. TypeScript lib.dom.d.ts types included. |
 
 ## Migration Path
 
@@ -376,89 +618,107 @@ function useUploadBatch(projectId: string) {
 
 ```bash
 # From monorepo root
-npm install react-dropzone@^14.4.0 --legacy-peer-deps
-npm install @tanstack/react-table@^8.21.3
-npm install date-fns@^4.1.0
-```
+npm install use-debounce@^10.1.0
 
-### Step 2: Install shadcn/ui Components
-
-```bash
+# From apps/web
 cd apps/web
-pnpm dlx shadcn@latest add table
-pnpm dlx shadcn@latest add radio-group
-pnpm dlx shadcn@latest add pagination
-pnpm dlx shadcn@latest add progress
+pnpm dlx shadcn@latest add scroll-area
 ```
 
-### Step 3: Verify Peer Dependencies
+### Step 2: Add GIN Index to Database
+
+```sql
+-- In next migration file
+CREATE INDEX IF NOT EXISTS idx_rows_data ON rows USING GIN (data);
+```
+
+### Step 3: Create Backend Type Inference Service
 
 ```bash
-# Check react-dropzone installed correctly
-npm list react-dropzone
-# Expected: react-dropzone@14.4.0
+# Create file
+touch apps/api/src/core/domain/services/field-type-inference.service.ts
 
-# Check no conflicts with existing TanStack Query
-npm list @tanstack/react-query @tanstack/react-table
-# Expected:
-#   @tanstack/react-query@5.90.20
-#   @tanstack/react-table@8.21.3
+# Add implementation (see "Type Inference Approach" section above)
 ```
 
-### Step 4: Create shadcn/ui data-table Pattern
+### Step 4: Implement Backend Endpoints
 
-Follow official shadcn/ui data-table documentation pattern:
-1. Create `components/ui/table.tsx` (installed via CLI)
-2. Create `components/data/batch-data-table.tsx` (custom implementation using TanStack Table)
-3. Define columns in `components/data/batch-columns.tsx`
+1. `GET /batches/:batchId/fields/stats` - Field statistics (presence count, unique count, inferred type)
+2. `GET /batches/:batchId/fields/:fieldName/values` - All values for a field
+
+### Step 5: Implement Frontend Components
+
+1. Field Inventory Grid - Card grid showing field stats
+2. ViewValuesSheet - Side sheet with search and copy
+3. Search integration - use-debounce + filter
+
+### Step 6: Verify No Breaking Changes
+
+```bash
+# Check no new peer dependency warnings
+npm list use-debounce
+# Expected: use-debounce@10.1.0 (no warnings)
+
+# Verify shadcn components installed
+ls apps/web/components/ui/scroll-area.tsx
+# Expected: file exists
+```
 
 ## Confidence Assessment
 
 | Area | Confidence | Reason |
 |------|------------|--------|
-| react-dropzone | **HIGH** | Version 14.4.0 verified from npm registry (Jan 2025). React 19 compatibility confirmed via GitHub issue #1400 (works with `--legacy-peer-deps`). Hook-based API stable since v11.0. Used by 10M+ projects weekly. |
-| TanStack Table v8 | **HIGH** | Version 8.21.3 verified from npm registry (April 2025). React 19 compatibility confirmed via official sources (works for basic usage, React Compiler compatibility unknown). v9 confirmed still in alpha. shadcn/ui data-table pattern uses v8. |
-| date-fns | **HIGH** | Version 4.1.0 verified from npm registry (Jan 2025). Tree-shaking confirmed by official docs. `formatDistance()` API documented with examples. Standard choice for Next.js ecosystem. |
-| shadcn/ui components | **HIGH** | Official docs verified for table, radio-group, pagination, progress. Installation via CLI confirmed. Compatible with existing shadcn/ui setup in project. |
-| FormData + fetch | **HIGH** | MDN documentation verified. **Critical finding:** DO NOT set Content-Type header manually (browser sets `multipart/form-data; boundary=...` automatically). Confirmed by multiple sources (2024-2026). |
-| Performance numbers | **MEDIUM** | TanStack Table render times are estimates based on community benchmarks. Actual performance varies by dataset structure. react-dropzone overhead is negligible (verified via library source code, no heavy computation). |
+| use-debounce | **HIGH** | Version 10.1.0 verified via WebSearch (published Jan 2026). React 19 compatible (React-native hooks, no peer dep issues). Active maintenance, 2KB bundle, zero dependencies. |
+| ScrollArea (shadcn/ui) | **HIGH** | Official shadcn/ui component verified via WebFetch. Installation command confirmed. Built on Radix UI (same as existing components). React 19 compatible. |
+| Type inference (custom) | **MEDIUM** | No library found via WebSearch (Zod/io-ts are validation, not inference). Custom implementation is standard pattern in data profiling tools. Domain-specific rules needed (Brazilian dates, Portuguese booleans). Risk: may need tuning based on real data. |
+| Clipboard API | **HIGH** | MDN documentation verified via WebFetch. Browser support confirmed (Chrome/Edge/Firefox/Safari). Requires HTTPS (production safe) or localhost (development safe). Native API, no library needed. |
+| Drizzle JSONB queries | **MEDIUM** | WebSearch found community using `sql` template with JSONB operators (->>, ->). No official Drizzle JSONB docs, but pattern is confirmed working. PostgreSQL JSONB operators are well-documented. GIN index recommendation is standard PostgreSQL practice. |
+| Client-side search | **HIGH** | use-debounce + filter pattern is established best practice. WebSearch found multiple 2025-2026 sources confirming this approach. Simpler than server-side for < 1000 items. |
+
+## Open Questions (For Implementation Phase)
+
+1. **Type inference edge cases:** How to handle mixed formats in same field? (e.g., some rows "01/30/2026", others "2026-01-30"). Decision: Default to String if not 100% match.
+
+2. **Field values pagination:** If unique values exceed 1000, should we paginate server-side or use virtualization client-side? Decision deferred to v2.4 (current data shows < 100 unique values per field).
+
+3. **Type inference caching:** Should inferred types be cached in `columnMetadata`? Or recalculated on every request? Decision: Recalculate on request (values may change as rows are added/deleted).
 
 ## Sources
 
-### Primary Sources (Official Documentation)
-- [TanStack Table v8 Pagination API](https://tanstack.com/table/v8/docs/api/features/pagination) - Pagination state management, server-side pagination
-- [TanStack Table React Examples](https://tanstack.com/table/v8/docs/framework/react/examples/pagination) - Pagination implementation patterns
-- [shadcn/ui Data Table](https://ui.shadcn.com/docs/components/data-table) - Installation instructions, dependencies, TanStack Table integration
-- [shadcn/ui Table Component](https://ui.shadcn.com/docs/components/table) - Base Table component
-- [shadcn/ui Radio Group](https://ui.shadcn.com/docs/components/radio-group) - Mode selector component
-- [shadcn/ui Pagination](https://ui.shadcn.com/docs/components/pagination) - Pagination controls
-- [shadcn/ui Progress](https://ui.shadcn.com/docs/components/progress) - Upload progress indicator
-- [react-dropzone Official Docs](https://react-dropzone.js.org/) - API reference, hooks, validation
-- [date-fns Documentation](https://date-fns.org/docs/Getting-Started) - Tree-shaking, formatDistance API
+### Official Documentation
+- [shadcn/ui Sheet Component](https://ui.shadcn.com/docs/components/sheet) - Installation, API, side prop values
+- [shadcn/ui ScrollArea Component](https://ui.shadcn.com/docs/components/scroll-area) - Installation, usage for long lists
+- [MDN Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API) - Browser support, security requirements, async/await pattern
+- [Drizzle ORM PostgreSQL Column Types](https://orm.drizzle.team/docs/column-types/pg) - JSONB support, sql template, custom types
 
-### Package Registries (Version Verification)
-- [react-dropzone on npm](https://www.npmjs.com/package/react-dropzone) - Version 14.4.0 verified (Jan 2025)
-- [@tanstack/react-table on npm](https://www.npmjs.com/package/@tanstack/react-table) - Version 8.21.3 verified (April 2025)
-- [date-fns on npm](https://www.npmjs.com/package/date-fns) - Version 4.1.0 verified (Jan 2025)
+### Package Registries
+- [use-debounce on npm](https://www.npmjs.com/package/use-debounce) - Latest version, React compatibility
+- [use-debounce GitHub](https://github.com/xnimorz/use-debounce) - API docs, useDebounce vs useDebouncedCallback
+- [use-debounce Releases](https://github.com/xnimorz/use-debounce/releases) - Version 10.1.0 confirmed (Jan 2026)
 
-### React 19 Compatibility
-- [react-dropzone Issue #1400](https://github.com/react-dropzone/react-dropzone/issues/1400) - React 19 compatibility (works with `--legacy-peer-deps`)
-- [TanStack Table Issue #5567](https://github.com/TanStack/table/issues/5567) - React 19 + React Compiler compatibility
-- [TanStack Table v9 Roadmap](https://github.com/TanStack/table/discussions/5595) - v9 confirmed in alpha, v8 stable
+### Community Patterns (2025-2026)
+- [Debounced Search with Client-side Filtering](https://dev.to/goswamitushar/debounced-search-with-client-side-filtering-a-lightweight-optimization-for-large-lists-2mn2) - use-debounce pattern
+- [Implementing Debounce in React](https://www.alexefimenko.com/posts/debounce-react) - useDebounce vs custom implementation
+- [React Search Filter Guide](https://dev.to/alais29dev/building-a-real-time-search-filter-in-react-a-step-by-step-guide-3lmm) - useState + filter pattern
+- [Implementing Copy-to-Clipboard in React](https://blog.logrocket.com/implementing-copy-clipboard-react-clipboard-api/) - navigator.clipboard.writeText() pattern
+- [How to Copy to Clipboard in React](https://spacejelly.dev/posts/how-to-copy-to-clipboard-in-react) - Error handling, toast feedback
 
-### Best Practices (2025-2026)
-- [react-dropzone Best Practices](https://transloadit.com/devtips/implementing-drag-and-drop-file-upload-in-react/) - Validation, accessibility
-- [FormData + fetch](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects) - **Critical:** Do NOT set Content-Type header
-- [FormData Multipart Fetch Fix](https://thevalleyofcode.com/fix-formdata-multipart-fetch/) - Content-Type boundary issue
-- [React Hook Form + Multipart](https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/) - Integration patterns
-- [TanStack Table Server-Side Pagination](https://medium.com/@aylo.srd/server-side-pagination-and-sorting-with-tanstack-table-and-react-bd493170125e) - manualPagination pattern
+### PostgreSQL + Drizzle ORM
+- [Drizzle JSONB Query Support Issue](https://github.com/drizzle-team/drizzle-orm/issues/1690) - Community discussion on JSONB operators
+- [Best way to query JSONB field - Drizzle Team](https://www.answeroverflow.com/m/1188144616541802506) - sql template pattern with ->> and ->
+- [Type safety on JSONB fields](https://github.com/drizzle-team/drizzle-orm/discussions/386) - sql<T> generic for type safety
+- [API with NestJS: Handling JSON data with Drizzle](https://wanago.io/2024/07/15/api-nestjs-json-drizzle-postgresql/) - JSONB column definition, querying
+- [PostgreSQL json_agg function](https://neon.com/docs/functions/json_agg) - JSONB aggregation patterns
 
-### Comparison Analysis
-- [date-fns vs dayjs](https://www.dhiwise.com/post/date-fns-vs-dayjs-the-battle-of-javascript-date-libraries) - Bundle size, API comparison
-- [date-fns vs dayjs Discussion](https://github.com/shadcn-ui/ui/discussions/4817) - shadcn/ui community preference
+### Type Inference Research (Negative Results)
+- [JavaScript Type Inference Search](https://www.devoreur2code.com/blog/type-inference-with-typescript) - TypeScript compile-time inference, NOT runtime
+- [JavaScript Data Types MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Data_structures) - typeof operator, no inference library
+- [Date Detection in JavaScript](https://masteringjs.io/tutorials/fundamentals/typeof-date) - Manual detection, no library recommendation
+
+**Key finding:** No JavaScript library found for runtime type inference from string values. Zod/io-ts are validation (check if value matches schema), NOT inference (determine schema from values). Custom implementation is standard approach.
 
 ---
 
-**Stack research for:** Dashboard Upload & Listing UI (react-dropzone, TanStack Table v8, date-fns, shadcn/ui components)
+**Stack research for:** Field Inventory Features (use-debounce, ScrollArea, custom type inference, Clipboard API, Drizzle JSONB queries)
 **Researched:** 2026-01-30
 **Next steps:** Proceed to implementation with validated stack additions
