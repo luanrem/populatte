@@ -38,7 +38,7 @@ Collapsed. See git history for details.
 - Integer phases (13, 14, 15, 16): Planned milestone work
 - Decimal phases (e.g. 13.1): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 13: API Foundation & Project Detail Page** - Wire batch endpoints, Zod schemas, React Query hooks, FormData fix, and project detail page shell
+- [x] **Phase 13: API Foundation & Project Detail Page** - Wire batch endpoints, Zod schemas, React Query hooks, FormData fix, and project detail page shell
 - [ ] **Phase 14: Upload Modal** - File upload modal with mode selector, drag-and-drop, validation, and batch creation
 - [ ] **Phase 15: Batch Grid** - Responsive batch card grid with empty state, skeletons, and navigation
 - [ ] **Phase 16: Data Table with Pagination** - Dynamic-column data table with server-side pagination and loading states
@@ -58,7 +58,7 @@ Collapsed. See git history for details.
 **Plans**: 1 plan
 
 Plans:
-- [ ] 13-01-PLAN.md -- Zod schemas, endpoint factory, React Query hooks, FormData fix, and project detail page shell
+- [x] 13-01-PLAN.md -- Zod schemas, endpoint factory, React Query hooks, FormData fix, and project detail page shell
 
 ### Phase 14: Upload Modal
 **Goal**: Users can upload Excel files to create batches via a drag-and-drop modal with mode selection and validation feedback
@@ -113,7 +113,7 @@ Phases execute in numeric order: 13 -> 14 -> 15 -> 16
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 13. API Foundation & Project Detail Page | v2.2 | 0/1 | Not started | - |
+| 13. API Foundation & Project Detail Page | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 14. Upload Modal | v2.2 | 0/1 | Not started | - |
 | 15. Batch Grid | v2.2 | 0/1 | Not started | - |
 | 16. Data Table with Pagination | v2.2 | 0/1 | Not started | - |

@@ -9,11 +9,11 @@ Requirements for Dashboard Upload & Listing UI. Each maps to roadmap phases.
 
 ### API Foundation (APIF)
 
-- [ ] **APIF-01**: Batch endpoint factory follows existing `createProjectEndpoints(fetchFn)` pattern
-- [ ] **APIF-02**: Zod response schemas validate batch list, batch detail, and paginated rows
-- [ ] **APIF-03**: React Query hooks for batch list, batch detail, batch rows, and upload mutation
-- [ ] **APIF-04**: API client supports FormData uploads (no hardcoded Content-Type for multipart)
-- [ ] **APIF-05**: Upload mutation invalidates batch list cache on success
+- [x] **APIF-01**: Batch endpoint factory follows existing `createProjectEndpoints(fetchFn)` pattern
+- [x] **APIF-02**: Zod response schemas validate batch list, batch detail, and paginated rows
+- [x] **APIF-03**: React Query hooks for batch list, batch detail, batch rows, and upload mutation
+- [x] **APIF-04**: API client supports FormData uploads (no hardcoded Content-Type for multipart)
+- [x] **APIF-05**: Upload mutation invalidates batch list cache on success
 
 ### Upload Modal (UPLD)
 
@@ -48,9 +48,9 @@ Requirements for Dashboard Upload & Listing UI. Each maps to roadmap phases.
 
 ### Project Detail Page (PROJ)
 
-- [ ] **PROJ-01**: Project detail page at /projects/[id] with project name header
-- [ ] **PROJ-02**: "Nova Importacao" button in project header opens upload modal
-- [ ] **PROJ-03**: Batch grid section displays below project header
+- [x] **PROJ-01**: Project detail page at /projects/[id] with project name header
+- [x] **PROJ-02**: "Nova Importacao" button in project header opens upload modal
+- [x] **PROJ-03**: Batch grid section displays below project header
 
 ## Future Requirements
 
@@ -97,11 +97,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| APIF-01 | Phase 13 | Pending |
-| APIF-02 | Phase 13 | Pending |
-| APIF-03 | Phase 13 | Pending |
-| APIF-04 | Phase 13 | Pending |
-| APIF-05 | Phase 13 | Pending |
+| APIF-01 | Phase 13 | Complete |
+| APIF-02 | Phase 13 | Complete |
+| APIF-03 | Phase 13 | Complete |
+| APIF-04 | Phase 13 | Complete |
+| APIF-05 | Phase 13 | Complete |
 | UPLD-01 | Phase 14 | Pending |
 | UPLD-02 | Phase 14 | Pending |
 | UPLD-03 | Phase 14 | Pending |
@@ -124,9 +124,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DTBL-05 | Phase 16 | Pending |
 | DTBL-06 | Phase 16 | Pending |
 | DTBL-07 | Phase 16 | Pending |
-| PROJ-01 | Phase 13 | Pending |
-| PROJ-02 | Phase 13 | Pending |
-| PROJ-03 | Phase 13 | Pending |
+| PROJ-01 | Phase 13 | Complete |
+| PROJ-02 | Phase 13 | Complete |
+| PROJ-03 | Phase 13 | Complete |
 
 **Coverage:**
 - v2.2 requirements: 30 total
