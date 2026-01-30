@@ -67,10 +67,11 @@ None.
 |---|-------------|------|--------|-----------|
 | 001 | Fix navigation in ProjectCard | 2026-01-30 | 65e6530 | [001-fix-navigation-in-projectcard](./quick/001-fix-navigation-in-projectcard/) |
 | 002 | Optimize project listing performance | 2026-01-30 | bf4f521 | [002-optimize-project-listing-performance](./quick/002-optimize-project-listing-performance/) |
+| 003 | Fix file upload field name mismatch | 2026-01-30 | a736bdf | [003-fix-file-upload-field-name-mismatch](./quick/003-fix-file-upload-field-name-mismatch/) |
 
 ## Session Continuity
 
-Last session: 2026-01-30T19:51:03Z
-Stopped at: Completed quick task 002 (Optimize project listing performance)
+Last session: 2026-01-30T20:02:48Z
+Stopped at: Completed quick task 003 (Fix file upload field name mismatch)
 Resume file: None
 Next step: /gsd:new-milestone
