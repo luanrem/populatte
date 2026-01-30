@@ -47,7 +47,15 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ### Active
 
-No active requirements. Next milestone not yet defined.
+**Current Milestone: v2.2 — Dashboard Upload & Listing UI**
+
+**Goal:** Build the frontend interface for uploading Excel files and viewing ingested data, connecting the Next.js dashboard to the batch/row API endpoints.
+
+**Target features:**
+- Project detail page with batch history grid
+- Upload modal with visual mode selector and drag-and-drop
+- Batch data table page with paginated rows
+- React Query hooks for batch endpoints with cache invalidation
 
 ### Out of Scope
 
@@ -64,6 +72,7 @@ No active requirements. Next milestone not yet defined.
 ## Context
 
 **Shipped v2.1** with 8,505+ LOC TypeScript across 130+ files (cumulative).
+**Starting v2.2** — Dashboard Upload & Listing UI (frontend for batch management).
 Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3.
 
 **Architecture patterns established:**
@@ -140,4 +149,4 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Defense-in-depth on batch endpoints | Verify batch.projectId === projectId prevents cross-project access | ✓ Good |
 
 ---
-*Last updated: 2026-01-30 after v2.1 milestone complete*
+*Last updated: 2026-01-30 after v2.2 milestone started*
