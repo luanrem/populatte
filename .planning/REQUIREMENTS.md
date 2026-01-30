@@ -9,15 +9,15 @@ Requirements for Batch Read Layer milestone. Closes the read cycle for ingested 
 
 ### Batch Read
 
-- [ ] **BREAD-01**: User can retrieve a single batch's metadata (mode, status, fileCount, rowCount, columnMetadata, timestamps) via `GET /projects/:projectId/batches/:batchId`
-- [ ] **BREAD-02**: User can list all batches for a project via `GET /projects/:projectId/batches` (ordered by creation date, excludes soft-deleted)
-- [ ] **BREAD-03**: Batch read endpoints enforce ownership validation — 404 if project not found, 403 if user is not owner
+- [x] **BREAD-01**: User can retrieve a single batch's metadata (mode, status, fileCount, rowCount, columnMetadata, timestamps) via `GET /projects/:projectId/batches/:batchId`
+- [x] **BREAD-02**: User can list all batches for a project via `GET /projects/:projectId/batches` (ordered by creation date, excludes soft-deleted)
+- [x] **BREAD-03**: Batch read endpoints enforce ownership validation — 404 if project not found, 403 if user is not owner
 
 ### Row Read
 
-- [ ] **RREAD-01**: User can retrieve paginated rows for a batch via `GET /projects/:projectId/batches/:batchId/rows?limit=N&offset=N`
-- [ ] **RREAD-02**: Rows are ordered by `sourceRowIndex` to preserve original Excel order
-- [ ] **RREAD-03**: Response includes pagination metadata: `{ items: Row[], total: number, limit: number, offset: number }`
+- [x] **RREAD-01**: User can retrieve paginated rows for a batch via `GET /projects/:projectId/batches/:batchId/rows?limit=N&offset=N`
+- [x] **RREAD-02**: Rows are ordered by `sourceRowIndex` to preserve original Excel order
+- [x] **RREAD-03**: Response includes pagination metadata: `{ items: Row[], total: number, limit: number, offset: number }`
 
 ### Repository Layer
 
@@ -55,12 +55,12 @@ Deferred to later milestones. Tracked but not in current roadmap.
 |-------------|-------|--------|
 | REPO-01 | Phase 11 | Complete |
 | REPO-02 | Phase 11 | Complete |
-| BREAD-01 | Phase 12 | Pending |
-| BREAD-02 | Phase 12 | Pending |
-| BREAD-03 | Phase 12 | Pending |
-| RREAD-01 | Phase 12 | Pending |
-| RREAD-02 | Phase 12 | Pending |
-| RREAD-03 | Phase 12 | Pending |
+| BREAD-01 | Phase 12 | Complete |
+| BREAD-02 | Phase 12 | Complete |
+| BREAD-03 | Phase 12 | Complete |
+| RREAD-01 | Phase 12 | Complete |
+| RREAD-02 | Phase 12 | Complete |
+| RREAD-03 | Phase 12 | Complete |
 
 **Coverage:**
 - v2.1 requirements: 8 total
@@ -73,4 +73,4 @@ Deferred to later milestones. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-01-29*
-*Last updated: 2026-01-30 after phase 11 completion*
+*Last updated: 2026-01-30 after phase 12 completion*

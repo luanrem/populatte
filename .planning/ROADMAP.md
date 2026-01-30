@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 End-to-End Auth & User Sync** - Phases 1-3 (shipped 2026-01-28)
 - ✅ **v2.0 Data Ingestion Engine** - Phases 4-10 (shipped 2026-01-29)
-- 🚧 **v2.1 Batch Read Layer** - Phases 11-12 (in progress)
+- ✅ **v2.1 Batch Read Layer** - Phases 11-12 (shipped 2026-01-30)
 
 ## Phases
 
@@ -95,11 +95,10 @@ Plans:
 
 </details>
 
-### 🚧 v2.1 Batch Read Layer (In Progress)
+<details>
+<summary>✅ v2.1 Batch Read Layer (Phases 11-12) - SHIPPED 2026-01-30</summary>
 
-**Milestone Goal:** Close the read cycle — let the dashboard display batch metadata and paginated row data so users can validate extracted Excel data before automation.
-
-#### Phase 11: Repository Layer
+### Phase 11: Repository Layer
 **Goal**: Extend repositories with pagination and soft-delete filtering
 **Depends on**: Phase 10
 **Requirements**: REPO-01, REPO-02
@@ -112,7 +111,7 @@ Plans:
 Plans:
 - [x] 11-01-PLAN.md — PaginatedResult type, paginated repository methods, soft-delete audit, ordering fixes
 
-#### Phase 12: Read Endpoints
+### Phase 12: Read Endpoints
 **Goal**: Batch and row read endpoints with ownership validation
 **Depends on**: Phase 11
 **Requirements**: BREAD-01, BREAD-02, BREAD-03, RREAD-01, RREAD-02, RREAD-03
@@ -125,7 +124,9 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 12-01-PLAN.md — GET endpoints for batch detail, batch list, and paginated rows with ownership validation
+- [x] 12-01-PLAN.md — GET endpoints for batch detail, batch list, and paginated rows with ownership validation
+
+</details>
 
 ## Progress
 
@@ -145,4 +146,4 @@ Phases execute in numeric order: 11 → 12
 | 9. ProfileMode Strategy | v2.0 | 1/1 | Complete | 2026-01-29 |
 | 10. REST Endpoint | v2.0 | 4/4 | Complete | 2026-01-29 |
 | 11. Repository Layer | v2.1 | 1/1 | Complete | 2026-01-30 |
-| 12. Read Endpoints | v2.1 | 0/1 | Not started | - |
+| 12. Read Endpoints | v2.1 | 1/1 | Complete | 2026-01-30 |
