@@ -101,10 +101,10 @@ Plans:
   4. Page transitions are smooth (previous data stays visible while next page loads via keepPreviousData)
   5. Loading skeleton rows are displayed during data fetch, and an empty state is shown for batches with zero rows
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 16-01: Batch detail page, dynamic columns, data table, pagination controls, and loading states
+- [ ] 16-01-PLAN.md -- Batch detail page, dynamic-column data table, pagination controls, and loading states
 
 ## Progress
 
