@@ -69,7 +69,7 @@ None.
 | 002 | Optimize project listing performance | 2026-01-30 | bf4f521 | [002-optimize-project-listing-performance](./quick/002-optimize-project-listing-performance/) |
 | 003 | Fix file upload field name mismatch | 2026-01-30 | a736bdf | [003-fix-file-upload-field-name-mismatch](./quick/003-fix-file-upload-field-name-mismatch/) |
 | 004 | Fix empty data table and column metadata | 2026-01-30 | 4def578 | [004-fix-empty-data-table-and-column-metadata](./quick/004-fix-empty-data-table-and-column-metadata/) |
-| 005 | Add filename support to batches database | 2026-01-30 | 40bd54f | [005-add-filename-support-to-batches-database](./quick/005-add-filename-support-to-batches-database/) |
+| 005 | Add filename support to batches database to UI | 2026-01-30 | ed6e569 | [005-add-filename-support-to-batches-database](./quick/005-add-filename-support-to-batches-database/) |
 
 ## Session Continuity
 
