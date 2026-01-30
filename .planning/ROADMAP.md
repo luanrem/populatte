@@ -70,10 +70,10 @@ Plans:
   3. User can add files via drag-and-drop or manual file selection, with visual feedback on dragover
   4. User sees client-side validation errors for invalid files (size >5MB, wrong file count per mode)
   5. User sees selected files with name and size, submits upload, and receives toast notification on success or failure with the batch list refreshing automatically
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 14-01: Upload modal with mode selector, drag-and-drop, file validation, and upload mutation
+- [ ] 14-01-PLAN.md -- Upload modal with mode selector, drag-and-drop, file validation, and upload mutation
 
 ### Phase 15: Batch Grid
 **Goal**: Users can see their batch history as a card grid on the project detail page and navigate to individual batch data
