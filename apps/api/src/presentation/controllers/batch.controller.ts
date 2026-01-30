@@ -16,6 +16,7 @@ import type { ExcelFileInput } from '../../infrastructure/excel/strategies/excel
 import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { createBatchSchema, type CreateBatchDto } from '../dto/batch.dto';
+import { FileContentValidationPipe } from '../pipes/file-content-validation.pipe';
 
 @Controller('projects/:projectId/batches')
 @UseGuards(ClerkAuthGuard)
@@ -31,7 +32,8 @@ export class BatchController {
   public async create(
     @Param('projectId') projectId: string,
     @Body('mode') mode: string,
-    @UploadedFiles() uploadedFiles: Express.Multer.File[],
+    @UploadedFiles(new FileContentValidationPipe())
+    uploadedFiles: Express.Multer.File[],
     @CurrentUser() user: User,
   ) {
     // Validate mode field with Zod
