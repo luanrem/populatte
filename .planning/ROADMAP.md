@@ -162,10 +162,11 @@ Plans:
   2. Type inference detects STRING, NUMBER, DATE, BOOLEAN from sample values without full-table scan
   3. Field stats endpoint follows existing ownership validation pattern with 404/403 separation
   4. Endpoint applies soft-delete filtering and defense-in-depth validation
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 17-01: TBD
+- [ ] 17-01-PLAN.md — TDD TypeInferenceService with Brazilian locale support
+- [ ] 17-02-PLAN.md — Repository aggregation, GetFieldStatsUseCase, and REST endpoint
 
 #### Phase 18: Backend Field Values Endpoint
 **Goal**: Paginated distinct values retrieval for specific fields
@@ -233,7 +234,7 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 14. Upload Modal UI | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 15. Batch Grid UI | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 16. Batch Detail Data Table | v2.2 | 1/1 | Complete | 2026-01-30 |
-| 17. Backend Field Stats | v2.3 | 0/TBD | Not started | - |
+| 17. Backend Field Stats | v2.3 | 0/2 | Not started | - |
 | 18. Backend Field Values | v2.3 | 0/TBD | Not started | - |
 | 19. Frontend Field Inventory | v2.3 | 0/TBD | Not started | - |
 | 20. View Values Side Sheet | v2.3 | 0/TBD | Not started | - |
