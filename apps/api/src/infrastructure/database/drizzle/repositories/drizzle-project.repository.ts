@@ -40,7 +40,7 @@ export class DrizzleProjectRepository extends ProjectRepository {
       .getClient()
       .select()
       .from(projects)
-      .where(eq(projects.id, id))
+      .where(and(eq(projects.id, id), isNull(projects.deletedAt)))
       .limit(1);
 
     const row = result[0];

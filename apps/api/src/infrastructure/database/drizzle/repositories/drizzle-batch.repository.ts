@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, count, desc, eq, isNull } from 'drizzle-orm';
 
 import { Batch, CreateBatchData } from '../../../../core/entities/batch.entity';
+import { PaginatedResult } from '../../../../core/entities/pagination.types';
 import { BatchRepository } from '../../../../core/repositories/batch.repository';
 import { DrizzleService } from '../drizzle.service';
 import { ingestionBatches } from '../schema';
@@ -60,9 +61,42 @@ export class DrizzleBatchRepository extends BatchRepository {
           isNull(ingestionBatches.deletedAt),
         ),
       )
-      .orderBy(ingestionBatches.createdAt);
+      .orderBy(desc(ingestionBatches.createdAt));
 
     return result.map((row) => BatchMapper.toDomain(row));
+  }
+
+  public async findByProjectIdPaginated(
+    projectId: string,
+    limit: number,
+    offset: number,
+  ): Promise<PaginatedResult<Batch>> {
+    const conditions = and(
+      eq(ingestionBatches.projectId, projectId),
+      isNull(ingestionBatches.deletedAt),
+    );
+
+    const [data, countResult] = await Promise.all([
+      this.drizzle
+        .getClient()
+        .select()
+        .from(ingestionBatches)
+        .where(conditions)
+        .orderBy(desc(ingestionBatches.createdAt))
+        .limit(limit)
+        .offset(offset),
+      this.drizzle
+        .getClient()
+        .select({ count: count() })
+        .from(ingestionBatches)
+        .where(conditions),
+    ]);
+
+    const total = countResult[0]?.count ?? 0;
+    return {
+      items: data.map((row) => BatchMapper.toDomain(row)),
+      total,
+    };
   }
 
   public async softDelete(id: string, deletedBy: string): Promise<void> {

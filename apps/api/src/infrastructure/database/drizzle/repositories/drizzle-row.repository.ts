@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, asc, count, eq, isNull } from 'drizzle-orm';
 
 import {
   CreateRowData,
@@ -7,6 +7,7 @@ import {
   RowStatus,
 } from '../../../../core/entities/row.entity';
 import type { IngestionRowInsert } from '../schema/ingestion-rows.schema';
+import { PaginatedResult } from '../../../../core/entities/pagination.types';
 import { RowRepository } from '../../../../core/repositories/row.repository';
 import { DrizzleService } from '../drizzle.service';
 import { ingestionRows } from '../schema';
@@ -50,5 +51,38 @@ export class DrizzleRowRepository extends RowRepository {
       );
 
     return result.map((row) => RowMapper.toDomain(row));
+  }
+
+  public async findByBatchIdPaginated(
+    batchId: string,
+    limit: number,
+    offset: number,
+  ): Promise<PaginatedResult<Row>> {
+    const conditions = and(
+      eq(ingestionRows.batchId, batchId),
+      isNull(ingestionRows.deletedAt),
+    );
+
+    const [data, countResult] = await Promise.all([
+      this.drizzle
+        .getClient()
+        .select()
+        .from(ingestionRows)
+        .where(conditions)
+        .orderBy(asc(ingestionRows.sourceRowIndex), asc(ingestionRows.id))
+        .limit(limit)
+        .offset(offset),
+      this.drizzle
+        .getClient()
+        .select({ count: count() })
+        .from(ingestionRows)
+        .where(conditions),
+    ]);
+
+    const total = countResult[0]?.count ?? 0;
+    return {
+      items: data.map((row) => RowMapper.toDomain(row)),
+      total,
+    };
   }
 }
