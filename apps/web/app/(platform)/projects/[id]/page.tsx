@@ -6,7 +6,7 @@ import { Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppHeader } from "@/components/layout/app-header";
-import { BatchEmptyState } from "@/components/projects/batch-empty-state";
+import { BatchGrid } from "@/components/projects/batch-grid";
 import { UploadBatchModal } from "@/components/projects/upload-batch-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -142,19 +142,12 @@ export default function ProjectDetailPage({
       </AppHeader>
 
       <div className="mx-auto max-w-5xl px-8 py-6">
-        {batchesLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-32 rounded-lg" />
-            ))}
-          </div>
-        ) : batches && batches.items.length === 0 ? (
-          <BatchEmptyState />
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            {batches?.items.length} importacoes
-          </p>
-        )}
+        <BatchGrid
+          projectId={id}
+          batches={batches}
+          isLoading={batchesLoading}
+          onUploadClick={() => setUploadModalOpen(true)}
+        />
       </div>
 
       <UploadBatchModal
