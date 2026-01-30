@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-30)
 Phase: 16 of 16 (all milestones complete)
 Plan: N/A
 Status: v2.2 milestone archived, ready for next milestone
-Last activity: 2026-01-30 -- Completed quick task 001: Fix navigation in ProjectCard
+Last activity: 2026-01-30 -- Completed quick task 002: Optimize project listing performance
 
 Progress: [██████████████] 100% (all milestones shipped)
 
@@ -66,10 +66,11 @@ None.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 001 | Fix navigation in ProjectCard | 2026-01-30 | 65e6530 | [001-fix-navigation-in-projectcard](./quick/001-fix-navigation-in-projectcard/) |
+| 002 | Optimize project listing performance | 2026-01-30 | bf4f521 | [002-optimize-project-listing-performance](./quick/002-optimize-project-listing-performance/) |
 
 ## Session Continuity
 
-Last session: 2026-01-30T19:40:20Z
-Stopped at: Completed quick task 001 (Fix navigation in ProjectCard)
+Last session: 2026-01-30T19:51:03Z
+Stopped at: Completed quick task 002 (Optimize project listing performance)
 Resume file: None
 Next step: /gsd:new-milestone
