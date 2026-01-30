@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Rows } from "lucide-react";
+import { Calendar, FileSpreadsheet, Rows } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -82,13 +82,17 @@ export function BatchDetailHeader({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Importacao</BreadcrumbPage>
+            <BreadcrumbPage>{batch.name ?? "Importacao"}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
       <Card>
         <CardContent className="p-6">
+          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <FileSpreadsheet className="h-5 w-5 text-muted-foreground" />
+            {batch.name ?? "Sem nome"}
+          </h2>
           <div className="flex flex-wrap items-center gap-4">
             <Badge className={mode.className}>{mode.text}</Badge>
             <Badge className={status.className}>{status.text}</Badge>

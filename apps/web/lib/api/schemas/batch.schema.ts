@@ -12,6 +12,7 @@ export const batchResponseSchema = z.object({
   projectId: z.string(),
   userId: z.string(),
   mode: z.enum(['LIST_MODE', 'PROFILE_MODE']),
+  name: z.string().nullable().optional(),
   status: z.enum(['PROCESSING', 'COMPLETED', 'FAILED']),
   fileCount: z.number(),
   rowCount: z.number(),

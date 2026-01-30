@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, ChevronRight, Rows } from "lucide-react";
+import { Calendar, ChevronRight, FileSpreadsheet, Rows } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -61,6 +61,11 @@ export function BatchCard({ batch, projectId }: BatchCardProps) {
       <Card className="transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
         <CardContent className="flex items-center justify-between p-6">
           <div className="flex flex-col gap-3 flex-1">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <FileSpreadsheet className="h-4 w-4 text-muted-foreground" />
+              <span>{batch.name ?? "Sem nome"}</span>
+            </div>
+
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
               <span>{formatRelativeDate(batch.createdAt)}</span>
