@@ -55,10 +55,10 @@ Collapsed. See git history for details.
   3. Batch API client supports FormData uploads without hardcoded Content-Type breaking multipart requests
   4. Zod schemas validate batch list, batch detail, and paginated row responses at runtime
   5. React Query hooks (useBatches, useBatch, useBatchRows, useUploadBatch) are available and wired to batch endpoints
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 13-01: Zod schemas, endpoint factory, React Query hooks, FormData fix, and project detail page
+- [ ] 13-01-PLAN.md -- Zod schemas, endpoint factory, React Query hooks, FormData fix, and project detail page shell
 
 ### Phase 14: Upload Modal
 **Goal**: Users can upload Excel files to create batches via a drag-and-drop modal with mode selection and validation feedback
