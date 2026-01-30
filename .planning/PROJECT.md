@@ -2,21 +2,11 @@
 
 ## What This Is
 
-A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, and data ingestion. The Next.js dashboard manages projects and uploads. The Chrome extension maps Excel columns to form fields and auto-populates web forms.
+A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, and data ingestion with strategy-based Excel parsing. The Next.js dashboard manages projects and uploads. The Chrome extension maps Excel columns to form fields and auto-populates web forms.
 
 ## Core Value
 
 **Transform tedious manual data entry into automated form population.** Upload Excel, map columns to fields, populate forms in one click.
-
-## Current Milestone: v2.0 Data Ingestion Engine
-
-**Goal:** Create a robust API to ingest unstructured Excel files and normalize them into standardized JSONB format in PostgreSQL, using the Strategy Pattern to support multiple ingestion modes.
-
-**Target features:**
-- File upload with Multer (max 5MB/file, max 50 files/request)
-- Strategy Pattern: `ListModeStrategy` (one file, many rows) and `ProfileModeStrategy` (many files, one entity per file)
-- Atomic batch operations with database transactions
-- JSONB normalized data storage with source traceability
 
 ## Requirements
 
@@ -36,19 +26,20 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - ✓ 401 error handling with token refresh + retry — v1.0
 - ✓ Type-safe API response handling with Zod schemas — v1.0
 - ✓ Project CRUD (create, list, get, update, soft-delete) — v1.0
+- ✓ Batch creation with file upload (POST /projects/:projectId/batches) — v2.0
+- ✓ ListModeStrategy: Parse single Excel file into N rows with headers as keys — v2.0
+- ✓ ProfileModeStrategy: Parse N Excel files into N rows with cell-address keys — v2.0
+- ✓ Strategy selection via request body parameter — v2.0
+- ✓ Atomic batch insert with database transactions (full rollback on failure) — v2.0
+- ✓ JSONB normalized data storage in `rows` table — v2.0
+- ✓ Source filename traceability on every row — v2.0
+- ✓ File validation: max 5MB per file, max 50 files per request — v2.0
+- ✓ Input validation: list_mode rejects >1 file, profile_mode accepts 1..N — v2.0
+- ✓ Drizzle schema for `batches` and `rows` tables with proper relationships — v2.0
 
 ### Active
 
-- [ ] Batch creation with file upload (POST /projects/:projectId/batches)
-- [ ] ListModeStrategy: Parse single Excel file into N rows with headers as keys
-- [ ] ProfileModeStrategy: Parse N Excel files into N rows with cell-address keys
-- [ ] Strategy selection via request body parameter
-- [ ] Atomic batch insert with database transactions (full rollback on failure)
-- [ ] JSONB normalized data storage in `rows` table
-- [ ] Source filename traceability on every row
-- [ ] File validation: max 5MB per file, max 50 files per request
-- [ ] Input validation: list_mode rejects >1 file, profile_mode accepts 1..N
-- [ ] Drizzle schema for `batches` and `rows` tables with proper relationships
+(None — next milestone will define new requirements)
 
 ### Out of Scope
 
@@ -56,17 +47,16 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - Roles/permissions system — future milestone
 - Session management UI — handled by Clerk components
 - API rate limiting — separate infrastructure concern
-- Frontend upload UI — v2.0 is backend-only (API first)
 - PDF ingestion strategy — future extension via Strategy Pattern
 - Notion ingestion strategy — future extension via Strategy Pattern
-- Key-Value heuristic detection for profile mode — deferred, cell-address keys for MVP
+- Key-Value heuristic detection for profile mode — deferred, cell-address keys sufficient for MVP
 - Streaming/chunked upload for large files — deferred to optimization milestone
 - Row-level error reporting (partial success) — entire batch is atomic for MVP
 
 ## Context
 
-**Shipped v1.0** with 4,244 LOC TypeScript across 65 files.
-Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4.
+**Shipped v2.0** with 7,503+ LOC TypeScript across 116+ files (cumulative).
+Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3.
 
 **Architecture patterns established:**
 - Compare-first sync: Guard fetches stored user, compares fields, writes only on mismatch
@@ -75,15 +65,18 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 - Dual API clients: Client-side (useApiClient with 401 retry) vs Server-side (createServerApiClient)
 - Factory pattern for endpoints: `createUserEndpoints(fetchFn)` composable with any fetch implementation
 - Smart retry: No 4xx retry, exponential backoff for 5xx/network errors
-
-**v2.0 adds:**
 - Strategy Pattern for extensible ingestion (ListMode, ProfileMode, future: PDF, Notion)
-- Database transactions for atomic batch operations
-- File upload handling with Multer
-- Excel parsing with SheetJS (xlsx)
+- CLS-based transactions for atomic batch operations via @nestjs-cls/transactional
+- Chunked bulk inserts (5,000 rows/INSERT) for PostgreSQL parameter limit compliance
+- Magic-byte file validation (ZIP/OLE2/CSV) before parser execution
+- Symbol-based DI tokens for strategy injection (prevents provider collisions)
 
 **Known tech debt:**
 - Clerk JWT Dashboard config needs human re-verification if template changes (low severity)
+- Pre-existing ESLint errors in v1.0 code (6 issues across sync-user, cell-access, main, webhook files)
+- Pre-existing TypeScript error in list-mode.strategy.ts (Object.entries type issue)
+- ContentLengthMiddleware cannot log userId (runs before auth guard — architectural trade-off)
+- FilesInterceptor limits hardcoded (NestJS decorator limitation, documented as intentional)
 
 ## Constraints
 
@@ -91,10 +84,8 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 - **Strict TypeScript**: No `any`, `noUncheckedIndexedAccess` enabled, explicit return types
 - **Language**: All code, comments, and documentation in English
 - **Existing Structure**: Must fit within established Clean Architecture layers
-- **No Breaking Changes**: Existing auth, user sync, and project CRUD must remain intact
-- **Backend Only**: v2.0 is API-first; no frontend changes in this milestone
-- **Strategy Pattern**: Ingestion must use strategy interface, no `if/else` blocks in service
-- **Atomic Operations**: Batch inserts wrapped in database transactions
+- **No Breaking Changes**: Existing auth, user sync, project CRUD, and data ingestion must remain intact
+- **Strategy Pattern**: Ingestion uses strategy interface; new strategies extend, not modify
 
 ## Key Decisions
 
@@ -115,10 +106,16 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Factory pattern for endpoints | Composable with any fetch implementation (hook or non-hook) | ✓ Good |
 | Smart retry in QueryClient | No 4xx retry, exponential backoff for 5xx/network | ✓ Good |
 | useState for stable QueryClient | Prevents cache loss on re-render | ✓ Good |
-| Strategy Pattern for ingestion | Open/Closed principle: add new strategies without modifying service | — Pending |
-| Cell-address keys for profile mode | Simplest lossless flattening; Key-Value heuristic deferred | — Pending |
-| Atomic batch transactions | All-or-nothing insert prevents partial data corruption | — Pending |
-| SheetJS (xlsx) for Excel parsing | Lightweight, widely used, handles .xlsx format | — Pending |
+| Strategy Pattern for ingestion | Open/Closed principle: add new strategies without modifying service | ✓ Good |
+| Cell-address keys for profile mode | Simplest lossless flattening; Key-Value heuristic deferred | ✓ Good |
+| Atomic batch transactions | All-or-nothing insert prevents partial data corruption | ✓ Good |
+| SheetJS (xlsx) from CDN | Lightweight, widely used; CDN avoids npm Prototype Pollution vulnerability | ✓ Good |
+| CLS-based transactions (@nestjs-cls/transactional) | Transparent transaction propagation without manual passing | ✓ Good |
+| Symbol-based DI tokens for strategies | Prevents NestJS provider collisions with class-based injection | ✓ Good |
+| Chunked bulk inserts (5,000 rows) | Stays under PostgreSQL 65,534 parameter limit | ✓ Good |
+| Magic-byte file validation | Prevents MIME-type spoofing; no ESM compatibility issues | ✓ Good |
+| Content-Length middleware for early rejection | Prevents Multer buffering oversized requests into memory | ✓ Good |
+| safeParse for multipart DTO validation | Type-safe Zod validation without unsafe assertions in controller | ✓ Good |
 
 ---
-*Last updated: 2026-01-29 after v2.0 milestone initialization*
+*Last updated: 2026-01-29 after v2.0 milestone completion*
