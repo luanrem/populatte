@@ -85,4 +85,19 @@ export class DrizzleRowRepository extends RowRepository {
       total,
     };
   }
+
+  public async countByBatchId(batchId: string): Promise<number> {
+    const result = await this.drizzle
+      .getClient()
+      .select({ count: count() })
+      .from(ingestionRows)
+      .where(
+        and(
+          eq(ingestionRows.batchId, batchId),
+          isNull(ingestionRows.deletedAt),
+        ),
+      );
+
+    return result[0]?.count ?? 0;
+  }
 }

@@ -6,7 +6,6 @@ jest.mock('@nestjs-cls/transactional', () => ({
 }));
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ForbiddenException } from '@nestjs/common';
 
 import {
   CreateBatchUseCase,
