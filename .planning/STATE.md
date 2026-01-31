@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 17 - Backend Field Stats with Type Inference
+**Current focus:** Phase 18 - Backend Field Values Endpoint
 
 ## Current Position
 
-Phase: 17 of 20 (Backend Field Stats with Type Inference)
-Plan: 2 of 2
+Phase: 18 of 20 (Backend Field Values Endpoint)
+Plan: 1 of 1
 Status: Phase complete
-Last activity: 2026-01-30 — Completed 17-02-PLAN.md (Repository aggregation and endpoint)
+Last activity: 2026-01-31 — Completed 18-01-PLAN.md (Field values endpoint)
 
-Progress: [████████████████░░░░] 85.0%
+Progress: [█████████████████░░░] 90.0%
 
 ## Performance Metrics
 
@@ -39,10 +39,10 @@ Progress: [████████████████░░░░] 85.0%
 - Total execution time: 15m 54s
 
 **v2.3 velocity:**
-- Plans completed: 2
-- Average duration: 4m 16s
-- Total execution time: 8m 32s
-- Current phase: 17 of 20
+- Plans completed: 3
+- Average duration: 3m 56s
+- Total execution time: 11m 32s
+- Current phase: 18 of 20
 
 *Updated after each plan completion*
 
@@ -53,16 +53,16 @@ Progress: [████████████████░░░░] 85.0%
 See PROJECT.md Key Decisions table for full log with outcomes.
 
 Recent decisions affecting current work:
+- v2.3 (18-01): Parallel CTE queries (values+count, total count) for optimal field values performance
+- v2.3 (18-01): Dual count system (matchingCount + totalDistinctCount) enables "X of Y matches (Z total)" UI
+- v2.3 (18-01): ILIKE search applies only to values query, not total count query
+- v2.3 (18-01): Field key validated against columnMetadata.normalizedKey for consistency
 - v2.3 (17-02): Single CTE-based query for field aggregation (no N+1 per field)
 - v2.3 (17-02): Empty strings not counted toward presence (filtered in SQL)
 - v2.3 (17-02): First 100 rows for type inference (deterministic sample)
-- v2.3 (17-02): Presence/unique counts use ALL rows (exact, not approximate)
 - v2.3 (17-01): 0/1 boolean pattern context-aware detection (['1','0'] vs ['1','2.5','3'])
 - v2.3 (17-01): Brazilian date check BEFORE ISO parse prevents MM/DD/YYYY misinterpretation
-- v2.3 (17-01): Threshold fallback < 80% → STRING with 1.0 confidence for mixed-type columns
 - v2.2: keepPreviousData for pagination prevents loading flash between page transitions
-- v2.2: Dynamic columns from columnMetadata supports any Excel structure
-- v2.1: PaginatedResult<T> with Promise.all two-query pattern for optimal performance
 
 ### Roadmap Evolution
 
@@ -93,7 +93,7 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-30
-Stopped at: Phase 17 complete — verified (8/8 must-haves passed)
+Last session: 2026-01-31
+Stopped at: Phase 18 complete — field values endpoint shipped
 Resume file: None
-Next step: /gsd:discuss-phase 18
+Next step: /gsd:discuss-phase 19
