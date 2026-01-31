@@ -9,6 +9,7 @@ import { BatchController } from '../../presentation/controllers/batch.controller
 import {
   GetBatchUseCase,
   GetFieldStatsUseCase,
+  GetFieldValuesUseCase,
   ListBatchesUseCase,
   ListRowsUseCase,
 } from '../../core/use-cases/batch';
@@ -22,6 +23,7 @@ import { ContentLengthMiddleware } from '../upload/middleware/content-length.mid
   providers: [
     GetBatchUseCase,
     GetFieldStatsUseCase,
+    GetFieldValuesUseCase,
     ListBatchesUseCase,
     ListRowsUseCase,
     TypeInferenceService,

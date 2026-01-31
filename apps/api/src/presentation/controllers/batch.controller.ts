@@ -17,14 +17,19 @@ import {
   CreateBatchUseCase,
   GetBatchUseCase,
   GetFieldStatsUseCase,
+  GetFieldValuesUseCase,
   ListBatchesUseCase,
   ListRowsUseCase,
 } from '../../core/use-cases/batch';
 import type { ExcelFileInput } from '../../infrastructure/excel/strategies/excel-parsing.strategy';
 import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import { createBatchSchema, paginationQuerySchema } from '../dto/batch.dto';
-import type { PaginationQueryDto } from '../dto/batch.dto';
+import {
+  createBatchSchema,
+  fieldValuesQuerySchema,
+  paginationQuerySchema,
+} from '../dto/batch.dto';
+import type { FieldValuesQueryDto, PaginationQueryDto } from '../dto/batch.dto';
 import { FileContentValidationPipe } from '../pipes/file-content-validation.pipe';
 import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
@@ -35,6 +40,7 @@ export class BatchController {
     private readonly createBatch: CreateBatchUseCase,
     private readonly getBatch: GetBatchUseCase,
     private readonly getFieldStatsUseCase: GetFieldStatsUseCase,
+    private readonly getFieldValuesUseCase: GetFieldValuesUseCase,
     private readonly listBatches: ListBatchesUseCase,
     private readonly listRowsUseCase: ListRowsUseCase,
   ) {}
@@ -138,5 +144,25 @@ export class BatchController {
     @CurrentUser() user: User,
   ) {
     return this.getFieldStatsUseCase.execute(projectId, batchId, user.id);
+  }
+
+  @Get(':batchId/fields/:fieldKey/values')
+  public async getFieldValues(
+    @Param('projectId') projectId: string,
+    @Param('batchId') batchId: string,
+    @Param('fieldKey') fieldKey: string,
+    @Query(new ZodValidationPipe(fieldValuesQuerySchema))
+    query: FieldValuesQueryDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.getFieldValuesUseCase.execute(
+      projectId,
+      batchId,
+      decodeURIComponent(fieldKey),
+      user.id,
+      query.limit,
+      query.offset,
+      query.search,
+    );
   }
 }
