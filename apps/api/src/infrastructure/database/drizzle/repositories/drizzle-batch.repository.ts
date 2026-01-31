@@ -4,6 +4,10 @@ import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
 import { Batch, CreateBatchData } from '../../../../core/entities/batch.entity';
 import { PaginatedResult } from '../../../../core/entities/pagination.types';
 import {
+  FieldValuesQuery,
+  FieldValuesResult,
+} from '../../../../core/entities/field-values.entity';
+import {
   BatchRepository,
   FieldAggregation,
 } from '../../../../core/repositories/batch.repository';
@@ -142,5 +146,70 @@ export class DrizzleBatchRepository extends BatchRepository {
       presenceCount: Number(row.presence_count),
       uniqueCount: Number(row.unique_count),
     }));
+  }
+
+  public async getFieldValues(
+    query: FieldValuesQuery,
+  ): Promise<FieldValuesResult> {
+    // Query 1: Get paginated values with matching count
+    const valuesQuery = query.search
+      ? sql`
+          WITH field_values AS (
+            SELECT DISTINCT data->>${query.fieldKey} AS value
+            FROM ingestion_rows
+            WHERE batch_id = ${query.batchId}
+              AND deleted_at IS NULL
+              AND data->>${query.fieldKey} IS NOT NULL
+              AND data->>${query.fieldKey} != ''
+          )
+          SELECT value, COUNT(*) OVER() AS matching_count
+          FROM field_values
+          WHERE value ILIKE '%' || ${query.search} || '%'
+          ORDER BY value ASC
+          LIMIT ${query.limit} OFFSET ${query.offset}
+        `
+      : sql`
+          WITH field_values AS (
+            SELECT DISTINCT data->>${query.fieldKey} AS value
+            FROM ingestion_rows
+            WHERE batch_id = ${query.batchId}
+              AND deleted_at IS NULL
+              AND data->>${query.fieldKey} IS NOT NULL
+              AND data->>${query.fieldKey} != ''
+          )
+          SELECT value, COUNT(*) OVER() AS matching_count
+          FROM field_values
+          ORDER BY value ASC
+          LIMIT ${query.limit} OFFSET ${query.offset}
+        `;
+
+    // Query 2: Get total distinct count (regardless of search)
+    const totalQuery = sql`
+      SELECT COUNT(DISTINCT data->>${query.fieldKey})::integer AS total_count
+      FROM ingestion_rows
+      WHERE batch_id = ${query.batchId}
+        AND deleted_at IS NULL
+        AND data->>${query.fieldKey} IS NOT NULL
+        AND data->>${query.fieldKey} != ''
+    `;
+
+    // Run both queries in parallel
+    const [valuesResult, totalResult] = await Promise.all([
+      this.drizzle.getClient().execute(valuesQuery),
+      this.drizzle.getClient().execute(totalQuery),
+    ]);
+
+    const values = valuesResult.rows.map((row) => String(row.value));
+    const matchingCount =
+      valuesResult.rows.length > 0
+        ? Number(valuesResult.rows[0]?.matching_count)
+        : 0;
+    const totalDistinctCount = Number(totalResult.rows[0]?.total_count ?? 0);
+
+    return {
+      values,
+      matchingCount,
+      totalDistinctCount,
+    };
   }
 }
