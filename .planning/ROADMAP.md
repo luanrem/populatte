@@ -176,10 +176,10 @@ Plans:
   1. Backend returns all distinct values for a specific field key across batch records
   2. Field values endpoint supports pagination (limit/offset) to handle high-cardinality fields
   3. Values are retrieved on-demand (not pre-loaded with stats)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 18-01: TBD
+- [ ] 18-01-PLAN.md — Field values endpoint with search, pagination, and ownership validation
 
 #### Phase 19: Frontend Field Inventory Grid
 **Goal**: Card-based field exploration UI with view toggle
