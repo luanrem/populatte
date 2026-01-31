@@ -168,7 +168,7 @@ Plans:
 - [x] 17-01-PLAN.md — TDD TypeInferenceService with Brazilian locale support
 - [x] 17-02-PLAN.md — Repository aggregation, GetFieldStatsUseCase, and REST endpoint
 
-#### Phase 18: Backend Field Values Endpoint
+#### Phase 18: Backend Field Values Endpoint ✓
 **Goal**: Paginated distinct values retrieval for specific fields
 **Depends on**: Phase 17
 **Requirements**: API-03, API-04
@@ -179,7 +179,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 18-01-PLAN.md — Field values endpoint with search, pagination, and ownership validation
+- [x] 18-01-PLAN.md — Field values endpoint with search, pagination, and ownership validation
 
 #### Phase 19: Frontend Field Inventory Grid
 **Goal**: Card-based field exploration UI with view toggle
@@ -235,6 +235,6 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 15. Batch Grid UI | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 16. Batch Detail Data Table | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 17. Backend Field Stats | v2.3 | 2/2 | Complete | 2026-01-30 |
-| 18. Backend Field Values | v2.3 | 0/TBD | Not started | - |
+| 18. Backend Field Values | v2.3 | 1/1 | Complete | 2026-01-31 |
 | 19. Frontend Field Inventory | v2.3 | 0/TBD | Not started | - |
 | 20. View Values Side Sheet | v2.3 | 0/TBD | Not started | - |

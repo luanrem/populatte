@@ -94,8 +94,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TYPE-02 | Phase 17 | Complete |
 | TYPE-03 | Phase 17 | Complete |
 | TYPE-04 | Phase 17 | Complete |
-| API-03 | Phase 18 | Pending |
-| API-04 | Phase 18 | Pending |
+| API-03 | Phase 18 | Complete |
+| API-04 | Phase 18 | Complete |
 | UI-01 | Phase 19 | Pending |
 | UI-02 | Phase 19 | Pending |
 | UI-03 | Phase 19 | Pending |
