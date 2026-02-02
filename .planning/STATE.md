@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 19 - Frontend Field Inventory Grid (complete)
+**Current focus:** Phase 20 - View Values Side Sheet (in progress)
 
 ## Current Position
 
-Phase: 19 of 20 (Frontend Field Inventory Grid)
-Plan: 2 of 2
-Status: Phase complete
-Last activity: 2026-02-02 — Completed 19-02-PLAN.md (Field inventory grid UI)
+Phase: 20 of 20 (View Values Side Sheet)
+Plan: 1 of 2
+Status: In progress
+Last activity: 2026-02-02 — Completed 20-01-PLAN.md (Data fetching layer)
 
-Progress: [██████████████████░░] 95.0%
+Progress: [███████████████████░] 97.5%
 
 ## Performance Metrics
 
@@ -39,10 +39,10 @@ Progress: [██████████████████░░] 95.0%
 - Total execution time: 15m 54s
 
 **v2.3 velocity:**
-- Plans completed: 5
-- Average duration: 3m 13s
-- Total execution time: ~15m 32s
-- Current phase: 19 of 20
+- Plans completed: 6
+- Average duration: 2m 53s
+- Total execution time: ~16m 45s
+- Current phase: 20 of 20
 
 *Updated after each plan completion*
 
@@ -53,6 +53,9 @@ Progress: [██████████████████░░] 95.0%
 See PROJECT.md Key Decisions table for full log with outcomes.
 
 Recent decisions affecting current work:
+- v2.3 (20-01): useInfiniteQuery offset = total loaded values count (not page number)
+- v2.3 (20-01): getNextPageParam compares loaded count against matchingCount for has-more detection
+- v2.3 (20-01): search param passed as undefined (not empty string) when no search active
 - v2.3 (19-02): Single controlled Input across loading/loaded states to avoid React uncontrolled-to-controlled warning
 - v2.3 (19-02): PROFILE_MODE defaults to inventory view, LIST_MODE defaults to table via useEffect on batch?.mode
 - v2.3 (19-02): Type badge colors: STRING=slate, NUMBER=blue, DATE=amber, BOOLEAN=emerald, UNKNOWN=gray
@@ -98,6 +101,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Phase 19 complete — field inventory grid shipped
+Stopped at: Completed 20-01-PLAN.md (Data fetching layer)
 Resume file: None
-Next step: /gsd:discuss-phase 20
+Next step: Execute 20-02-PLAN.md (Side sheet UI)
