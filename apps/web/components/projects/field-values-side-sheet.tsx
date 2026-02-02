@@ -67,16 +67,6 @@ export function FieldValuesSideSheet({
     debouncedSearch || undefined,
   );
 
-  // Reset search when field changes
-  useEffect(() => {
-    setSearchInput("");
-  }, [fieldName]);
-
-  // Reset scroll position when field changes
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0 });
-  }, [fieldName]);
-
   // Auto-fetch next page when sentinel is in view
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
