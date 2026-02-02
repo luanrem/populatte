@@ -10,6 +10,7 @@ import type {
   PaginatedRowsResponse,
   UploadBatchResponse,
 } from '../../api/schemas/batch.schema';
+import type { FieldStatsResponse } from '../../api/schemas/field-stats.schema';
 
 export function useBatches(projectId: string, limit = 50, offset = 0) {
   const client = useApiClient();
@@ -62,5 +63,16 @@ export function useUploadBatch(projectId: string) {
         queryKey: ['projects', projectId, 'batches'],
       });
     },
+  });
+}
+
+export function useFieldStats(projectId: string, batchId: string) {
+  const client = useApiClient();
+  const endpoints = createBatchEndpoints(client.fetch);
+
+  return useQuery<FieldStatsResponse>({
+    queryKey: ['projects', projectId, 'batches', batchId, 'field-stats'],
+    queryFn: () => endpoints.getFieldStats(projectId, batchId),
+    enabled: !!projectId && !!batchId,
   });
 }

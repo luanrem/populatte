@@ -10,6 +10,10 @@ import {
   type PaginatedRowsResponse,
   type UploadBatchResponse,
 } from '../schemas/batch.schema';
+import {
+  fieldStatsResponseSchema,
+  type FieldStatsResponse,
+} from '../schemas/field-stats.schema';
 
 export function createBatchEndpoints(
   fetchFn: (endpoint: string, options?: RequestInit) => Promise<Response>,
@@ -102,6 +106,28 @@ export function createBatchEndpoints(
           result.error.issues,
         );
         throw new Error('Invalid batch data received from server');
+      }
+
+      return result.data;
+    },
+
+    async getFieldStats(
+      projectId: string,
+      batchId: string,
+    ): Promise<FieldStatsResponse> {
+      const response = await fetchFn(
+        `/projects/${projectId}/batches/${batchId}/field-stats`,
+      );
+      const data: unknown = await response.json();
+
+      const result = fieldStatsResponseSchema.safeParse(data);
+
+      if (!result.success) {
+        console.error(
+          '[API] Field stats response validation failed:',
+          result.error.issues,
+        );
+        throw new Error('Invalid field stats data received from server');
       }
 
       return result.data;
