@@ -39,34 +39,8 @@ export function BatchFieldInventory({
     );
   }, [data?.fields, searchQuery]);
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Input
-          placeholder="Filtrar campos..."
-          className="max-w-sm"
-          disabled
-        />
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-4 space-y-3">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-5 w-16" />
-                <Skeleton className="h-2 w-full" />
-                <Skeleton className="h-3 w-1/2" />
-                <Skeleton className="h-3 w-2/3" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // Empty state - no fields or no rows
-  if (!data || data.fields.length === 0 || totalRows === 0) {
+  // Empty state - no fields or no rows (no search input needed)
+  if (!isLoading && data && (data.fields.length === 0 || totalRows === 0)) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
         <div className="rounded-full border-2 border-dashed border-muted-foreground/25 bg-muted/50 p-6 mb-6">
@@ -82,16 +56,31 @@ export function BatchFieldInventory({
     );
   }
 
-  // Empty search results
-  if (searchQuery && filteredFields.length === 0) {
-    return (
-      <div className="space-y-4">
-        <Input
-          placeholder="Filtrar campos..."
-          className="max-w-sm"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+  return (
+    <div className="space-y-4">
+      <Input
+        placeholder="Filtrar campos..."
+        className="max-w-sm"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        disabled={isLoading}
+      />
+
+      {isLoading ? (
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="p-4 space-y-3">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-2 w-full" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-3 w-2/3" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : searchQuery && filteredFields.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-4">
           <div className="rounded-full border-2 border-dashed border-muted-foreground/25 bg-muted/50 p-6 mb-6">
             <LayoutGrid className="h-12 w-12 text-muted-foreground/50" />
@@ -103,33 +92,22 @@ export function BatchFieldInventory({
             Tente buscar por outro termo.
           </p>
         </div>
-      </div>
-    );
-  }
-
-  // Loaded state with fields
-  return (
-    <div className="space-y-4">
-      <Input
-        placeholder="Filtrar campos..."
-        className="max-w-sm"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-        {filteredFields.map((field) => (
-          <FieldCard
-            key={field.fieldName}
-            fieldName={field.fieldName}
-            inferredType={field.inferredType}
-            presenceCount={field.presenceCount}
-            totalRows={totalRows}
-            uniqueCount={field.uniqueCount}
-            sampleValues={field.sampleValues}
-            onClick={() => {}}
-          />
-        ))}
-      </div>
+      ) : (
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+          {filteredFields.map((field) => (
+            <FieldCard
+              key={field.fieldName}
+              fieldName={field.fieldName}
+              inferredType={field.inferredType}
+              presenceCount={field.presenceCount}
+              totalRows={totalRows}
+              uniqueCount={field.uniqueCount}
+              sampleValues={field.sampleValues}
+              onClick={() => {}}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
