@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 19 - Frontend Field Inventory Grid
+**Current focus:** Phase 19 - Frontend Field Inventory Grid (complete)
 
 ## Current Position
 
 Phase: 19 of 20 (Frontend Field Inventory Grid)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-02 — Completed 19-01-PLAN.md (Field stats data layer)
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-02-02 — Completed 19-02-PLAN.md (Field inventory grid UI)
 
-Progress: [█████████████████░░░] 91.7%
+Progress: [██████████████████░░] 95.0%
 
 ## Performance Metrics
 
@@ -39,9 +39,9 @@ Progress: [█████████████████░░░] 91.7%
 - Total execution time: 15m 54s
 
 **v2.3 velocity:**
-- Plans completed: 4
-- Average duration: 3m 19s
-- Total execution time: 12m 32s
+- Plans completed: 5
+- Average duration: 3m 13s
+- Total execution time: ~15m 32s
 - Current phase: 19 of 20
 
 *Updated after each plan completion*
@@ -53,17 +53,18 @@ Progress: [█████████████████░░░] 91.7%
 See PROJECT.md Key Decisions table for full log with outcomes.
 
 Recent decisions affecting current work:
+- v2.3 (19-02): Single controlled Input across loading/loaded states to avoid React uncontrolled-to-controlled warning
+- v2.3 (19-02): PROFILE_MODE defaults to inventory view, LIST_MODE defaults to table via useEffect on batch?.mode
+- v2.3 (19-02): Type badge colors: STRING=slate, NUMBER=blue, DATE=amber, BOOLEAN=emerald, UNKNOWN=gray
+- v2.3 (19-02): Presence threshold at 50% for amber progress bar warning
+- v2.3 (19-02): ID badge shown when uniqueCount === totalRows
+- v2.3 (19-02): FieldCard onClick is no-op pending Phase 20 side sheet
 - v2.3 (19-01): Used z.enum for InferredType matching backend enum values exactly
 - v2.3 (19-01): queryKey convention ['projects', projectId, 'batches', batchId, 'field-stats'] for nested resources
 - v2.3 (19-01): Hook only fetches when both projectId and batchId are present (enabled guards)
 - v2.3 (18-01): Parallel CTE queries (values+count, total count) for optimal field values performance
 - v2.3 (18-01): Dual count system (matchingCount + totalDistinctCount) enables "X of Y matches (Z total)" UI
-- v2.3 (18-01): ILIKE search applies only to values query, not total count query
-- v2.3 (18-01): Field key validated against columnMetadata.normalizedKey for consistency
 - v2.3 (17-02): Single CTE-based query for field aggregation (no N+1 per field)
-- v2.3 (17-02): Empty strings not counted toward presence (filtered in SQL)
-- v2.3 (17-02): First 100 rows for type inference (deterministic sample)
-- v2.3 (17-01): 0/1 boolean pattern context-aware detection (['1','0'] vs ['1','2.5','3'])
 - v2.3 (17-01): Brazilian date check BEFORE ISO parse prevents MM/DD/YYYY misinterpretation
 - v2.2: keepPreviousData for pagination prevents loading flash between page transitions
 
@@ -97,6 +98,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 19-01-PLAN.md (Field stats data layer)
+Stopped at: Phase 19 complete — field inventory grid shipped
 Resume file: None
-Next step: Continue with 19-02-PLAN.md
+Next step: /gsd:discuss-phase 20
