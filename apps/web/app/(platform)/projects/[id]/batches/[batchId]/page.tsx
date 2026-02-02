@@ -8,6 +8,8 @@ import { BatchDetailHeader } from "@/components/projects/batch-detail-header";
 import { BatchDataTable } from "@/components/projects/batch-data-table";
 import { BatchTablePagination } from "@/components/projects/batch-table-pagination";
 import { BatchTableEmptyState } from "@/components/projects/batch-table-empty-state";
+import { BatchViewToggle, type ViewMode } from "@/components/projects/batch-view-toggle";
+import { BatchFieldInventory } from "@/components/projects/batch-field-inventory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,6 +25,7 @@ export default function BatchDetailPage({
   const { id, batchId } = use(params);
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
+  const [currentView, setCurrentView] = useState<ViewMode>("table");
 
   const {
     data: project,
@@ -52,6 +55,13 @@ export default function BatchDetailPage({
       toast.error("Erro ao carregar a importacao");
     }
   }, [batchError, batchErrorData]);
+
+  // Set default view based on batch mode
+  useEffect(() => {
+    if (batch) {
+      setCurrentView(batch.mode === "PROFILE_MODE" ? "inventory" : "table");
+    }
+  }, [batch?.mode]);
 
   const handlePageSizeChange = (newLimit: number) => {
     setLimit(newLimit);
@@ -164,20 +174,32 @@ export default function BatchDetailPage({
             <BatchTableEmptyState />
           ) : (
             <div className="space-y-4">
-              <BatchDataTable
-                batch={batch}
-                rows={rowsData?.items ?? []}
-                isLoading={rowsLoading}
-                isPlaceholderData={isPlaceholderData}
-                offset={offset}
-              />
-              <BatchTablePagination
-                total={rowsData?.total ?? batch.totalRows}
-                limit={limit}
-                offset={offset}
-                onPageChange={setOffset}
-                onPageSizeChange={handlePageSizeChange}
-              />
+              <BatchViewToggle value={currentView} onValueChange={setCurrentView} />
+
+              {currentView === "table" ? (
+                <>
+                  <BatchDataTable
+                    batch={batch}
+                    rows={rowsData?.items ?? []}
+                    isLoading={rowsLoading}
+                    isPlaceholderData={isPlaceholderData}
+                    offset={offset}
+                  />
+                  <BatchTablePagination
+                    total={rowsData?.total ?? batch.totalRows}
+                    limit={limit}
+                    offset={offset}
+                    onPageChange={setOffset}
+                    onPageSizeChange={handlePageSizeChange}
+                  />
+                </>
+              ) : (
+                <BatchFieldInventory
+                  projectId={id}
+                  batchId={batchId}
+                  totalRows={batch.totalRows}
+                />
+              )}
             </div>
           )}
         </div>
