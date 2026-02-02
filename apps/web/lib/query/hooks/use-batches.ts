@@ -1,6 +1,6 @@
 'use client';
 
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useApiClient } from '../../api/client';
 import { createBatchEndpoints } from '../../api/endpoints/batches';
@@ -11,6 +11,7 @@ import type {
   UploadBatchResponse,
 } from '../../api/schemas/batch.schema';
 import type { FieldStatsResponse } from '../../api/schemas/field-stats.schema';
+import type { FieldValuesResponse } from '../../api/schemas/field-values.schema';
 
 export function useBatches(projectId: string, limit = 50, offset = 0) {
   const client = useApiClient();
@@ -74,5 +75,31 @@ export function useFieldStats(projectId: string, batchId: string) {
     queryKey: ['projects', projectId, 'batches', batchId, 'field-stats'],
     queryFn: () => endpoints.getFieldStats(projectId, batchId),
     enabled: !!projectId && !!batchId,
+  });
+}
+
+export function useFieldValuesInfinite(
+  projectId: string,
+  batchId: string,
+  fieldKey: string,
+  search?: string,
+) {
+  const client = useApiClient();
+  const endpoints = createBatchEndpoints(client.fetch);
+
+  return useInfiniteQuery<FieldValuesResponse>({
+    queryKey: ['projects', projectId, 'batches', batchId, 'field-values', fieldKey, { search }],
+    queryFn: ({ pageParam }) =>
+      endpoints.getFieldValues(projectId, batchId, fieldKey, {
+        limit: 50,
+        offset: pageParam as number,
+        search: search || undefined,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const loadedCount = allPages.reduce((sum, page) => sum + page.values.length, 0);
+      return loadedCount < lastPage.matchingCount ? loadedCount : undefined;
+    },
+    enabled: !!projectId && !!batchId && !!fieldKey,
   });
 }
