@@ -207,10 +207,11 @@ Plans:
   3. User can copy individual values to clipboard with toast feedback
   4. Side sheet fetches values on demand when opened, not pre-loaded
   5. Loading indicator displays while values are fetching
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 20-01: TBD
+- [ ] 20-01-PLAN.md — Field values Zod schema, API endpoint, useFieldValuesInfinite hook, useDebounce hook
+- [ ] 20-02-PLAN.md — FieldValuesSideSheet and FieldValueRow components, Sheet integration into BatchFieldInventory
 
 ## Progress
 
