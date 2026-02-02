@@ -14,6 +14,10 @@ import {
   fieldStatsResponseSchema,
   type FieldStatsResponse,
 } from '../schemas/field-stats.schema';
+import {
+  fieldValuesResponseSchema,
+  type FieldValuesResponse,
+} from '../schemas/field-values.schema';
 
 export function createBatchEndpoints(
   fetchFn: (endpoint: string, options?: RequestInit) => Promise<Response>,
@@ -128,6 +132,34 @@ export function createBatchEndpoints(
           result.error.issues,
         );
         throw new Error('Invalid field stats data received from server');
+      }
+
+      return result.data;
+    },
+
+    async getFieldValues(
+      projectId: string,
+      batchId: string,
+      fieldKey: string,
+      params: { limit: number; offset: number; search?: string },
+    ): Promise<FieldValuesResponse> {
+      let url = `/projects/${projectId}/batches/${batchId}/fields/${encodeURIComponent(fieldKey)}/values?limit=${params.limit}&offset=${params.offset}`;
+
+      if (params.search) {
+        url += `&search=${encodeURIComponent(params.search)}`;
+      }
+
+      const response = await fetchFn(url);
+      const data: unknown = await response.json();
+
+      const result = fieldValuesResponseSchema.safeParse(data);
+
+      if (!result.success) {
+        console.error(
+          '[API] Field values response validation failed:',
+          result.error.issues,
+        );
+        throw new Error('Invalid field values data received from server');
       }
 
       return result.data;
