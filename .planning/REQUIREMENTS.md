@@ -33,17 +33,17 @@ Requirements for Field Inventory milestone. Each maps to roadmap phases.
 
 ### View Values Side Sheet
 
-- [ ] **SHEET-01**: Clicking a field card opens a side sheet showing all values for that field
-- [ ] **SHEET-02**: Side sheet includes debounced search input to filter displayed values
-- [ ] **SHEET-03**: Each value row has a copy button that copies to clipboard with toast feedback
-- [ ] **SHEET-04**: Side sheet fetches values on demand (only when opened, not pre-loaded)
+- [x] **SHEET-01**: Clicking a field card opens a side sheet showing all values for that field
+- [x] **SHEET-02**: Side sheet includes debounced search input to filter displayed values
+- [x] **SHEET-03**: Each value row has a copy button that copies to clipboard with toast feedback
+- [x] **SHEET-04**: Side sheet fetches values on demand (only when opened, not pre-loaded)
 
 ### Loading & Empty States
 
 - [ ] **UX-01**: Skeleton cards display while field stats are loading
 - [ ] **UX-02**: Empty state shows when batch has no fields or no rows
-- [ ] **UX-03**: Loading indicator in side sheet while values are fetching
-- [ ] **UX-04**: Empty state in side sheet when field has no values
+- [x] **UX-03**: Loading indicator in side sheet while values are fetching
+- [x] **UX-04**: Empty state in side sheet when field has no values
 
 ## Future Requirements
 
@@ -103,12 +103,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-05 | Phase 19 | Complete |
 | UX-01 | Phase 19 | Complete |
 | UX-02 | Phase 19 | Complete |
-| SHEET-01 | Phase 20 | Pending |
-| SHEET-02 | Phase 20 | Pending |
-| SHEET-03 | Phase 20 | Pending |
-| SHEET-04 | Phase 20 | Pending |
-| UX-03 | Phase 20 | Pending |
-| UX-04 | Phase 20 | Pending |
+| SHEET-01 | Phase 20 | Complete |
+| SHEET-02 | Phase 20 | Complete |
+| SHEET-03 | Phase 20 | Complete |
+| SHEET-04 | Phase 20 | Complete |
+| UX-03 | Phase 20 | Complete |
+| UX-04 | Phase 20 | Complete |
 
 **Coverage:**
 - v2.3 requirements: 23 total
@@ -117,4 +117,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-01-30*
-*Last updated: 2026-01-30 after roadmap creation*
+*Last updated: 2026-02-02 after phase 20 completion*

@@ -6,7 +6,7 @@
 - ✅ **v2.0 Data Ingestion Engine** - Phases 4-10 (shipped 2026-01-29)
 - ✅ **v2.1 Batch Read Layer** - Phases 11-12 (shipped 2026-01-30)
 - ✅ **v2.2 Dashboard Upload & Listing UI** - Phases 13-16 (shipped 2026-01-30)
-- 🚧 **v2.3 Field Inventory** - Phases 17-20 (in progress)
+- ✅ **v2.3 Field Inventory** - Phases 17-20 (shipped 2026-02-02)
 
 ## Phases
 
@@ -149,9 +149,8 @@ Plans:
 
 </details>
 
-### 🚧 v2.3 Field Inventory (In Progress)
-
-**Milestone Goal:** Column-oriented data exploration to prepare Excel-to-form field mapping
+<details>
+<summary>✅ v2.3 Field Inventory (Phases 17-20) - SHIPPED 2026-02-02</summary>
 
 #### Phase 17: Backend Field Stats with Type Inference ✓
 **Goal**: Field-level analytics endpoint with presence, uniqueness, and type detection
@@ -197,7 +196,7 @@ Plans:
 - [x] 19-01-PLAN.md — Field stats Zod schema, API endpoint, and React Query hook
 - [x] 19-02-PLAN.md — Field inventory grid components, view toggle, and page integration
 
-#### Phase 20: Frontend View Values Side Sheet
+#### Phase 20: Frontend View Values Side Sheet ✓
 **Goal**: Non-modal value exploration with search and copy
 **Depends on**: Phases 18, 19
 **Requirements**: SHEET-01, SHEET-02, SHEET-03, SHEET-04, UX-03, UX-04
@@ -210,8 +209,10 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 20-01-PLAN.md — Field values Zod schema, API endpoint, useFieldValuesInfinite hook, useDebounce hook
-- [ ] 20-02-PLAN.md — FieldValuesSideSheet and FieldValueRow components, Sheet integration into BatchFieldInventory
+- [x] 20-01-PLAN.md — Field values Zod schema, API endpoint, useFieldValuesInfinite hook, useDebounce hook
+- [x] 20-02-PLAN.md — FieldValuesSideSheet and FieldValueRow components, Sheet integration into BatchFieldInventory
+
+</details>
 
 ## Progress
 
@@ -239,4 +240,4 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 17. Backend Field Stats | v2.3 | 2/2 | Complete | 2026-01-30 |
 | 18. Backend Field Values | v2.3 | 1/1 | Complete | 2026-01-31 |
 | 19. Frontend Field Inventory | v2.3 | 2/2 | Complete | 2026-02-02 |
-| 20. View Values Side Sheet | v2.3 | 0/TBD | Not started | - |
+| 20. View Values Side Sheet | v2.3 | 2/2 | Complete | 2026-02-02 |
