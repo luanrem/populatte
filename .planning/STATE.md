@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-30)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 20 - View Values Side Sheet (in progress)
+**Current focus:** Phase 20 complete - View Values Side Sheet shipped
 
 ## Current Position
 
 Phase: 20 of 20 (View Values Side Sheet)
-Plan: 1 of 2
-Status: In progress
-Last activity: 2026-02-02 — Completed 20-01-PLAN.md (Data fetching layer)
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-02-02 — Completed 20-02-PLAN.md (Side sheet UI)
 
-Progress: [███████████████████░] 97.5%
+Progress: [████████████████████] 100%
 
 ## Performance Metrics
 
@@ -39,10 +39,10 @@ Progress: [███████████████████░] 97.5%
 - Total execution time: 15m 54s
 
 **v2.3 velocity:**
-- Plans completed: 6
-- Average duration: 2m 53s
-- Total execution time: ~16m 45s
-- Current phase: 20 of 20
+- Plans completed: 7
+- Average duration: 2m 46s
+- Total execution time: ~20m 30s
+- Current phase: 20 of 20 (complete)
 
 *Updated after each plan completion*
 
@@ -53,6 +53,9 @@ Progress: [███████████████████░] 97.5%
 See PROJECT.md Key Decisions table for full log with outcomes.
 
 Recent decisions affecting current work:
+- v2.3 (20-02): Key-prop remount on FieldValuesSideSheet for state reset (React Compiler compatible)
+- v2.3 (20-02): Removed useMemo in favor of React Compiler auto-memoization
+- v2.3 (20-02): FieldValueRow count prop optional (backend has no per-value counts)
 - v2.3 (20-01): useInfiniteQuery offset = total loaded values count (not page number)
 - v2.3 (20-01): getNextPageParam compares loaded count against matchingCount for has-more detection
 - v2.3 (20-01): search param passed as undefined (not empty string) when no search active
@@ -61,7 +64,6 @@ Recent decisions affecting current work:
 - v2.3 (19-02): Type badge colors: STRING=slate, NUMBER=blue, DATE=amber, BOOLEAN=emerald, UNKNOWN=gray
 - v2.3 (19-02): Presence threshold at 50% for amber progress bar warning
 - v2.3 (19-02): ID badge shown when uniqueCount === totalRows
-- v2.3 (19-02): FieldCard onClick is no-op pending Phase 20 side sheet
 - v2.3 (19-01): Used z.enum for InferredType matching backend enum values exactly
 - v2.3 (19-01): queryKey convention ['projects', projectId, 'batches', batchId, 'field-stats'] for nested resources
 - v2.3 (19-01): Hook only fetches when both projectId and batchId are present (enabled guards)
@@ -77,7 +79,7 @@ Recent decisions affecting current work:
 - v2.0: 10 phases, 12 plans -- Data Ingestion Engine (shipped 2026-01-29)
 - v2.1: 2 phases, 2 plans -- Batch Read Layer (shipped 2026-01-30)
 - v2.2: 4 phases, 4 plans -- Dashboard Upload & Listing UI (shipped 2026-01-30)
-- v2.3: 4 phases, TBD plans -- Field Inventory (in progress)
+- v2.3: 4 phases, 7 plans -- Field Inventory (shipped 2026-02-02)
 
 ### Pending Todos
 
@@ -101,6 +103,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 20-01-PLAN.md (Data fetching layer)
+Stopped at: Completed 20-02-PLAN.md (Side sheet UI) - Phase 20 and v2.3 roadmap complete
 Resume file: None
-Next step: Execute 20-02-PLAN.md (Side sheet UI)
+Next step: Define v2.4 roadmap
