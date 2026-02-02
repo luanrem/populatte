@@ -63,7 +63,18 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ### Active
 
-(None — define next milestone with `/gsd:new-milestone`)
+#### Current Milestone: v3.0 Backend Mapping
+
+**Goal:** Build the mapping CRUD layer that associates Excel columns to web form selectors, enabling the Chrome extension to fetch and execute form-filling recipes.
+
+- [ ] Mapping entity with project ownership, target URL, optional success trigger
+- [ ] Step entity with ordered actions (fill/click/wait/verify), selector fallbacks, sourceFieldKey XOR fixedValue
+- [ ] Full CRUD for mappings (create, list, get, update, soft-delete)
+- [ ] Full CRUD for steps (create, update, delete, reorder)
+- [ ] Prefix-based URL matching for extension lookup
+- [ ] Auto-increment step ordering on create
+- [ ] Ownership validation following 404/403 separation pattern
+- [ ] Defense-in-depth: step belongs to mapping, mapping belongs to project
 
 ### Out of Scope
 
@@ -79,6 +90,13 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - Domain-specific type detection (CPF, CNPJ, EMAIL, PHONE) — deferred to future type enhancement milestone
 - Completeness heatmap, sort/filter controls, bulk copy for field inventory — UI enhancements deferred
 - GIN index on JSONB data column — performance optimization deferred until needed
+- Mapping/step frontend UI — future milestone after backend mapping is solid
+- Step execution engine — Chrome extension responsibility, not API
+- CSS selector validation — extension validates selectors against live DOM
+- Redis caching for mappings — optimization deferred
+- Mapping versioning/history — future enhancement
+- Mapping import/export — future enhancement
+- Mapping duplication/cloning — future enhancement
 
 ## Context
 
@@ -187,4 +205,4 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Copy feedback with CheckCheck icon | 1.5s setTimeout reset; clipboard API in browser context | ✓ Good |
 
 ---
-*Last updated: 2026-02-02 after v2.3 milestone complete*
+*Last updated: 2026-02-02 after v3.0 milestone started*
