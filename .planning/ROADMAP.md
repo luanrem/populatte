@@ -191,10 +191,11 @@ Plans:
   3. PROFILE_MODE batches default to field inventory view, LIST_MODE defaults to table view
   4. Skeleton cards display while stats are loading
   5. Empty state shows when batch has no fields or no rows
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 19-01: TBD
+- [ ] 19-01-PLAN.md — Field stats Zod schema, API endpoint, and React Query hook
+- [ ] 19-02-PLAN.md — Field inventory grid components, view toggle, and page integration
 
 #### Phase 20: Frontend View Values Side Sheet
 **Goal**: Non-modal value exploration with search and copy
@@ -236,5 +237,5 @@ Phases execute in numeric order: 17 → 18 → 19 → 20
 | 16. Batch Detail Data Table | v2.2 | 1/1 | Complete | 2026-01-30 |
 | 17. Backend Field Stats | v2.3 | 2/2 | Complete | 2026-01-30 |
 | 18. Backend Field Values | v2.3 | 1/1 | Complete | 2026-01-31 |
-| 19. Frontend Field Inventory | v2.3 | 0/TBD | Not started | - |
+| 19. Frontend Field Inventory | v2.3 | 0/2 | Not started | - |
 | 20. View Values Side Sheet | v2.3 | 0/TBD | Not started | - |
