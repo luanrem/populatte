@@ -1,5 +1,32 @@
 # Project Milestones: Populatte
 
+## v2.3 Field Inventory (Shipped: 2026-02-02)
+
+**Delivered:** Field-level analytics and exploration for ingested Excel data, enabling users to view per-field statistics (type, presence, uniqueness) and browse/search/copy individual field values via a card-based inventory with side sheet.
+
+**Phases completed:** 17-20 (7 plans total)
+
+**Key accomplishments:**
+- Type inference engine with Brazilian locale support (CPF/CNPJ/CEP, DD/MM/YYYY, R$ currency) and 80% confidence threshold via TDD
+- CTE-based single-query field aggregation for per-field stats (presence, uniqueness, inferred type) without N+1
+- Paginated field values endpoint with ILIKE search, dual count system (matching + total), and parallel CTE queries
+- Field Inventory card grid with color-coded type badges, presence progress bars, mode-aware defaults, and search filtering
+- View Values side sheet with infinite scroll (IntersectionObserver), debounced search, copy-to-clipboard with inline feedback
+- End-to-end field exploration flow: upload → view batch → toggle to inventory → click card → browse/search/copy values
+
+**Stats:**
+- 60 files changed (+8,441 / -203 lines)
+- ~12,057 lines of TypeScript (cumulative)
+- 4 phases, 7 plans, 14 tasks
+- 3 days (2026-01-30 → 2026-02-02)
+- Execution time: ~20m 30s (avg 2m 46s/plan)
+
+**Git range:** `docs(17)` → `docs(20)`
+
+**What's next:** Next milestone TBD — `/gsd:new-milestone` to define scope
+
+---
+
 ## v2.2 Dashboard Upload & Listing UI (Shipped: 2026-01-30)
 
 **Delivered:** Frontend interface for uploading Excel files and viewing ingested data, connecting the Next.js dashboard to batch/row API endpoints with a complete project detail → upload → batch grid → data table flow.

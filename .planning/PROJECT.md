@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, and data ingestion with strategy-based Excel parsing. The Next.js dashboard manages projects, file uploads, and data visualization with paginated batch tables. The Chrome extension maps Excel columns to form fields and auto-populates web forms.
+A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, and field-level analytics with type inference. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, and field exploration with card-based inventory and value browsing. The Chrome extension maps Excel columns to form fields and auto-populates web forms.
 
 ## Core Value
 
@@ -54,17 +54,16 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - ✓ Dynamic data table with server-side pagination — v2.2
 - ✓ Smooth page transitions with keepPreviousData — v2.2
 - ✓ Complete dashboard upload-to-view flow — v2.2
+- ✓ Backend field stats endpoint with CTE-based aggregation and type inference — v2.3
+- ✓ Backend field values endpoint with paginated search and dual count system — v2.3
+- ✓ Field Inventory card grid with type badges, presence bars, and mode-aware defaults — v2.3
+- ✓ View Values side sheet with infinite scroll, debounced search, and copy-to-clipboard — v2.3
+- ✓ View toggle between table and field inventory on any batch — v2.3
+- ✓ Type inference engine with Brazilian locale support (CPF/CNPJ/CEP, DD/MM/YYYY, R$ currency) — v2.3
 
 ### Active
 
-**v2.3 — Field Inventory**
-
-- [ ] Backend endpoint for field-level stats (presence count, inferred type, unique value count per field)
-- [ ] Backend endpoint for field values (all values for a specific field across records)
-- [ ] Field Inventory grid UI — card per field showing name, type badge, presence stats, unique count
-- [ ] View Values side sheet — click field card to see all values, with search and copy
-- [ ] View toggle on batch detail — switch between table view and field inventory for any batch mode
-- [ ] PROFILE_MODE defaults to field inventory, LIST_MODE defaults to table
+(None — define next milestone with `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -77,11 +76,14 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - Key-Value heuristic detection for profile mode — deferred, cell-address keys sufficient for MVP
 - Streaming/chunked upload for large files — deferred to optimization milestone
 - Row-level error reporting (partial success) — entire batch is atomic for MVP
+- Domain-specific type detection (CPF, CNPJ, EMAIL, PHONE) — deferred to future type enhancement milestone
+- Completeness heatmap, sort/filter controls, bulk copy for field inventory — UI enhancements deferred
+- GIN index on JSONB data column — performance optimization deferred until needed
 
 ## Context
 
-**Shipped v2.2** with ~10,200 LOC TypeScript across 145+ files (cumulative).
-Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, shadcn/ui.
+**Shipped v2.3** with ~12,057 LOC TypeScript across 170+ files (cumulative).
+Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, react-intersection-observer, shadcn/ui.
 
 **Architecture patterns established:**
 - Compare-first sync: Guard fetches stored user, compares fields, writes only on mismatch
@@ -164,6 +166,25 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Sticky row number column | Preserves context when horizontally scrolling wide tables | ✓ Good |
 | Tooltip on every cell | Simpler than conditional truncation detection; acceptable DOM overhead for MVP | ✓ Good |
 | Page size change resets offset | Prevents invalid pagination state (e.g., offset=200 with limit=25) | ✓ Good |
+| TDD for TypeInferenceService | RED-GREEN-REFACTOR catches edge cases during test writing; 35 tests | ✓ Good |
+| Brazilian date check BEFORE ISO parse | Prevents DD/MM/YYYY misinterpretation as MM/DD/YYYY American format | ✓ Good |
+| 80% confidence threshold with STRING fallback | Mixed-type columns default to STRING with 1.0 confidence | ✓ Good |
+| Single CTE-based field aggregation | No N+1 per field; jsonb_object_keys extracts dynamic field names | ✓ Good |
+| Empty strings not counted toward presence | Semantically "no value"; presence reflects meaningful data | ✓ Good |
+| First 100 rows for type inference sample | Balances accuracy with performance; deterministic sort | ✓ Good |
+| Parallel CTE queries for field values | Promise.all for values+matchingCount and totalDistinctCount | ✓ Good |
+| Dual count system (matching + total) | Enables "X of Y matches (Z total)" rich pagination UX | ✓ Good |
+| ILIKE search on values only | Total count stays constant; UI shows matches vs total | ✓ Good |
+| Field key validation via normalizedKey | Consistent with field stats and overall system field key handling | ✓ Good |
+| URL-encoded field keys at controller | decodeURIComponent handles spaces/special chars in Excel headers | ✓ Good |
+| z.enum for InferredType | Matches backend enum values exactly; compile-time safety | ✓ Good |
+| Mode-aware view defaults | PROFILE_MODE → inventory, LIST_MODE → table via useEffect on batch.mode | ✓ Good |
+| Type badge color coding | STRING=slate, NUMBER=blue, DATE=amber, BOOLEAN=emerald, UNKNOWN=gray | ✓ Good |
+| Key-prop remount for field switching | React Compiler compatible; cleaner than useEffect setState reset | ✓ Good |
+| React Compiler auto-memoization | Removed manual useMemo; compiler handles optimization | ✓ Good |
+| Sentinel-based infinite scroll | IntersectionObserver ref on invisible div triggers fetchNextPage | ✓ Good |
+| useDebounce generic hook (300ms) | Reusable across search inputs; prevents excessive API calls | ✓ Good |
+| Copy feedback with CheckCheck icon | 1.5s setTimeout reset; clipboard API in browser context | ✓ Good |
 
 ---
-*Last updated: 2026-01-30 after v2.3 milestone started*
+*Last updated: 2026-02-02 after v2.3 milestone complete*

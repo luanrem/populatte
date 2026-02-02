@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-30)
+See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 20 complete - View Values Side Sheet shipped
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 20 of 20 (View Values Side Sheet)
-Plan: 2 of 2
-Status: Phase complete
-Last activity: 2026-02-02 — Completed 20-02-PLAN.md (Side sheet UI)
+Phase: 20 of 20 (milestone complete)
+Plan: N/A
+Status: v2.3 shipped — ready for next milestone
+Last activity: 2026-02-02 — v2.3 Field Inventory milestone complete
 
-Progress: [████████████████████] 100%
+Progress: [████████████████████] 100% (v2.3)
 
 ## Performance Metrics
 
@@ -42,7 +42,6 @@ Progress: [████████████████████] 100%
 - Plans completed: 7
 - Average duration: 2m 46s
 - Total execution time: ~20m 30s
-- Current phase: 20 of 20 (complete)
 
 *Updated after each plan completion*
 
@@ -51,27 +50,6 @@ Progress: [████████████████████] 100%
 ### Decisions
 
 See PROJECT.md Key Decisions table for full log with outcomes.
-
-Recent decisions affecting current work:
-- v2.3 (20-02): Key-prop remount on FieldValuesSideSheet for state reset (React Compiler compatible)
-- v2.3 (20-02): Removed useMemo in favor of React Compiler auto-memoization
-- v2.3 (20-02): FieldValueRow count prop optional (backend has no per-value counts)
-- v2.3 (20-01): useInfiniteQuery offset = total loaded values count (not page number)
-- v2.3 (20-01): getNextPageParam compares loaded count against matchingCount for has-more detection
-- v2.3 (20-01): search param passed as undefined (not empty string) when no search active
-- v2.3 (19-02): Single controlled Input across loading/loaded states to avoid React uncontrolled-to-controlled warning
-- v2.3 (19-02): PROFILE_MODE defaults to inventory view, LIST_MODE defaults to table via useEffect on batch?.mode
-- v2.3 (19-02): Type badge colors: STRING=slate, NUMBER=blue, DATE=amber, BOOLEAN=emerald, UNKNOWN=gray
-- v2.3 (19-02): Presence threshold at 50% for amber progress bar warning
-- v2.3 (19-02): ID badge shown when uniqueCount === totalRows
-- v2.3 (19-01): Used z.enum for InferredType matching backend enum values exactly
-- v2.3 (19-01): queryKey convention ['projects', projectId, 'batches', batchId, 'field-stats'] for nested resources
-- v2.3 (19-01): Hook only fetches when both projectId and batchId are present (enabled guards)
-- v2.3 (18-01): Parallel CTE queries (values+count, total count) for optimal field values performance
-- v2.3 (18-01): Dual count system (matchingCount + totalDistinctCount) enables "X of Y matches (Z total)" UI
-- v2.3 (17-02): Single CTE-based query for field aggregation (no N+1 per field)
-- v2.3 (17-01): Brazilian date check BEFORE ISO parse prevents MM/DD/YYYY misinterpretation
-- v2.2: keepPreviousData for pagination prevents loading flash between page transitions
 
 ### Roadmap Evolution
 
@@ -103,6 +81,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 20-02-PLAN.md (Side sheet UI) - Phase 20 and v2.3 roadmap complete
+Stopped at: v2.3 Field Inventory milestone archived
 Resume file: None
-Next step: Define v2.4 roadmap
+Next step: `/gsd:new-milestone` to define next milestone scope
