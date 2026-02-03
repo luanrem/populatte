@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, eq, max } from 'drizzle-orm';
 
 import {
   CreateStepData,
@@ -38,6 +38,17 @@ export class DrizzleStepRepository extends StepRepository {
       .orderBy(asc(steps.stepOrder));
 
     return result.map((row) => StepMapper.toDomain(row));
+  }
+
+  public async getMaxStepOrder(mappingId: string): Promise<number> {
+    const result = await this.drizzle
+      .getClient()
+      .select({ maxOrder: max(steps.stepOrder) })
+      .from(steps)
+      .where(eq(steps.mappingId, mappingId));
+
+    const row = result[0];
+    return row?.maxOrder ?? 0;
   }
 
   public async create(data: CreateStepData): Promise<Step> {
@@ -104,7 +115,7 @@ export class DrizzleStepRepository extends StepRepository {
   public async reorder(
     mappingId: string,
     orderedStepIds: string[],
-  ): Promise<void> {
+  ): Promise<Step[]> {
     for (let i = 0; i < orderedStepIds.length; i++) {
       const stepId = orderedStepIds[i];
       if (stepId !== undefined) {
@@ -115,5 +126,7 @@ export class DrizzleStepRepository extends StepRepository {
           .where(and(eq(steps.id, stepId), eq(steps.mappingId, mappingId)));
       }
     }
+
+    return this.findByMappingId(mappingId);
   }
 }
