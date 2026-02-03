@@ -18,18 +18,18 @@ Requirements for Chrome Extension MVP (COPILOTO mode). Each maps to roadmap phas
 
 ### Backend Extension Auth
 
-- [ ] **BAUTH-01**: Web app generates 5-minute connection code via POST /auth/extension-code
-- [ ] **BAUTH-02**: Extension exchanges code for 30-day JWT via POST /auth/extension-token
-- [ ] **BAUTH-03**: GET /auth/me validates token and returns user info
-- [ ] **BAUTH-04**: Extension code is single-use (invalidated after exchange)
-- [ ] **BAUTH-05**: Endpoints follow existing Clean Architecture patterns
+- [x] **BAUTH-01**: Web app generates 5-minute connection code via POST /auth/extension-code
+- [x] **BAUTH-02**: Extension exchanges code for 30-day JWT via POST /auth/extension-token
+- [x] **BAUTH-03**: GET /auth/me validates token and returns user info
+- [x] **BAUTH-04**: Extension code is single-use (invalidated after exchange)
+- [x] **BAUTH-05**: Endpoints follow existing Clean Architecture patterns
 
 ### Backend Row Status
 
-- [ ] **BROW-01**: PATCH /projects/:projectId/batches/:batchId/rows/:rowId updates row status
-- [ ] **BROW-02**: Status field supports values: PENDING, VALID, ERROR
-- [ ] **BROW-03**: Optional errorMessage field stores failure reason
-- [ ] **BROW-04**: Ownership validation follows existing 404/403 pattern
+- [x] **BROW-01**: PATCH /projects/:projectId/batches/:batchId/rows/:rowId updates row status
+- [x] **BROW-02**: Status field supports values: PENDING, VALID, ERROR
+- [x] **BROW-03**: Optional errorMessage field stores failure reason
+- [x] **BROW-04**: Ownership validation follows existing 404/403 pattern
 
 ### Extension Authentication
 
@@ -128,15 +128,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-04 | 24 | Complete |
 | FOUND-05 | 24 | Complete |
 | FOUND-06 | 24 | Complete |
-| BAUTH-01 | 25 | Pending |
-| BAUTH-02 | 25 | Pending |
-| BAUTH-03 | 25 | Pending |
-| BAUTH-04 | 25 | Pending |
-| BAUTH-05 | 25 | Pending |
-| BROW-01 | 25 | Pending |
-| BROW-02 | 25 | Pending |
-| BROW-03 | 25 | Pending |
-| BROW-04 | 25 | Pending |
+| BAUTH-01 | 25 | Complete |
+| BAUTH-02 | 25 | Complete |
+| BAUTH-03 | 25 | Complete |
+| BAUTH-04 | 25 | Complete |
+| BAUTH-05 | 25 | Complete |
+| BROW-01 | 25 | Complete |
+| BROW-02 | 25 | Complete |
+| BROW-03 | 25 | Complete |
+| BROW-04 | 25 | Complete |
 | AUTH-01 | 26 | Pending |
 | AUTH-02 | 26 | Pending |
 | AUTH-03 | 26 | Pending |
@@ -179,4 +179,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 — Phase 24 requirements complete*
+*Last updated: 2026-02-03 — Phase 25 requirements complete*

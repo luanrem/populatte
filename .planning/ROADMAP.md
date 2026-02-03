@@ -17,7 +17,7 @@ This roadmap delivers the Chrome Extension MVP with COPILOTO mode — a manual r
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 24: Extension Foundation** - WXT scaffold, storage abstraction, message bus, type integration
-- [ ] **Phase 25: Backend Extensions** - Extension auth endpoints, row status tracking
+- [x] **Phase 25: Backend Extensions** - Extension auth endpoints, row status tracking
 - [ ] **Phase 26: Extension Auth Flow** - Connection code exchange, token storage, auth UI
 - [ ] **Phase 27: Popup UI** - Project/batch selectors, row navigation, fill controls
 - [ ] **Phase 28: Content Script** - Selector engine (CSS/XPath), step executor, DOM manipulation
@@ -55,8 +55,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 25-01-PLAN.md — Extension auth infrastructure and endpoints (code generation, JWT exchange, /auth/me)
-- [ ] 25-02-PLAN.md — Row status update endpoint with ownership validation
+- [x] 25-01-PLAN.md — Extension auth infrastructure and endpoints (code generation, JWT exchange, /auth/me)
+- [x] 25-02-PLAN.md — Row status update endpoint with ownership validation
 
 ### Phase 26: Extension Auth Flow
 **Goal**: Users can authenticate the extension via connection code from web app
@@ -126,7 +126,7 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 24. Extension Foundation | 3/3 | ✓ Complete | 2026-02-03 |
-| 25. Backend Extensions | 0/2 | Not started | - |
+| 25. Backend Extensions | 2/2 | ✓ Complete | 2026-02-03 |
 | 26. Extension Auth Flow | 0/TBD | Not started | - |
 | 27. Popup UI | 0/TBD | Not started | - |
 | 28. Content Script | 0/TBD | Not started | - |
@@ -134,4 +134,4 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-03 — Phase 25 planned (2 plans)*
+*Last updated: 2026-02-03 — Phase 25 complete (2 plans)*
