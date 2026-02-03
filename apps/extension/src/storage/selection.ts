@@ -1,4 +1,4 @@
-import { storage } from 'wxt/storage';
+import { storage } from 'wxt/utils/storage';
 import type { SelectionState } from './types';
 import { DEFAULT_SELECTION } from './types';
 

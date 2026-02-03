@@ -1,4 +1,4 @@
-import { storage } from 'wxt/storage';
+import { storage } from 'wxt/utils/storage';
 import type { AuthState } from './types';
 import { DEFAULT_AUTH } from './types';
 

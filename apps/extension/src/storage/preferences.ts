@@ -1,4 +1,4 @@
-import { storage } from 'wxt/storage';
+import { storage } from 'wxt/utils/storage';
 import type { PreferencesState } from './types';
 import { DEFAULT_PREFERENCES } from './types';
 
