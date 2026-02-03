@@ -36,17 +36,17 @@ Plans:
 **Goal**: Users can create, list, view, update, and soft-delete mappings for their projects
 **Depends on**: Phase 21
 **Requirements**: MAP-01, MAP-02, MAP-03, MAP-04, MAP-05, SEC-01, SEC-03
+**Plans:** 2 plans
 **Success Criteria** (what must be TRUE):
   1. User can create a mapping with name, targetUrl, and optional successTrigger for a project they own
   2. User can list paginated mappings for a project, with optional targetUrl prefix filter returning only active mappings
   3. User can view a mapping's details including all associated steps ordered by stepOrder
   4. User can update a mapping's name, targetUrl, isActive status, and successTrigger
   5. User can soft-delete a mapping, making it and its steps inaccessible via mapping endpoints
-**Plans**: TBD
 
 Plans:
-- [ ] 22-01: Mapping use cases (create, list, get, update, soft-delete) with ownership validation
-- [ ] 22-02: Mapping controller, DTOs, and endpoint wiring
+- [ ] 22-01-PLAN.md -- Mapping use cases (create, list, get, update, soft-delete) with ownership validation and repository extensions
+- [ ] 22-02-PLAN.md -- Mapping controller, DTOs, and endpoint wiring with MappingModule
 
 ### Phase 23: Step CRUD
 **Goal**: Users can manage ordered steps within their mappings with full defense-in-depth security
@@ -72,5 +72,5 @@ Phases execute in numeric order: 21 → 22 → 23
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 21. Domain Foundation | 2/2 | ✓ Complete | 2026-02-03 |
-| 22. Mapping CRUD | 0/2 | Not started | - |
+| 22. Mapping CRUD | 0/2 | Planned | - |
 | 23. Step CRUD | 0/2 | Not started | - |
