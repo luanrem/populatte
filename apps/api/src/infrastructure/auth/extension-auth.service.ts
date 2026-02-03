@@ -6,7 +6,10 @@ import { eq, and, isNull } from 'drizzle-orm';
 import type { User } from '../../core/entities/user.entity';
 import { UserRepository } from '../../core/repositories/user.repository';
 import { DrizzleService } from '../database/drizzle/drizzle.service';
-import { extensionCodes } from '../database/drizzle/schema/extension-codes.schema';
+import {
+  extensionCodes,
+  type ExtensionCodeRow,
+} from '../database/drizzle/schema/extension-codes.schema';
 import { extensionConfig } from '../config/extension.config';
 
 interface LockoutEntry {
@@ -68,11 +71,13 @@ export class ExtensionAuthService {
     const db = this.drizzleService.getClient();
 
     // Find the code
-    const [codeRecord] = await db
+    const result = await db
       .select()
       .from(extensionCodes)
       .where(eq(extensionCodes.code, code))
       .limit(1);
+
+    const codeRecord: ExtensionCodeRow | undefined = result[0];
 
     // Check lockout for this user (if we found the code)
     if (codeRecord && this.isLockedOut(codeRecord.userId)) {

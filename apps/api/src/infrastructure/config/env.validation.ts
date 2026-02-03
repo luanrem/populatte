@@ -30,4 +30,13 @@ export const envValidationSchema = Joi.object({
   UPLOAD_MAX_FILE_COUNT: Joi.number()
     .default(50)
     .description('Maximum number of files per request'),
+
+  // Extension authentication
+  EXTENSION_JWT_SECRET: Joi.string()
+    .required()
+    .description('JWT secret for extension authentication'),
+  EXTENSION_JWT_EXPIRY: Joi.string()
+    .optional()
+    .default('30d')
+    .description('JWT expiry for extension tokens (e.g., "30d", "24h")'),
 });

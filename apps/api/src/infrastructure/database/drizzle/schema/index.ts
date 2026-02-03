@@ -4,3 +4,4 @@ export * from './ingestion-batches.schema';
 export * from './ingestion-rows.schema';
 export * from './mappings.schema';
 export * from './steps.schema';
+export * from './extension-codes.schema';

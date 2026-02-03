@@ -6,6 +6,7 @@ import {
   clerkConfig,
   databaseConfig,
   uploadConfig,
+  extensionConfig,
   envValidationSchema,
 } from './infrastructure/config';
 import { AuthModule } from './infrastructure/auth/auth.module';
@@ -25,7 +26,7 @@ import { AppService } from './app.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [clerkConfig, databaseConfig, uploadConfig],
+      load: [clerkConfig, databaseConfig, uploadConfig, extensionConfig],
       validationSchema: envValidationSchema,
       validationOptions: {
         abortEarly: false, // Show all validation errors
