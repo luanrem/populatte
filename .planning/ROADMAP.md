@@ -16,7 +16,7 @@ This roadmap delivers the Chrome Extension MVP with COPILOTO mode — a manual r
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 24: Extension Foundation** - WXT scaffold, storage abstraction, message bus, type integration
+- [x] **Phase 24: Extension Foundation** - WXT scaffold, storage abstraction, message bus, type integration
 - [ ] **Phase 25: Backend Extensions** - Extension auth endpoints, row status tracking
 - [ ] **Phase 26: Extension Auth Flow** - Connection code exchange, token storage, auth UI
 - [ ] **Phase 27: Popup UI** - Project/batch selectors, row navigation, fill controls
@@ -38,9 +38,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 24-01-PLAN.md — WXT scaffold with React popup, background, and content script
-- [ ] 24-02-PLAN.md — Storage abstraction layer with typed accessors
-- [ ] 24-03-PLAN.md — Type-safe message bus between all contexts
+- [x] 24-01-PLAN.md — WXT scaffold with React popup, background, and content script
+- [x] 24-02-PLAN.md — Storage abstraction layer with typed accessors
+- [x] 24-03-PLAN.md — Type-safe message bus between all contexts
 
 ### Phase 25: Backend Extensions
 **Goal**: API supports extension authentication and row status tracking
@@ -124,7 +124,7 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 24. Extension Foundation | 0/3 | Planned | - |
+| 24. Extension Foundation | 3/3 | ✓ Complete | 2026-02-03 |
 | 25. Backend Extensions | 0/TBD | Not started | - |
 | 26. Extension Auth Flow | 0/TBD | Not started | - |
 | 27. Popup UI | 0/TBD | Not started | - |
@@ -133,4 +133,4 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-03*
+*Last updated: 2026-02-03 — Phase 24 complete*

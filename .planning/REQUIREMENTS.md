@@ -9,12 +9,12 @@ Requirements for Chrome Extension MVP (COPILOTO mode). Each maps to roadmap phas
 
 ### Extension Foundation
 
-- [ ] **FOUND-01**: Extension builds with WXT + Vite + Manifest V3
-- [ ] **FOUND-02**: TypeScript configured for all contexts (popup, background, content script)
-- [ ] **FOUND-03**: Type-safe message bus enables communication between all contexts
-- [ ] **FOUND-04**: chrome.storage abstraction layer handles session and local persistence
-- [ ] **FOUND-05**: Shared types integrated from @populatte/types package
-- [ ] **FOUND-06**: Extension loads successfully in Chrome developer mode
+- [x] **FOUND-01**: Extension builds with WXT + Vite + Manifest V3
+- [x] **FOUND-02**: TypeScript configured for all contexts (popup, background, content script)
+- [x] **FOUND-03**: Type-safe message bus enables communication between all contexts
+- [x] **FOUND-04**: chrome.storage abstraction layer handles session and local persistence
+- [x] **FOUND-05**: Shared types integrated from @populatte/types package
+- [x] **FOUND-06**: Extension loads successfully in Chrome developer mode
 
 ### Backend Extension Auth
 
@@ -122,12 +122,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | 24 | Pending |
-| FOUND-02 | 24 | Pending |
-| FOUND-03 | 24 | Pending |
-| FOUND-04 | 24 | Pending |
-| FOUND-05 | 24 | Pending |
-| FOUND-06 | 24 | Pending |
+| FOUND-01 | 24 | Complete |
+| FOUND-02 | 24 | Complete |
+| FOUND-03 | 24 | Complete |
+| FOUND-04 | 24 | Complete |
+| FOUND-05 | 24 | Complete |
+| FOUND-06 | 24 | Complete |
 | BAUTH-01 | 25 | Pending |
 | BAUTH-02 | 25 | Pending |
 | BAUTH-03 | 25 | Pending |
@@ -179,4 +179,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 after roadmap creation*
+*Last updated: 2026-02-03 — Phase 24 requirements complete*
