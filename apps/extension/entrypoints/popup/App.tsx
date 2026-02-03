@@ -13,10 +13,12 @@ export default function App() {
     loadState();
 
     // Listen for state updates from background
-    const listener = (message: { type: string; payload: unknown }) => {
+    const listener = (message: { type: string; payload: unknown }): undefined | false => {
       if (message.type === 'STATE_UPDATED') {
         setState(message.payload as ExtensionState);
+        return undefined; // Handled, no response needed
       }
+      return false; // Not handling this message, let other listeners respond
     };
 
     browser.runtime.onMessage.addListener(listener);
