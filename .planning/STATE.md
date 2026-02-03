@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 
 ## Current Position
 
-Phase: Milestone complete
-Plan: N/A
-Status: Ready for next milestone
-Last activity: 2026-02-03 — v3.0 archived and tagged
+Phase: Not started (defining requirements)
+Plan: —
+Status: Researching extension ecosystem
+Last activity: 2026-02-03 — Milestone v4.0 started
 
-Progress: Milestone shipped
+Progress: Research in progress
 
 ## Performance Metrics
 

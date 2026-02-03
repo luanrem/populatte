@@ -71,13 +71,18 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ### Active
 
-#### Next Milestone: TBD
+#### Current Milestone: v4.0 Extension Core
 
-**Goal:** To be defined via `/gsd:new-milestone`
+**Goal:** Build Chrome extension MVP with COPILOTO mode — manual row advancement after form fill
 
-Potential directions:
-- **v3.1 Mapping Frontend:** Dashboard UI for creating/editing mappings with visual step builder
-- **v3.2 Extension Integration:** Chrome extension consumes mapping API for form-filling execution
+**Target features:**
+- Extension foundation with Vite + CRXJS, Manifest V3, TypeScript
+- Connection code auth flow (web app generates code, extension exchanges for JWT)
+- Background service worker with state management and API client
+- Popup UI with project/batch selection and fill controls
+- Content script with selector engine and step execution
+- Full fill cycle: detect mapping → fill form → user confirms → next row
+- Backend additions: row status tracking, extension auth endpoints
 
 ### Out of Scope
 
