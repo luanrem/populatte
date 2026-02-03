@@ -52,10 +52,11 @@ Plans:
   3. Extension can validate token and retrieve user info via /auth/me
   4. Extension can update row status to PENDING, VALID, or ERROR with optional message
   5. All endpoints follow existing ownership validation patterns
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 25-01: TBD
+- [ ] 25-01-PLAN.md — Extension auth infrastructure and endpoints (code generation, JWT exchange, /auth/me)
+- [ ] 25-02-PLAN.md — Row status update endpoint with ownership validation
 
 ### Phase 26: Extension Auth Flow
 **Goal**: Users can authenticate the extension via connection code from web app
@@ -125,7 +126,7 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 24. Extension Foundation | 3/3 | ✓ Complete | 2026-02-03 |
-| 25. Backend Extensions | 0/TBD | Not started | - |
+| 25. Backend Extensions | 0/2 | Not started | - |
 | 26. Extension Auth Flow | 0/TBD | Not started | - |
 | 27. Popup UI | 0/TBD | Not started | - |
 | 28. Content Script | 0/TBD | Not started | - |
@@ -133,4 +134,4 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-03 — Phase 24 complete*
+*Last updated: 2026-02-03 — Phase 25 planned (2 plans)*
