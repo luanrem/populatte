@@ -35,10 +35,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Popup opens and renders React UI
   4. Storage operations persist and retrieve data across popup closes
   5. TypeScript compilation succeeds with @populatte/types integration
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 24-01: TBD
+- [ ] 24-01-PLAN.md — WXT scaffold with React popup, background, and content script
+- [ ] 24-02-PLAN.md — Storage abstraction layer with typed accessors
+- [ ] 24-03-PLAN.md — Type-safe message bus between all contexts
 
 ### Phase 25: Backend Extensions
 **Goal**: API supports extension authentication and row status tracking
@@ -122,7 +124,7 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 24. Extension Foundation | 0/TBD | Not started | - |
+| 24. Extension Foundation | 0/3 | Planned | - |
 | 25. Backend Extensions | 0/TBD | Not started | - |
 | 26. Extension Auth Flow | 0/TBD | Not started | - |
 | 27. Popup UI | 0/TBD | Not started | - |
