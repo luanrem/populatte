@@ -74,9 +74,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DOM-01 | Phase 21 | Pending |
-| DOM-02 | Phase 21 | Pending |
-| DOM-03 | Phase 21 | Pending |
+| DOM-01 | Phase 21 | Complete |
+| DOM-02 | Phase 21 | Complete |
+| DOM-03 | Phase 21 | Complete |
 | MAP-01 | Phase 22 | Pending |
 | MAP-02 | Phase 22 | Pending |
 | MAP-03 | Phase 22 | Pending |

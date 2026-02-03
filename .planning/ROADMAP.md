@@ -11,7 +11,7 @@ Build the mapping CRUD layer that associates Excel columns to web form selectors
 - Integer phases (21, 22, 23): Planned milestone work
 - Decimal phases (21.1, 22.1): Urgent insertions if needed
 
-- [ ] **Phase 21: Domain Foundation** - Mapping and Step entities, Drizzle schemas, and repository layer
+- [x] **Phase 21: Domain Foundation** - Mapping and Step entities, Drizzle schemas, and repository layer
 - [ ] **Phase 22: Mapping CRUD** - Complete mapping lifecycle with ownership validation and soft-delete
 - [ ] **Phase 23: Step CRUD** - Step management with reordering and defense-in-depth security
 
@@ -29,8 +29,8 @@ Build the mapping CRUD layer that associates Excel columns to web form selectors
   4. Repository interfaces and Drizzle implementations support CRUD operations for both entities with soft-delete filtering on mappings
 
 Plans:
-- [ ] 21-01-PLAN.md -- Mapping domain layer (entity, schema, repository interface, mapper, Drizzle implementation)
-- [ ] 21-02-PLAN.md -- Step domain layer (entity, schema, repository, mapper, implementation) + DrizzleModule registration + migration
+- [x] 21-01-PLAN.md -- Mapping domain layer (entity, schema, repository interface, mapper, Drizzle implementation)
+- [x] 21-02-PLAN.md -- Step domain layer (entity, schema, repository, mapper, implementation) + DrizzleModule registration + migration
 
 ### Phase 22: Mapping CRUD
 **Goal**: Users can create, list, view, update, and soft-delete mappings for their projects
@@ -71,6 +71,6 @@ Phases execute in numeric order: 21 → 22 → 23
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 21. Domain Foundation | 0/2 | Not started | - |
+| 21. Domain Foundation | 2/2 | ✓ Complete | 2026-02-03 |
 | 22. Mapping CRUD | 0/2 | Not started | - |
 | 23. Step CRUD | 0/2 | Not started | - |
