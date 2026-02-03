@@ -34,9 +34,7 @@ export class DrizzleMappingRepository extends MappingRepository {
       .getClient()
       .select()
       .from(mappings)
-      .where(
-        and(eq(mappings.projectId, projectId), isNull(mappings.deletedAt)),
-      )
+      .where(and(eq(mappings.projectId, projectId), isNull(mappings.deletedAt)))
       .orderBy(asc(mappings.createdAt));
 
     return result.map((row) => MappingMapper.toDomain(row));

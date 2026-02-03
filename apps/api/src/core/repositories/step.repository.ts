@@ -1,8 +1,4 @@
-import {
-  CreateStepData,
-  Step,
-  UpdateStepData,
-} from '../entities/step.entity';
+import { CreateStepData, Step, UpdateStepData } from '../entities/step.entity';
 
 export abstract class StepRepository {
   public abstract findById(id: string): Promise<Step | null>;

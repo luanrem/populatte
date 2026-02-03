@@ -67,10 +67,7 @@ export class DrizzleStepRepository extends StepRepository {
     return StepMapper.toDomain(row);
   }
 
-  public async update(
-    id: string,
-    data: UpdateStepData,
-  ): Promise<Step | null> {
+  public async update(id: string, data: UpdateStepData): Promise<Step | null> {
     const result = await this.drizzle
       .getClient()
       .update(steps)
@@ -101,10 +98,7 @@ export class DrizzleStepRepository extends StepRepository {
   }
 
   public async delete(id: string): Promise<void> {
-    await this.drizzle
-      .getClient()
-      .delete(steps)
-      .where(eq(steps.id, id));
+    await this.drizzle.getClient().delete(steps).where(eq(steps.id, id));
   }
 
   public async reorder(
