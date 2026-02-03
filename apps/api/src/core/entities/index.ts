@@ -5,3 +5,4 @@ export * from './row.entity';
 export * from './pagination.types';
 export * from './field-stats.entity';
 export * from './field-values.entity';
+export * from './mapping.entity';
