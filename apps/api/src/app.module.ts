@@ -18,7 +18,11 @@ import { ProjectModule } from './infrastructure/project/project.module';
 import { BatchModule } from './infrastructure/batch/batch.module';
 import { MappingModule } from './infrastructure/mapping/mapping.module';
 import { StepModule } from './infrastructure/step/step.module';
-import { WebhookController, UserController } from './presentation/controllers';
+import {
+  WebhookController,
+  UserController,
+  ExtensionAuthController,
+} from './presentation/controllers';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -43,7 +47,12 @@ import { AppService } from './app.service';
     MappingModule,
     StepModule,
   ],
-  controllers: [AppController, WebhookController, UserController],
+  controllers: [
+    AppController,
+    WebhookController,
+    UserController,
+    ExtensionAuthController,
+  ],
   providers: [AppService, SyncUserUseCase, DeleteUserUseCase],
 })
 export class AppModule {}
