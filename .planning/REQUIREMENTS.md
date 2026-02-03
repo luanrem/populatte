@@ -74,27 +74,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MAP-01 | — | Pending |
-| MAP-02 | — | Pending |
-| MAP-03 | — | Pending |
-| MAP-04 | — | Pending |
-| MAP-05 | — | Pending |
-| STEP-01 | — | Pending |
-| STEP-02 | — | Pending |
-| STEP-03 | — | Pending |
-| STEP-04 | — | Pending |
-| DOM-01 | — | Pending |
-| DOM-02 | — | Pending |
-| DOM-03 | — | Pending |
-| SEC-01 | — | Pending |
-| SEC-02 | — | Pending |
-| SEC-03 | — | Pending |
+| DOM-01 | Phase 21 | Pending |
+| DOM-02 | Phase 21 | Pending |
+| DOM-03 | Phase 21 | Pending |
+| MAP-01 | Phase 22 | Pending |
+| MAP-02 | Phase 22 | Pending |
+| MAP-03 | Phase 22 | Pending |
+| MAP-04 | Phase 22 | Pending |
+| MAP-05 | Phase 22 | Pending |
+| SEC-01 | Phase 22 | Pending |
+| SEC-03 | Phase 22 | Pending |
+| STEP-01 | Phase 23 | Pending |
+| STEP-02 | Phase 23 | Pending |
+| STEP-03 | Phase 23 | Pending |
+| STEP-04 | Phase 23 | Pending |
+| SEC-02 | Phase 23 | Pending |
 
 **Coverage:**
 - v3.0 requirements: 15 total
-- Mapped to phases: 0
-- Unmapped: 15
+- Mapped to phases: 15
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-02 after initial definition*
+*Last updated: 2026-02-02 after roadmap creation*
