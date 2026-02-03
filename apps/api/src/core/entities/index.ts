@@ -6,3 +6,4 @@ export * from './pagination.types';
 export * from './field-stats.entity';
 export * from './field-values.entity';
 export * from './mapping.entity';
+export * from './step.entity';
