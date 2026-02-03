@@ -1,4 +1,8 @@
-import { CreateRowData, Row } from '../entities/row.entity';
+import {
+  CreateRowData,
+  Row,
+  UpdateRowStatusData,
+} from '../entities/row.entity';
 import { PaginatedResult } from '../entities/pagination.types';
 
 export abstract class RowRepository {
@@ -17,4 +21,11 @@ export abstract class RowRepository {
   public abstract countByBatchId(batchId: string): Promise<number>;
 
   public abstract getSampleRows(batchId: string, limit: number): Promise<Row[]>;
+
+  public abstract findById(id: string): Promise<Row | null>;
+
+  public abstract updateStatus(
+    id: string,
+    data: UpdateRowStatusData,
+  ): Promise<Row>;
 }

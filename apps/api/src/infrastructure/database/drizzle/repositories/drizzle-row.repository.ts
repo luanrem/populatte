@@ -5,6 +5,7 @@ import {
   CreateRowData,
   Row,
   RowStatus,
+  UpdateRowStatusData,
 } from '../../../../core/entities/row.entity';
 import type { IngestionRowInsert } from '../schema/ingestion-rows.schema';
 import { PaginatedResult } from '../../../../core/entities/pagination.types';
@@ -116,5 +117,43 @@ export class DrizzleRowRepository extends RowRepository {
       .limit(limit);
 
     return result.map((row) => RowMapper.toDomain(row));
+  }
+
+  public async findById(id: string): Promise<Row | null> {
+    const result = await this.drizzle
+      .getClient()
+      .select()
+      .from(ingestionRows)
+      .where(and(eq(ingestionRows.id, id), isNull(ingestionRows.deletedAt)))
+      .limit(1);
+
+    const row = result[0];
+    return row ? RowMapper.toDomain(row) : null;
+  }
+
+  public async updateStatus(
+    id: string,
+    data: UpdateRowStatusData,
+  ): Promise<Row> {
+    const now = new Date();
+    const result = await this.drizzle
+      .getClient()
+      .update(ingestionRows)
+      .set({
+        fillStatus: data.fillStatus,
+        fillErrorMessage: data.fillErrorMessage ?? null,
+        fillErrorStep: data.fillErrorStep ?? null,
+        fillUpdatedAt: now,
+        updatedAt: now,
+      })
+      .where(eq(ingestionRows.id, id))
+      .returning();
+
+    const row = result[0];
+    if (!row) {
+      throw new Error('Row not found');
+    }
+
+    return RowMapper.toDomain(row);
   }
 }

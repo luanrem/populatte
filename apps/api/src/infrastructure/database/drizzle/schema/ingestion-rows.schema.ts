@@ -18,6 +18,12 @@ export const rowStatusEnum = pgEnum('row_status', [
   'ERROR',
 ]);
 
+export const fillStatusEnum = pgEnum('fill_status', [
+  'PENDING',
+  'VALID',
+  'ERROR',
+]);
+
 export const ingestionRows = pgTable(
   'ingestion_rows',
   {
@@ -31,6 +37,10 @@ export const ingestionRows = pgTable(
     sourceFileName: text('source_file_name').notNull(),
     sourceSheetName: text('source_sheet_name').notNull(),
     sourceRowIndex: integer('source_row_index').notNull(),
+    fillStatus: fillStatusEnum('fill_status').notNull().default('PENDING'),
+    fillErrorMessage: text('fill_error_message'),
+    fillErrorStep: text('fill_error_step'),
+    fillUpdatedAt: timestamp('fill_updated_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
