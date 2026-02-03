@@ -21,16 +21,16 @@ Build the mapping CRUD layer that associates Excel columns to web form selectors
 **Goal**: Mapping and Step domain models exist with database persistence and repository abstractions
 **Depends on**: Nothing (foundation phase)
 **Requirements**: DOM-01, DOM-02, DOM-03
+**Plans:** 2 plans
 **Success Criteria** (what must be TRUE):
   1. Mapping entity exists with projectId, name, targetUrl, isActive, nullable successTrigger enum, and soft-delete timestamps
   2. Step entity exists with mappingId, action enum (fill/click/wait/verify), selector, selectorFallbacks array, mutually exclusive sourceFieldKey/fixedValue, stepOrder, and config options (waitMs, optional, clearBefore, pressEnter)
   3. Drizzle schema creates mappings and steps tables with proper foreign keys, indexes, and relationships
   4. Repository interfaces and Drizzle implementations support CRUD operations for both entities with soft-delete filtering on mappings
-**Plans**: TBD
 
 Plans:
-- [ ] 21-01: Mapping domain layer (entity, Drizzle schema, repository interface + implementation, mapper)
-- [ ] 21-02: Step domain layer (entity, Drizzle schema, repository interface + implementation, mapper, run migration)
+- [ ] 21-01-PLAN.md -- Mapping domain layer (entity, schema, repository interface, mapper, Drizzle implementation)
+- [ ] 21-02-PLAN.md -- Step domain layer (entity, schema, repository, mapper, implementation) + DrizzleModule registration + migration
 
 ### Phase 22: Mapping CRUD
 **Goal**: Users can create, list, view, update, and soft-delete mappings for their projects
