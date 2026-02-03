@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** v3.0 Backend Mapping — Phase 23: Step CRUD
+**Current focus:** v3.0 Backend Mapping — Phase 23: Step CRUD (COMPLETE)
 
 ## Current Position
 
 Phase: 23 (3 of 3 in v3.0) (Step CRUD)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-03 — Completed 23-01-PLAN.md (Step Use Cases)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-03 — Completed 23-02-PLAN.md (Step Controller)
 
-Progress: [████████████████████] 100% (v3.0: 5/5 plans)
+Progress: [████████████████████] 100% (v3.0: 6/6 plans)
 
 ## Performance Metrics
 
@@ -44,8 +44,15 @@ Progress: [████████████████████] 100% (v
 - Total execution time: ~20m 30s
 
 **v3.0 velocity:**
-- Plans completed: 5
-- Phase 23-01: 2m 47s
+- Plans completed: 6
+- Phase 21-01: 2m 47s (Mapping Entity)
+- Phase 21-02: 2m 48s (Mapping Use Cases)
+- Phase 22-01: 2m 54s (Mapping Repository)
+- Phase 22-02: 3m 03s (Mapping Controller)
+- Phase 23-01: 2m 47s (Step Use Cases)
+- Phase 23-02: 2m 24s (Step Controller)
+- Average duration: 2m 47s
+- Total execution time: ~17m
 
 *Updated after each plan completion*
 
@@ -59,6 +66,9 @@ Recent decisions:
 - Steps use hard delete (unlike mappings which use soft delete) since steps have no audit trail requirements
 - StepOrder is auto-assigned as maxOrder + 1 on creation
 - ReorderStepsUseCase validates exact match of orderedStepIds (no missing, no extra, no duplicates)
+- Step routes nested under /mappings/:mappingId (not /projects/:projectId)
+- Zod validates mutual exclusion of sourceFieldKey/fixedValue at DTO level
+- Zod validates duplicate IDs in reorder request at DTO level
 
 ### Roadmap Evolution
 
@@ -67,7 +77,7 @@ Recent decisions:
 - v2.1: 2 phases, 2 plans -- Batch Read Layer (shipped 2026-01-30)
 - v2.2: 4 phases, 4 plans -- Dashboard Upload & Listing UI (shipped 2026-01-30)
 - v2.3: 4 phases, 7 plans -- Field Inventory (shipped 2026-02-02)
-- v3.0: 3 phases, 5 plans -- Backend Mapping (in progress)
+- v3.0: 3 phases, 6 plans -- Backend Mapping (shipped 2026-02-03)
 
 ### Pending Todos
 
@@ -91,6 +101,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 23-01-PLAN.md
+Stopped at: Completed 23-02-PLAN.md (v3.0 Backend Mapping complete)
 Resume file: None
-Next step: Execute 23-02-PLAN.md (Step Controller)
+Next step: Plan next version (extension integration or UI)
