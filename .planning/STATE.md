@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 
 ## Current Position
 
-Phase: 21 (1 of 3 in v3.0) (Domain Foundation) — VERIFIED ✓
-Plan: 2 of 2 in current phase
-Status: Phase complete and verified
-Last activity: 2026-02-03 — Phase 21 verified, enum gaps fixed
+Phase: 22 (2 of 3 in v3.0) (Mapping CRUD)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-03 — Completed 22-01-PLAN.md (mapping use cases)
 
-Progress: [████████░░░░░░░░░░░░] 40% (v3.0: 2/6 plans)
+Progress: [██████████░░░░░░░░░░] 50% (v3.0: 3/6 plans)
 
 ## Performance Metrics
 
@@ -82,6 +82,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Phase 21 verified and complete
+Stopped at: Completed 22-01-PLAN.md (mapping use cases)
 Resume file: None
-Next step: /gsd:discuss-phase 22
+Next step: Execute 22-02-PLAN.md (controllers and DTOs)
