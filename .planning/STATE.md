@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 ## Current Position
 
 Phase: 24 of 29 (Extension Foundation)
-Plan: 2 of TBD in current phase
+Plan: 3 of TBD in current phase
 Status: In progress
-Last activity: 2026-02-03 — Completed 24-02-PLAN.md (Storage Abstraction)
+Last activity: 2026-02-03 — Completed 24-03-PLAN.md (Messaging Infrastructure)
 
 Progress: [█░░░░░░░░░] ~3%
 
@@ -27,9 +27,9 @@ Progress: [█░░░░░░░░░] ~3%
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 
 **v4.0 velocity:**
-- Plans completed: 2
-- Average duration: 3m 14s
-- Total execution time: 6m 28s
+- Plans completed: 3
+- Average duration: 3m 48s
+- Total execution time: 11m 24s
 
 *Updated after each plan completion*
 
@@ -46,6 +46,10 @@ Recent decisions affecting current work:
 - [24-01]: React 19.2.0 installed at workspace root to resolve lucide-react peer dependency hoisting
 - [24-01]: Created minimal @populatte/types package to establish type sharing infrastructure
 - [24-01]: Using Tailwind CSS v4 with Vite plugin for extension UI consistency with web app
+- [24-02]: Storage organized into three flat sections: auth, selection, preferences with explicit typed methods
+- [24-03]: Message types use discriminated unions with explicit type field for type safety
+- [24-03]: WXT storage imports from 'wxt/utils/storage' not 'wxt/storage'
+- [24-03]: Entrypoints use relative imports (../src/messaging) due to WXT @ alias pointing to extension root
 - [24-02]: Storage organized into three flat sections: auth, selection, preferences
 - [24-02]: Explicit typed methods (getAuth, setSelectedProject) instead of generic get/set
 - [24-02]: WXT storage.defineItem() API with fallback defaults for type-safe storage
@@ -82,6 +86,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 24-02-PLAN.md execution
+Stopped at: Completed 24-03-PLAN.md execution
 Resume file: None
 Next step: Continue with next plan in phase 24
