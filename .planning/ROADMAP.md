@@ -13,7 +13,7 @@ Build the mapping CRUD layer that associates Excel columns to web form selectors
 
 - [x] **Phase 21: Domain Foundation** - Mapping and Step entities, Drizzle schemas, and repository layer
 - [x] **Phase 22: Mapping CRUD** - Complete mapping lifecycle with ownership validation and soft-delete
-- [ ] **Phase 23: Step CRUD** - Step management with reordering and defense-in-depth security
+- [x] **Phase 23: Step CRUD** - Step management with reordering and defense-in-depth security
 
 ## Phase Details
 
@@ -61,8 +61,8 @@ Plans:
   5. All step operations enforce the full ownership chain: step belongs to mapping, mapping belongs to project, project belongs to user
 
 Plans:
-- [ ] 23-01-PLAN.md -- Step use cases (create, update, delete, reorder) with defense-in-depth ownership
-- [ ] 23-02-PLAN.md -- Step controller, DTOs, and endpoint wiring with StepModule
+- [x] 23-01-PLAN.md -- Step use cases (create, update, delete, reorder) with defense-in-depth ownership
+- [x] 23-02-PLAN.md -- Step controller, DTOs, and endpoint wiring with StepModule
 
 ## Progress
 
@@ -73,4 +73,4 @@ Phases execute in numeric order: 21 -> 22 -> 23
 |-------|----------------|--------|-----------|
 | 21. Domain Foundation | 2/2 | Complete | 2026-02-03 |
 | 22. Mapping CRUD | 2/2 | Complete | 2026-02-03 |
-| 23. Step CRUD | 0/2 | Not started | - |
+| 23. Step CRUD | 2/2 | Complete | 2026-02-03 |

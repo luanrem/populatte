@@ -17,21 +17,21 @@ Requirements for Backend Mapping milestone. Each maps to roadmap phases.
 
 ### Step CRUD
 
-- [ ] **STEP-01**: User can add a step to a mapping with action type (fill/click/wait/verify), selector, and auto-assigned order
-- [ ] **STEP-02**: User can update a step's action, selector, fallbacks, source field key, fixed value, and config
-- [ ] **STEP-03**: User can delete a step from a mapping
-- [ ] **STEP-04**: User can reorder steps within a mapping by providing ordered step IDs
+- [x] **STEP-01**: User can add a step to a mapping with action type (fill/click/wait/verify), selector, and auto-assigned order
+- [x] **STEP-02**: User can update a step's action, selector, fallbacks, source field key, fixed value, and config
+- [x] **STEP-03**: User can delete a step from a mapping
+- [x] **STEP-04**: User can reorder steps within a mapping by providing ordered step IDs
 
 ### Domain Model
 
-- [ ] **DOM-01**: Mapping entity with project ownership, targetUrl, isActive, nullable successTrigger (url_change | text_appears | element_disappears)
-- [ ] **DOM-02**: Step entity with ordered actions, CSS selector + fallbacks array, sourceFieldKey XOR fixedValue (mutually exclusive), config options (waitMs, optional, clearBefore, pressEnter)
-- [ ] **DOM-03**: Drizzle schema for mappings and steps tables with proper relationships and soft delete on mappings
+- [x] **DOM-01**: Mapping entity with project ownership, targetUrl, isActive, nullable successTrigger (url_change | text_appears | element_disappears)
+- [x] **DOM-02**: Step entity with ordered actions, CSS selector + fallbacks array, sourceFieldKey XOR fixedValue (mutually exclusive), config options (waitMs, optional, clearBefore, pressEnter)
+- [x] **DOM-03**: Drizzle schema for mappings and steps tables with proper relationships and soft delete on mappings
 
 ### Security
 
 - [x] **SEC-01**: All mapping endpoints enforce project ownership validation (404/403 separation pattern)
-- [ ] **SEC-02**: All step endpoints enforce mapping-to-project ownership chain (defense-in-depth)
+- [x] **SEC-02**: All step endpoints enforce mapping-to-project ownership chain (defense-in-depth)
 - [x] **SEC-03**: Soft-delete filtering on all mapping read queries
 
 ## Future Requirements
@@ -84,11 +84,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MAP-05 | Phase 22 | Complete |
 | SEC-01 | Phase 22 | Complete |
 | SEC-03 | Phase 22 | Complete |
-| STEP-01 | Phase 23 | Pending |
-| STEP-02 | Phase 23 | Pending |
-| STEP-03 | Phase 23 | Pending |
-| STEP-04 | Phase 23 | Pending |
-| SEC-02 | Phase 23 | Pending |
+| STEP-01 | Phase 23 | Complete |
+| STEP-02 | Phase 23 | Complete |
+| STEP-03 | Phase 23 | Complete |
+| STEP-04 | Phase 23 | Complete |
+| SEC-02 | Phase 23 | Complete |
 
 **Coverage:**
 - v3.0 requirements: 15 total
@@ -97,4 +97,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-02*
-*Last updated: 2026-02-02 after roadmap creation*
+*Last updated: 2026-02-03 after Phase 23 completion*
