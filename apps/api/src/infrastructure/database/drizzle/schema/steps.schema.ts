@@ -12,7 +12,12 @@ import {
 
 import { mappings } from './mappings.schema';
 
-export const stepActionEnum = pgEnum('step_action', ['fill', 'click', 'wait']);
+export const stepActionEnum = pgEnum('step_action', [
+  'fill',
+  'click',
+  'wait',
+  'verify',
+]);
 
 export const steps = pgTable(
   'steps',

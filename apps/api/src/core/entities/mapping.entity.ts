@@ -1,6 +1,7 @@
 export enum SuccessTrigger {
   UrlChange = 'url_change',
-  ElementAppears = 'element_appears',
+  TextAppears = 'text_appears',
+  ElementDisappears = 'element_disappears',
 }
 
 export interface SuccessConfig {

@@ -14,7 +14,8 @@ import { projects } from './projects.schema';
 
 export const successTriggerEnum = pgEnum('success_trigger', [
   'url_change',
-  'element_appears',
+  'text_appears',
+  'element_disappears',
 ]);
 
 export const mappings = pgTable(

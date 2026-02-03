@@ -1,5 +1,5 @@
 {
-  "id": "f228c262-f421-4dc7-b80f-54f4e62f70a7",
+  "id": "79a5e90f-4883-47c5-a1d7-66265170c25c",
   "prevId": "28631a26-6860-4d5a-9843-3d56a137dc31",
   "version": "7",
   "dialect": "postgresql",
@@ -861,7 +861,8 @@
       "schema": "public",
       "values": [
         "url_change",
-        "element_appears"
+        "text_appears",
+        "element_disappears"
       ]
     },
     "public.step_action": {
@@ -870,7 +871,8 @@
       "values": [
         "fill",
         "click",
-        "wait"
+        "wait",
+        "verify"
       ]
     }
   },

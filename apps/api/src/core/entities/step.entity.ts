@@ -2,6 +2,7 @@ export enum StepAction {
   Fill = 'fill',
   Click = 'click',
   Wait = 'wait',
+  Verify = 'verify',
 }
 
 export enum SelectorType {

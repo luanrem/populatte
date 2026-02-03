@@ -1,5 +1,5 @@
-CREATE TYPE "public"."success_trigger" AS ENUM('url_change', 'element_appears');--> statement-breakpoint
-CREATE TYPE "public"."step_action" AS ENUM('fill', 'click', 'wait');--> statement-breakpoint
+CREATE TYPE "public"."success_trigger" AS ENUM('url_change', 'text_appears', 'element_disappears');--> statement-breakpoint
+CREATE TYPE "public"."step_action" AS ENUM('fill', 'click', 'wait', 'verify');--> statement-breakpoint
 CREATE TABLE "mappings" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"project_id" uuid NOT NULL,
