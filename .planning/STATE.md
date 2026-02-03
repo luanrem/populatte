@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** v3.0 Backend Mapping — Phase 22: Mapping CRUD
+**Current focus:** v3.0 Backend Mapping — Phase 23: Step CRUD
 
 ## Current Position
 
-Phase: 22 (2 of 3 in v3.0) (Mapping CRUD) — VERIFIED ✓
-Plan: 2 of 2 in current phase
-Status: Phase complete and verified
-Last activity: 2026-02-03 — Phase 22 verified, 6/6 must-haves passed
+Phase: 23 (3 of 3 in v3.0) (Step CRUD)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-03 — Completed 23-01-PLAN.md (Step Use Cases)
 
-Progress: [████████████████░░░░] 80% (v3.0: 4/5 plans)
+Progress: [████████████████████] 100% (v3.0: 5/5 plans)
 
 ## Performance Metrics
 
@@ -43,6 +43,10 @@ Progress: [████████████████░░░░] 80% (v3
 - Average duration: 2m 46s
 - Total execution time: ~20m 30s
 
+**v3.0 velocity:**
+- Plans completed: 5
+- Phase 23-01: 2m 47s
+
 *Updated after each plan completion*
 
 ## Accumulated Context
@@ -50,6 +54,11 @@ Progress: [████████████████░░░░] 80% (v3
 ### Decisions
 
 See PROJECT.md Key Decisions table for full log with outcomes.
+
+Recent decisions:
+- Steps use hard delete (unlike mappings which use soft delete) since steps have no audit trail requirements
+- StepOrder is auto-assigned as maxOrder + 1 on creation
+- ReorderStepsUseCase validates exact match of orderedStepIds (no missing, no extra, no duplicates)
 
 ### Roadmap Evolution
 
@@ -82,6 +91,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Phase 22 verified and complete
+Stopped at: Completed 23-01-PLAN.md
 Resume file: None
-Next step: /gsd:discuss-phase 23
+Next step: Execute 23-02-PLAN.md (Step Controller)
