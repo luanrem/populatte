@@ -15,6 +15,7 @@ import { TransactionModule } from './infrastructure/transaction/transaction.modu
 import { HealthModule } from './infrastructure/health/health.module';
 import { ProjectModule } from './infrastructure/project/project.module';
 import { BatchModule } from './infrastructure/batch/batch.module';
+import { MappingModule } from './infrastructure/mapping/mapping.module';
 import { WebhookController, UserController } from './presentation/controllers';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -37,6 +38,7 @@ import { AppService } from './app.service';
     HealthModule,
     ProjectModule,
     BatchModule,
+    MappingModule,
   ],
   controllers: [AppController, WebhookController, UserController],
   providers: [AppService, SyncUserUseCase, DeleteUserUseCase],
