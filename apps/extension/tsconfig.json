@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@populatte/types": ["../../packages/types/src"],
+      "@populatte/types/*": ["../../packages/types/src/*"]
+    },
+    "types": ["chrome"]
+  },
+  "include": ["src", "entrypoints", "wxt.config.ts", ".wxt/types"],
+  "exclude": ["node_modules", ".output"]
+}
