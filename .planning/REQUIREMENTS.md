@@ -122,61 +122,61 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | TBD | Pending |
-| FOUND-02 | TBD | Pending |
-| FOUND-03 | TBD | Pending |
-| FOUND-04 | TBD | Pending |
-| FOUND-05 | TBD | Pending |
-| FOUND-06 | TBD | Pending |
-| BAUTH-01 | TBD | Pending |
-| BAUTH-02 | TBD | Pending |
-| BAUTH-03 | TBD | Pending |
-| BAUTH-04 | TBD | Pending |
-| BAUTH-05 | TBD | Pending |
-| BROW-01 | TBD | Pending |
-| BROW-02 | TBD | Pending |
-| BROW-03 | TBD | Pending |
-| BROW-04 | TBD | Pending |
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| AUTH-05 | TBD | Pending |
-| AUTH-06 | TBD | Pending |
-| POP-01 | TBD | Pending |
-| POP-02 | TBD | Pending |
-| POP-03 | TBD | Pending |
-| POP-04 | TBD | Pending |
-| POP-05 | TBD | Pending |
-| POP-06 | TBD | Pending |
-| POP-07 | TBD | Pending |
-| POP-08 | TBD | Pending |
-| CS-01 | TBD | Pending |
-| CS-02 | TBD | Pending |
-| CS-03 | TBD | Pending |
-| CS-04 | TBD | Pending |
-| CS-05 | TBD | Pending |
-| CS-06 | TBD | Pending |
-| CS-07 | TBD | Pending |
-| CS-08 | TBD | Pending |
-| SUCC-01 | TBD | Pending |
-| SUCC-02 | TBD | Pending |
-| SUCC-03 | TBD | Pending |
-| SUCC-04 | TBD | Pending |
-| FILL-01 | TBD | Pending |
-| FILL-02 | TBD | Pending |
-| FILL-03 | TBD | Pending |
-| FILL-04 | TBD | Pending |
-| FILL-05 | TBD | Pending |
-| FILL-06 | TBD | Pending |
-| FILL-07 | TBD | Pending |
-| FILL-08 | TBD | Pending |
+| FOUND-01 | 24 | Pending |
+| FOUND-02 | 24 | Pending |
+| FOUND-03 | 24 | Pending |
+| FOUND-04 | 24 | Pending |
+| FOUND-05 | 24 | Pending |
+| FOUND-06 | 24 | Pending |
+| BAUTH-01 | 25 | Pending |
+| BAUTH-02 | 25 | Pending |
+| BAUTH-03 | 25 | Pending |
+| BAUTH-04 | 25 | Pending |
+| BAUTH-05 | 25 | Pending |
+| BROW-01 | 25 | Pending |
+| BROW-02 | 25 | Pending |
+| BROW-03 | 25 | Pending |
+| BROW-04 | 25 | Pending |
+| AUTH-01 | 26 | Pending |
+| AUTH-02 | 26 | Pending |
+| AUTH-03 | 26 | Pending |
+| AUTH-04 | 26 | Pending |
+| AUTH-05 | 26 | Pending |
+| AUTH-06 | 26 | Pending |
+| POP-01 | 27 | Pending |
+| POP-02 | 27 | Pending |
+| POP-03 | 27 | Pending |
+| POP-04 | 27 | Pending |
+| POP-05 | 27 | Pending |
+| POP-06 | 27 | Pending |
+| POP-07 | 27 | Pending |
+| POP-08 | 27 | Pending |
+| CS-01 | 28 | Pending |
+| CS-02 | 28 | Pending |
+| CS-03 | 28 | Pending |
+| CS-04 | 28 | Pending |
+| CS-05 | 28 | Pending |
+| CS-06 | 28 | Pending |
+| CS-07 | 28 | Pending |
+| CS-08 | 28 | Pending |
+| SUCC-01 | 29 | Pending |
+| SUCC-02 | 29 | Pending |
+| SUCC-03 | 29 | Pending |
+| SUCC-04 | 29 | Pending |
+| FILL-01 | 29 | Pending |
+| FILL-02 | 29 | Pending |
+| FILL-03 | 29 | Pending |
+| FILL-04 | 29 | Pending |
+| FILL-05 | 29 | Pending |
+| FILL-06 | 29 | Pending |
+| FILL-07 | 29 | Pending |
+| FILL-08 | 29 | Pending |
 
 **Coverage:**
 - v4.0 requirements: 48 total
-- Mapped to phases: 0
-- Unmapped: 48 (awaiting roadmap)
+- Mapped to phases: 48
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 after initial definition*
+*Last updated: 2026-02-03 after roadmap creation*
