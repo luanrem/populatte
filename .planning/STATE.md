@@ -53,6 +53,9 @@ Recent decisions affecting current work:
 - [24-02]: Storage organized into three flat sections: auth, selection, preferences
 - [24-02]: Explicit typed methods (getAuth, setSelectedProject) instead of generic get/set
 - [24-02]: WXT storage.defineItem() API with fallback defaults for type-safe storage
+- [25-01]: Jose library chosen for extension JWT (already in ecosystem, no CommonJS issues)
+- [25-01]: In-memory lockout map for brute-force protection (5 attempts, 15-minute timeout)
+- [25-01]: 6-digit numeric connection codes (familiar from 2FA, 1M combinations)
 - [25-02]: FillStatus enum separate from RowStatus (validation vs fill tracking)
 - [25-02]: VALID fill status is final - cannot be changed once set
 - [25-02]: ERROR status can be reset to PENDING for retry capability
