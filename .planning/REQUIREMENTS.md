@@ -9,11 +9,11 @@ Requirements for Backend Mapping milestone. Each maps to roadmap phases.
 
 ### Mapping CRUD
 
-- [ ] **MAP-01**: User can create a mapping with name, target URL, and optional success trigger for a project
-- [ ] **MAP-02**: User can list all mappings for a project with pagination, optionally filtered by targetUrl prefix match (only active mappings when targetUrl provided)
-- [ ] **MAP-03**: User can view mapping details including all steps ordered by step order
-- [ ] **MAP-04**: User can update mapping name, target URL, isActive, and success trigger
-- [ ] **MAP-05**: User can soft-delete a mapping (steps become inaccessible via mapping endpoints, no cascade)
+- [x] **MAP-01**: User can create a mapping with name, target URL, and optional success trigger for a project
+- [x] **MAP-02**: User can list all mappings for a project with pagination, optionally filtered by targetUrl prefix match (only active mappings when targetUrl provided)
+- [x] **MAP-03**: User can view mapping details including all steps ordered by step order
+- [x] **MAP-04**: User can update mapping name, target URL, isActive, and success trigger
+- [x] **MAP-05**: User can soft-delete a mapping (steps become inaccessible via mapping endpoints, no cascade)
 
 ### Step CRUD
 
@@ -30,9 +30,9 @@ Requirements for Backend Mapping milestone. Each maps to roadmap phases.
 
 ### Security
 
-- [ ] **SEC-01**: All mapping endpoints enforce project ownership validation (404/403 separation pattern)
+- [x] **SEC-01**: All mapping endpoints enforce project ownership validation (404/403 separation pattern)
 - [ ] **SEC-02**: All step endpoints enforce mapping-to-project ownership chain (defense-in-depth)
-- [ ] **SEC-03**: Soft-delete filtering on all mapping read queries
+- [x] **SEC-03**: Soft-delete filtering on all mapping read queries
 
 ## Future Requirements
 
@@ -77,13 +77,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DOM-01 | Phase 21 | Complete |
 | DOM-02 | Phase 21 | Complete |
 | DOM-03 | Phase 21 | Complete |
-| MAP-01 | Phase 22 | Pending |
-| MAP-02 | Phase 22 | Pending |
-| MAP-03 | Phase 22 | Pending |
-| MAP-04 | Phase 22 | Pending |
-| MAP-05 | Phase 22 | Pending |
-| SEC-01 | Phase 22 | Pending |
-| SEC-03 | Phase 22 | Pending |
+| MAP-01 | Phase 22 | Complete |
+| MAP-02 | Phase 22 | Complete |
+| MAP-03 | Phase 22 | Complete |
+| MAP-04 | Phase 22 | Complete |
+| MAP-05 | Phase 22 | Complete |
+| SEC-01 | Phase 22 | Complete |
+| SEC-03 | Phase 22 | Complete |
 | STEP-01 | Phase 23 | Pending |
 | STEP-02 | Phase 23 | Pending |
 | STEP-03 | Phase 23 | Pending |
