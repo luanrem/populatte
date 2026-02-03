@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-02)
+See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** v3.0 Backend Mapping — MILESTONE COMPLETE
+**Current focus:** v3.0 Backend Mapping — SHIPPED
 
 ## Current Position
 
-Phase: 23 (3 of 3 in v3.0) (Step CRUD) — VERIFIED ✓
-Plan: 2 of 2 in current phase
-Status: Milestone complete and verified
-Last activity: 2026-02-03 — Phase 23 verified, 5/5 must-haves passed
+Phase: Milestone complete
+Plan: N/A
+Status: Ready for next milestone
+Last activity: 2026-02-03 — v3.0 archived and tagged
 
-Progress: [████████████████████] 100% (v3.0: 6/6 plans)
+Progress: Milestone shipped
 
 ## Performance Metrics
 
@@ -62,14 +62,6 @@ Progress: [████████████████████] 100% (v
 
 See PROJECT.md Key Decisions table for full log with outcomes.
 
-Recent decisions:
-- Steps use hard delete (unlike mappings which use soft delete) since steps have no audit trail requirements
-- StepOrder is auto-assigned as maxOrder + 1 on creation
-- ReorderStepsUseCase validates exact match of orderedStepIds (no missing, no extra, no duplicates)
-- Step routes nested under /mappings/:mappingId (not /projects/:projectId)
-- Zod validates mutual exclusion of sourceFieldKey/fixedValue at DTO level
-- Zod validates duplicate IDs in reorder request at DTO level
-
 ### Roadmap Evolution
 
 - v1.0: 3 phases, 5 plans -- End-to-End Auth & User Sync (shipped 2026-01-28)
@@ -101,6 +93,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: v3.0 Backend Mapping milestone complete
+Stopped at: v3.0 milestone archived and tagged
 Resume file: None
-Next step: /gsd:audit-milestone
+Next step: /gsd:new-milestone (after /clear for fresh context)

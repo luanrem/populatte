@@ -1,5 +1,32 @@
 # Project Milestones: Populatte
 
+## v3.0 Backend Mapping (Shipped: 2026-02-03)
+
+**Delivered:** Mapping CRUD layer that associates Excel columns to web form selectors, enabling the Chrome extension to fetch and execute form-filling recipes with full ownership validation and defense-in-depth security.
+
+**Phases completed:** 21-23 (6 plans total)
+
+**Key accomplishments:**
+- Mapping and Step domain models with Drizzle schemas, pgEnums (success_trigger, step_action), and repository abstractions
+- Complete mapping CRUD (create, list, get, update, soft-delete) with project ownership validation (404/403 separation)
+- Complete step CRUD (create, update, delete, reorder) with auto-assigned stepOrder and hard delete
+- Defense-in-depth security: step -> mapping -> project -> user ownership chain on all step operations
+- Inverted URL prefix matching for extension lookup (stored targetUrl is prefix of current page URL)
+- Zod DTO validation with mutual exclusion refinement (sourceFieldKey XOR fixedValue) and duplicate detection for reorder
+
+**Stats:**
+- 58 files changed (+6,254 / -58 lines)
+- ~6,302 lines of TypeScript (API only)
+- 3 phases, 6 plans
+- 1 day (2026-02-02 → 2026-02-03)
+- Execution time: ~17min (avg 2m 47s/plan)
+
+**Git range:** `docs(21)` → `docs(23)`
+
+**What's next:** v3.1 Mapping Frontend or v3.2 Extension Integration — `/gsd:new-milestone` to define scope
+
+---
+
 ## v2.3 Field Inventory (Shipped: 2026-02-02)
 
 **Delivered:** Field-level analytics and exploration for ingested Excel data, enabling users to view per-field statistics (type, presence, uniqueness) and browse/search/copy individual field values via a card-based inventory with side sheet.

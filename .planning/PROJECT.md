@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, and field-level analytics with type inference. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, and field exploration with card-based inventory and value browsing. The Chrome extension maps Excel columns to form fields and auto-populates web forms.
+A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, field-level analytics with type inference, and mapping/step CRUD for form-filling recipes. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, and field exploration with card-based inventory and value browsing. The Chrome extension will map Excel columns to form fields and auto-populate web forms using the backend mapping layer.
 
 ## Core Value
 
@@ -60,21 +60,24 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - ✓ View Values side sheet with infinite scroll, debounced search, and copy-to-clipboard — v2.3
 - ✓ View toggle between table and field inventory on any batch — v2.3
 - ✓ Type inference engine with Brazilian locale support (CPF/CNPJ/CEP, DD/MM/YYYY, R$ currency) — v2.3
+- ✓ Mapping entity with project ownership, target URL, optional success trigger — v3.0
+- ✓ Step entity with ordered actions (fill/click/wait/verify), selector fallbacks, sourceFieldKey XOR fixedValue — v3.0
+- ✓ Full CRUD for mappings (create, list, get, update, soft-delete) — v3.0
+- ✓ Full CRUD for steps (create, update, delete, reorder) — v3.0
+- ✓ Prefix-based URL matching for extension lookup — v3.0
+- ✓ Auto-increment step ordering on create — v3.0
+- ✓ Ownership validation following 404/403 separation pattern — v3.0
+- ✓ Defense-in-depth: step belongs to mapping, mapping belongs to project — v3.0
 
 ### Active
 
-#### Current Milestone: v3.0 Backend Mapping
+#### Next Milestone: TBD
 
-**Goal:** Build the mapping CRUD layer that associates Excel columns to web form selectors, enabling the Chrome extension to fetch and execute form-filling recipes.
+**Goal:** To be defined via `/gsd:new-milestone`
 
-- [ ] Mapping entity with project ownership, target URL, optional success trigger
-- [ ] Step entity with ordered actions (fill/click/wait/verify), selector fallbacks, sourceFieldKey XOR fixedValue
-- [ ] Full CRUD for mappings (create, list, get, update, soft-delete)
-- [ ] Full CRUD for steps (create, update, delete, reorder)
-- [ ] Prefix-based URL matching for extension lookup
-- [ ] Auto-increment step ordering on create
-- [ ] Ownership validation following 404/403 separation pattern
-- [ ] Defense-in-depth: step belongs to mapping, mapping belongs to project
+Potential directions:
+- **v3.1 Mapping Frontend:** Dashboard UI for creating/editing mappings with visual step builder
+- **v3.2 Extension Integration:** Chrome extension consumes mapping API for form-filling execution
 
 ### Out of Scope
 
@@ -100,7 +103,7 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ## Context
 
-**Shipped v2.3** with ~12,057 LOC TypeScript across 170+ files (cumulative).
+**Shipped v3.0** with ~6,302 LOC TypeScript in API (58 files changed, +6,254 lines).
 Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, react-intersection-observer, shadcn/ui.
 
 **Architecture patterns established:**
@@ -203,6 +206,19 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Sentinel-based infinite scroll | IntersectionObserver ref on invisible div triggers fetchNextPage | ✓ Good |
 | useDebounce generic hook (300ms) | Reusable across search inputs; prevents excessive API calls | ✓ Good |
 | Copy feedback with CheckCheck icon | 1.5s setTimeout reset; clipboard API in browser context | ✓ Good |
+| No userId param in MappingRepository | Ownership validated at use-case layer via project lookup | ✓ Good |
+| SuccessConfig uses jsonb with typed $type<>() | Compile-time safety while allowing future extension | ✓ Good |
+| Steps use hard-delete (no deletedAt) | Steps are cheap to recreate; soft-delete adds unnecessary complexity | ✓ Good |
+| Inverted URL prefix matching | Extension can find mappings where stored targetUrl is prefix of current URL | ✓ Good |
+| Page (1-indexed) in ListMappingsResult | Per CONTEXT.md requirement, calculated as Math.floor(offset / limit) + 1 | ✓ Good |
+| findByIdWithDeleted for delete flow | Enables proper 404 for already soft-deleted mappings | ✓ Good |
+| z.preprocess for successTrigger enum coercion | Avoids TypeScript comparison errors with empty string to null | ✓ Good |
+| Step routes nested under /mappings/:mappingId | REST resource hierarchy; mapping already establishes project ownership | ✓ Good |
+| Zod refine for mutual exclusion | sourceFieldKey/fixedValue validation at DTO level for early rejection | ✓ Good |
+| Zod refine for duplicate detection in reorder | Detects duplicate step IDs before reaching use case layer | ✓ Good |
+| StepOrder auto-increments via getMaxStepOrder | maxOrder + 1 on creation; no manual order assignment needed | ✓ Good |
+| Strict reorder validation | Validates exact match (length, duplicates, missing, extra IDs) | ✓ Good |
+| Defense-in-depth on step operations | Verify step.mappingId === URL mappingId before ownership chain | ✓ Good |
 
 ---
-*Last updated: 2026-02-02 after v3.0 milestone started*
+*Last updated: 2026-02-03 after v3.0 milestone completed*
