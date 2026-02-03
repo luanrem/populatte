@@ -52,25 +52,25 @@ Plans:
 **Goal**: Users can manage ordered steps within their mappings with full defense-in-depth security
 **Depends on**: Phase 22
 **Requirements**: STEP-01, STEP-02, STEP-03, STEP-04, SEC-02
+**Plans:** 2 plans
 **Success Criteria** (what must be TRUE):
   1. User can add a step to a mapping with action type, selector, and auto-assigned order at the end
   2. User can update a step's action, selector, fallbacks, sourceFieldKey or fixedValue (mutually exclusive), and config options
   3. User can delete a step from a mapping
   4. User can reorder steps by providing an ordered list of step IDs
   5. All step operations enforce the full ownership chain: step belongs to mapping, mapping belongs to project, project belongs to user
-**Plans**: TBD
 
 Plans:
-- [ ] 23-01: Step use cases (create, update, delete, reorder) with defense-in-depth ownership
-- [ ] 23-02: Step controller, DTOs, and endpoint wiring
+- [ ] 23-01-PLAN.md -- Step use cases (create, update, delete, reorder) with defense-in-depth ownership
+- [ ] 23-02-PLAN.md -- Step controller, DTOs, and endpoint wiring with StepModule
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 21 → 22 → 23
+Phases execute in numeric order: 21 -> 22 -> 23
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 21. Domain Foundation | 2/2 | ✓ Complete | 2026-02-03 |
-| 22. Mapping CRUD | 2/2 | ✓ Complete | 2026-02-03 |
+| 21. Domain Foundation | 2/2 | Complete | 2026-02-03 |
+| 22. Mapping CRUD | 2/2 | Complete | 2026-02-03 |
 | 23. Step CRUD | 0/2 | Not started | - |
