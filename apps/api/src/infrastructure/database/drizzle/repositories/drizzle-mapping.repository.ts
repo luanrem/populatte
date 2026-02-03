@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { and, asc, eq, isNull } from 'drizzle-orm';
+import { and, asc, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
 import {
   CreateMappingData,
   Mapping,
   UpdateMappingData,
 } from '../../../../core/entities/mapping.entity';
-import { MappingRepository } from '../../../../core/repositories/mapping.repository';
+import {
+  MappingRepository,
+  PaginatedMappings,
+} from '../../../../core/repositories/mapping.repository';
 import { DrizzleService } from '../drizzle.service';
-import { mappings } from '../schema';
+import { mappings, steps } from '../schema';
 import { MappingMapper } from '../mappers/mapping.mapper';
 
 @Injectable()
@@ -29,6 +32,18 @@ export class DrizzleMappingRepository extends MappingRepository {
     return row ? MappingMapper.toDomain(row) : null;
   }
 
+  public async findByIdWithDeleted(id: string): Promise<Mapping | null> {
+    const result = await this.drizzle
+      .getClient()
+      .select()
+      .from(mappings)
+      .where(eq(mappings.id, id))
+      .limit(1);
+
+    const row = result[0];
+    return row ? MappingMapper.toDomain(row) : null;
+  }
+
   public async findByProjectId(projectId: string): Promise<Mapping[]> {
     const result = await this.drizzle
       .getClient()
@@ -38,6 +53,66 @@ export class DrizzleMappingRepository extends MappingRepository {
       .orderBy(asc(mappings.createdAt));
 
     return result.map((row) => MappingMapper.toDomain(row));
+  }
+
+  public async findByProjectIdPaginated(
+    projectId: string,
+    limit: number,
+    offset: number,
+    targetUrl?: string,
+    isActive?: boolean,
+  ): Promise<PaginatedMappings> {
+    // Build conditions array
+    const conditions = [
+      eq(mappings.projectId, projectId),
+      isNull(mappings.deletedAt),
+    ];
+
+    // Add URL filter if provided (inverted prefix: currentUrl LIKE storedUrl%)
+    if (targetUrl !== undefined) {
+      conditions.push(sql`${targetUrl} LIKE ${mappings.targetUrl} || '%'`);
+    }
+
+    // Add isActive filter if provided
+    if (isActive !== undefined) {
+      conditions.push(eq(mappings.isActive, isActive));
+    }
+
+    const whereClause = and(...conditions);
+
+    // Run data and count queries in parallel
+    const [dataResult, countResult] = await Promise.all([
+      this.drizzle
+        .getClient()
+        .select()
+        .from(mappings)
+        .where(whereClause)
+        .orderBy(desc(mappings.createdAt))
+        .limit(limit)
+        .offset(offset),
+      this.drizzle
+        .getClient()
+        .select({ count: count() })
+        .from(mappings)
+        .where(whereClause),
+    ]);
+
+    const total = countResult[0]?.count ?? 0;
+
+    return {
+      items: dataResult.map((row) => MappingMapper.toDomain(row)),
+      total,
+    };
+  }
+
+  public async countStepsByMappingId(mappingId: string): Promise<number> {
+    const result = await this.drizzle
+      .getClient()
+      .select({ count: count() })
+      .from(steps)
+      .where(eq(steps.mappingId, mappingId));
+
+    return result[0]?.count ?? 0;
   }
 
   public async create(data: CreateMappingData): Promise<Mapping> {
