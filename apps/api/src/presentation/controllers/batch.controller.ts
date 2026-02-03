@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UploadedFiles,
@@ -21,6 +22,7 @@ import {
   ListBatchesUseCase,
   ListRowsUseCase,
 } from '../../core/use-cases/batch';
+import { UpdateRowStatusUseCase } from '../../core/use-cases/row';
 import type { ExcelFileInput } from '../../infrastructure/excel/strategies/excel-parsing.strategy';
 import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
@@ -30,6 +32,8 @@ import {
   paginationQuerySchema,
 } from '../dto/batch.dto';
 import type { FieldValuesQueryDto, PaginationQueryDto } from '../dto/batch.dto';
+import { updateRowStatusSchema } from '../dto/row.dto';
+import type { UpdateRowStatusDto } from '../dto/row.dto';
 import { FileContentValidationPipe } from '../pipes/file-content-validation.pipe';
 import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
@@ -43,6 +47,7 @@ export class BatchController {
     private readonly getFieldValuesUseCase: GetFieldValuesUseCase,
     private readonly listBatches: ListBatchesUseCase,
     private readonly listRowsUseCase: ListRowsUseCase,
+    private readonly updateRowStatusUseCase: UpdateRowStatusUseCase,
   ) {}
 
   @Post()
@@ -163,6 +168,24 @@ export class BatchController {
       query.limit,
       query.offset,
       query.search,
+    );
+  }
+
+  @Patch(':batchId/rows/:rowId/status')
+  public async updateRowStatus(
+    @Param('projectId') projectId: string,
+    @Param('batchId') batchId: string,
+    @Param('rowId') rowId: string,
+    @Body(new ZodValidationPipe(updateRowStatusSchema))
+    body: UpdateRowStatusDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.updateRowStatusUseCase.execute(
+      projectId,
+      batchId,
+      rowId,
+      user.id,
+      body,
     );
   }
 }

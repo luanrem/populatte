@@ -13,6 +13,7 @@ import {
   ListBatchesUseCase,
   ListRowsUseCase,
 } from '../../core/use-cases/batch';
+import { UpdateRowStatusUseCase } from '../../core/use-cases/row';
 import { TypeInferenceService } from '../../core/services/type-inference.service';
 import { IngestionModule } from '../excel/ingestion.module';
 import { ContentLengthMiddleware } from '../upload/middleware/content-length.middleware';
@@ -26,6 +27,7 @@ import { ContentLengthMiddleware } from '../upload/middleware/content-length.mid
     GetFieldValuesUseCase,
     ListBatchesUseCase,
     ListRowsUseCase,
+    UpdateRowStatusUseCase,
     TypeInferenceService,
   ],
 })
