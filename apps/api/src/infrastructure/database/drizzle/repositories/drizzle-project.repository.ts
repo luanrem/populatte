@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, inArray, isNull } from 'drizzle-orm';
 
 import {
   CreateProjectData,
@@ -9,7 +9,7 @@ import {
 } from '../../../../core/entities/project.entity';
 import { ProjectRepository } from '../../../../core/repositories/project.repository';
 import { DrizzleService } from '../drizzle.service';
-import { projects } from '../schema';
+import { ingestionBatches, ingestionRows, projects } from '../schema';
 import { ProjectMapper } from '../mappers/project.mapper';
 
 @Injectable()
@@ -134,10 +134,60 @@ export class DrizzleProjectRepository extends ProjectRepository {
   }
 
   public async softDelete(id: string, userId: string): Promise<void> {
+    const now = new Date();
+
+    // 1. Get all batch IDs for this project (before soft-deleting them)
+    const batches = await this.drizzle
+      .getClient()
+      .select({ id: ingestionBatches.id })
+      .from(ingestionBatches)
+      .where(
+        and(
+          eq(ingestionBatches.projectId, id),
+          isNull(ingestionBatches.deletedAt),
+        ),
+      );
+
+    const batchIds = batches.map((b) => b.id);
+
+    // 2. Soft-delete all rows in those batches
+    if (batchIds.length > 0) {
+      await this.drizzle
+        .getClient()
+        .update(ingestionRows)
+        .set({
+          deletedAt: now,
+          updatedAt: now,
+        })
+        .where(
+          and(
+            inArray(ingestionRows.batchId, batchIds),
+            isNull(ingestionRows.deletedAt),
+          ),
+        );
+    }
+
+    // 3. Soft-delete all batches for this project
+    await this.drizzle
+      .getClient()
+      .update(ingestionBatches)
+      .set({
+        deletedAt: now,
+        deletedBy: userId,
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(ingestionBatches.projectId, id),
+          isNull(ingestionBatches.deletedAt),
+        ),
+      );
+
+    // 4. Soft-delete the project itself
     await this.drizzle
       .getClient()
       .update(projects)
-      .set({ deletedAt: new Date(), updatedAt: new Date() })
+      .set({ deletedAt: now, updatedAt: now })
       .where(
         and(
           eq(projects.id, id),
