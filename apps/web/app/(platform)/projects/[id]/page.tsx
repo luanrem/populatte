@@ -21,6 +21,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProject, useUpdateProject, useDeleteProject } from "@/lib/query/hooks/use-projects";
 import { useBatches } from "@/lib/query/hooks/use-batches";
@@ -173,10 +174,13 @@ export default function ProjectDetailPage({
         </Button>
       </AppHeader>
 
-      <div className="mx-auto max-w-5xl px-8 py-6 space-y-8">
+      <div className="mx-auto max-w-5xl px-8 py-6 space-y-10">
         {/* Batches Section */}
         <section>
-          <h2 className="text-lg font-semibold mb-4">Importacoes</h2>
+          <h2 className="text-xl font-semibold mb-2">Importacoes</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Dados importados de arquivos Excel
+          </p>
           <BatchGrid
             projectId={id}
             batches={batches}
@@ -185,9 +189,11 @@ export default function ProjectDetailPage({
           />
         </section>
 
+        <Separator />
+
         {/* Mappings Section */}
         <section>
-          <h2 className="text-lg font-semibold mb-4">Mappings</h2>
+          <h2 className="text-xl font-semibold mb-2">Mappings</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Regras de preenchimento automatico
           </p>
