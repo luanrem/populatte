@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Coffee, RefreshCw } from 'lucide-react';
 import { sendToBackground } from '../../src/messaging';
-import type { StateResponse, PingResponse, ExtensionState } from '../../src/types';
+import type { StateResponse, ExtensionState } from '../../src/types';
+import { ConnectView, ConnectedIndicator } from './components';
 
 export default function App() {
   const [state, setState] = useState<ExtensionState | null>(null);
@@ -44,20 +45,6 @@ export default function App() {
     }
   }
 
-  async function testPing() {
-    try {
-      const response = await sendToBackground<PingResponse>({ type: 'PING' });
-      if (response.success) {
-        console.log('Ping success:', response.data);
-        alert('Ping successful! Background is responsive.');
-      } else {
-        alert('Ping failed: ' + response.error);
-      }
-    } catch (err) {
-      alert('Ping error: ' + (err instanceof Error ? err.message : 'Unknown'));
-    }
-  }
-
   return (
     <div className="w-[350px] h-[500px] bg-white p-4 flex flex-col">
       <header className="flex items-center gap-2 mb-4 pb-3 border-b">
@@ -86,46 +73,31 @@ export default function App() {
         )}
 
         {state && !loading && (
-          <>
-            <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-              <p className="text-sm text-amber-800">
-                {state.isAuthenticated
-                  ? `Connected as ${state.userEmail || 'user'}`
-                  : 'Not connected. Auth integration pending.'}
-              </p>
-            </div>
+          state.isAuthenticated ? (
+            <>
+              <ConnectedIndicator />
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Status:</span>
-                <span className={state.isAuthenticated ? 'text-green-600' : 'text-gray-600'}>
-                  {state.isAuthenticated ? 'Connected' : 'Disconnected'}
-                </span>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Project:</span>
+                  <span className="text-gray-900">{state.projectId || 'None selected'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Batch:</span>
+                  <span className="text-gray-900">{state.batchId || 'None selected'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Row:</span>
+                  <span className="text-gray-900">
+                    {state.rowTotal > 0 ? `${state.rowIndex + 1} of ${state.rowTotal}` : 'N/A'}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Project:</span>
-                <span className="text-gray-900">{state.projectId || 'None selected'}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Batch:</span>
-                <span className="text-gray-900">{state.batchId || 'None selected'}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Row:</span>
-                <span className="text-gray-900">
-                  {state.rowTotal > 0 ? `${state.rowIndex + 1} of ${state.rowTotal}` : 'N/A'}
-                </span>
-              </div>
-            </div>
-          </>
+            </>
+          ) : (
+            <ConnectView onConnected={loadState} />
+          )
         )}
-
-        <button
-          onClick={testPing}
-          className="w-full px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium"
-        >
-          Test Connection
-        </button>
       </main>
 
       <footer className="pt-3 border-t text-xs text-gray-400">
