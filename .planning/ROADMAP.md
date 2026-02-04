@@ -102,10 +102,11 @@ Plans:
   3. When primary selector fails, engine tries fallback selectors in order
   4. Fill action populates inputs/textareas/selects and triggers framework reactivity
   5. Step executor processes ordered steps and reports success/failure per step
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 28-01: TBD
+- [ ] 28-01-PLAN.md — Selector engine and action executors (CSS/XPath, fill/click/wait)
+- [ ] 28-02-PLAN.md — Step executor and content script FILL_EXECUTE integration
 
 ### Phase 29: Fill Cycle Integration
 **Goal**: Complete fill-to-confirm cycle where user fills form, verifies, and advances to next row
