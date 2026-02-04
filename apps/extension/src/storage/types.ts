@@ -46,6 +46,8 @@ export interface SelectionState {
 export interface PreferencesState {
   /** Last used project ID (for quick restore) */
   lastProjectId: string | null;
+  /** Last selected mapping ID per project (maps projectId to mappingId) */
+  lastMappingIdByProject: Record<string, string>;
 }
 
 /**
@@ -67,4 +69,5 @@ export const DEFAULT_SELECTION: SelectionState = {
 
 export const DEFAULT_PREFERENCES: PreferencesState = {
   lastProjectId: null,
+  lastMappingIdByProject: {},
 };

@@ -53,4 +53,31 @@ export const preferencesStorage = {
       lastProjectId: projectId,
     });
   },
+
+  /**
+   * Get last selected mapping ID for a project
+   */
+  async getLastMappingId(projectId: string): Promise<string | null> {
+    const prefs = await this.getPreferences();
+    return prefs.lastMappingIdByProject[projectId] ?? null;
+  },
+
+  /**
+   * Set last selected mapping ID for a project
+   */
+  async setLastMappingId(projectId: string, mappingId: string | null): Promise<void> {
+    const current = await this.getPreferences();
+    const updated = { ...current.lastMappingIdByProject };
+
+    if (mappingId === null) {
+      delete updated[projectId];
+    } else {
+      updated[projectId] = mappingId;
+    }
+
+    await this.setPreferences({
+      ...current,
+      lastMappingIdByProject: updated,
+    });
+  },
 };

@@ -99,6 +99,21 @@ export interface MarkErrorMessage {
 }
 
 // ============================================================================
+// Mapping Messages
+// ============================================================================
+
+export interface GetMappingsMessage {
+  type: 'GET_MAPPINGS';
+}
+
+export interface MappingSelectMessage {
+  type: 'MAPPING_SELECT';
+  payload: {
+    mappingId: string;
+  };
+}
+
+// ============================================================================
 // Fill Messages (Background <-> Content Script)
 // ============================================================================
 
@@ -169,6 +184,14 @@ export interface ExtensionState {
   rowIndex: number;
   rowTotal: number;
   fillStatus: FillStatus;
+  /** Current active mapping ID */
+  mappingId: string | null;
+  /** Name of current active mapping for display */
+  mappingName: string | null;
+  /** Whether current URL has available mapping */
+  hasMapping: boolean;
+  /** Available mappings for selection when multiple match */
+  availableMappings: Array<{ id: string; name: string }>;
 }
 
 export type FillStatus = 'idle' | 'pending' | 'filling' | 'success' | 'partial' | 'failed';
@@ -219,6 +242,8 @@ export type PopupToBackgroundMessage =
   | RowPrevMessage
   | MarkErrorMessage
   | FillStartMessage
+  | GetMappingsMessage
+  | MappingSelectMessage
   | GetStateMessage
   | PingMessage;
 
