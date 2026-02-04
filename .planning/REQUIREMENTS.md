@@ -42,14 +42,14 @@ Requirements for Chrome Extension MVP (COPILOTO mode). Each maps to roadmap phas
 
 ### Popup UI
 
-- [ ] **POP-01**: Project selector dropdown fetches and displays user's projects
-- [ ] **POP-02**: Batch selector dropdown fetches batches for selected project
-- [ ] **POP-03**: Row indicator shows current row number and total rows
-- [ ] **POP-04**: Fill button triggers form fill for current row
-- [ ] **POP-05**: Next button advances to next row after fill
-- [ ] **POP-06**: Stop button aborts ongoing fill operation
+- [x] **POP-01**: Project selector dropdown fetches and displays user's projects
+- [x] **POP-02**: Batch selector dropdown fetches batches for selected project
+- [x] **POP-03**: Row indicator shows current row number and total rows
+- [x] **POP-04**: Fill button triggers form fill for current row
+- [x] **POP-05**: Next button advances to next row after fill
+- [x] **POP-06**: Stop button aborts ongoing fill operation
 - [ ] **POP-07**: Mapping indicator shows when current URL has available mapping
-- [ ] **POP-08**: State persists and restores when popup closes and reopens
+- [x] **POP-08**: State persists and restores when popup closes and reopens
 
 ### Content Script
 
@@ -143,14 +143,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04 | 26 | Complete |
 | AUTH-05 | 26 | Complete |
 | AUTH-06 | 26 | Complete |
-| POP-01 | 27 | Pending |
-| POP-02 | 27 | Pending |
-| POP-03 | 27 | Pending |
-| POP-04 | 27 | Pending |
-| POP-05 | 27 | Pending |
-| POP-06 | 27 | Pending |
-| POP-07 | 27 | Pending |
-| POP-08 | 27 | Pending |
+| POP-01 | 27 | Complete |
+| POP-02 | 27 | Complete |
+| POP-03 | 27 | Complete |
+| POP-04 | 27 | Complete |
+| POP-05 | 27 | Complete |
+| POP-06 | 27 | Complete |
+| POP-07 | 29 | Pending |
+| POP-08 | 27 | Complete |
 | CS-01 | 28 | Pending |
 | CS-02 | 28 | Pending |
 | CS-03 | 28 | Pending |
@@ -179,4 +179,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-04 — Phase 26 requirements complete*
+*Last updated: 2026-02-03 — Phase 27 requirements complete (POP-07 deferred to Phase 29)*
