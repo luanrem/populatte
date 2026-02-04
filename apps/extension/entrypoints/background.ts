@@ -1,5 +1,6 @@
 import { storage, initializeStorage } from '../src/storage';
 import { broadcast } from '../src/messaging';
+import { exchangeCode, getMe } from '../src/api';
 import type { ExtensionState, PopupToBackgroundMessage } from '../src/types';
 
 export default defineBackground(() => {
@@ -61,6 +62,36 @@ export default defineBackground(() => {
                 success: true,
                 data: { token: auth.token, userId: auth.userId, userEmail: auth.userEmail, isExpired },
               });
+              break;
+            }
+
+            case 'AUTH_LOGIN': {
+              const { code } = message.payload;
+              try {
+                // Exchange code for token
+                const { token } = await exchangeCode(code);
+
+                // Get user info with the token
+                const user = await getMe(token);
+
+                // Store token with 30-day expiry
+                const expiresAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
+                await storage.auth.setToken(token, expiresAt);
+
+                // Store user info
+                await storage.auth.setUser(user.id, user.email);
+
+                // Broadcast state update
+                await notifyStateUpdate();
+
+                sendResponse({ success: true });
+              } catch (err) {
+                console.error('[Background] AUTH_LOGIN error:', err);
+                sendResponse({
+                  success: false,
+                  error: err instanceof Error ? err.message : 'Connection failed',
+                });
+              }
               break;
             }
 
