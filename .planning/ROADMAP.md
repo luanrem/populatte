@@ -6,7 +6,7 @@ This roadmap delivers the Chrome Extension MVP with COPILOTO mode — a manual r
 
 ## Milestones
 
-- 📋 **v4.0 Extension Core** - Phases 24-29 (current)
+- v4.0 Extension Core - Phases 24-29 (current)
 
 ## Phases
 
@@ -82,7 +82,7 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Project dropdown loads and displays user's projects from API
   2. Batch dropdown filters by selected project and shows batch list
-  3. Row indicator shows current position (e.g., "Row 3 of 150")
+  3. Row indicator shows current row number and total rows
   4. Fill/Next/Stop buttons enable based on current state
   5. Selections persist when popup closes and restore on reopen
 **Plans**: 3 plans
@@ -111,34 +111,37 @@ Plans:
 ### Phase 29: Fill Cycle Integration
 **Goal**: Complete fill-to-confirm cycle where user fills form, verifies, and advances to next row
 **Depends on**: Phase 27, Phase 28
-**Requirements**: POP-07, FILL-01, FILL-02, FILL-03, FILL-04, FILL-05, FILL-06, FILL-07, FILL-08
+**Requirements**: POP-07, FILL-01, FILL-02, FILL-03, FILL-04, FILL-05, FILL-06, FILL-07, FILL-08, SUCC-01, SUCC-02, SUCC-03, SUCC-04
 **Success Criteria** (what must be TRUE):
   1. Background detects when user navigates to mapped URL and shows mapping indicator (badge)
   2. Clicking Fill executes all steps for current row and updates popup with progress
   3. Row status updates to VALID or ERROR in database after fill attempt
   4. User can manually advance to next row after verifying fill success
   5. Mark Error updates row status in database with error reason
-**Plans**: 3 plans
+  6. Success monitor detects URL change, text appears, or element disappears triggers
+  7. Timeout prevents infinite waiting on success detection (30s default)
+**Plans**: 4 plans
 
 Plans:
-- [ ] 29-01-PLAN.md — Mapping detection and badge indicator
+- [ ] 29-01-PLAN.md — Mapping detection, badge indicator, and mapping selector UI
 - [ ] 29-02-PLAN.md — Fill orchestration (FILL_START handler, row data fetch, content script execution)
-- [ ] 29-03-PLAN.md — Row status updates (VALID/ERROR persistence)
+- [ ] 29-03-PLAN.md — Row status updates (VALID/ERROR persistence, retry via navigation)
+- [ ] 29-04-PLAN.md — Success monitoring (url_change, text_appears, element_disappears triggers)
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
+Phases execute in numeric order: 24 -> 25 -> 26 -> 27 -> 28 -> 29
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 24. Extension Foundation | 3/3 | ✓ Complete | 2026-02-03 |
-| 25. Backend Extensions | 2/2 | ✓ Complete | 2026-02-03 |
-| 26. Extension Auth Flow | 3/3 | ✓ Complete | 2026-02-04 |
-| 27. Popup UI | 3/3 | ✓ Complete | 2026-02-03 |
-| 28. Content Script | 2/2 | ✓ Complete | 2026-02-04 |
-| 29. Fill Cycle Integration | 0/3 | Not started | - |
+| 24. Extension Foundation | 3/3 | Complete | 2026-02-03 |
+| 25. Backend Extensions | 2/2 | Complete | 2026-02-03 |
+| 26. Extension Auth Flow | 3/3 | Complete | 2026-02-04 |
+| 27. Popup UI | 3/3 | Complete | 2026-02-03 |
+| 28. Content Script | 2/2 | Complete | 2026-02-04 |
+| 29. Fill Cycle Integration | 0/4 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-04 — Phase 29 planned (3 plans in 3 waves)*
+*Last updated: 2026-02-04 — Phase 29 revised (4 plans in 4 waves, added success monitoring)*
