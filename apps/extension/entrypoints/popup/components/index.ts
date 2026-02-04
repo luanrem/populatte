@@ -10,3 +10,5 @@ export { ConnectedIndicator } from './ConnectedIndicator';
 export { ProjectSelector } from './ProjectSelector';
 export { BatchSelector } from './BatchSelector';
 export { RowIndicator } from './RowIndicator';
+export { ErrorInput } from './ErrorInput';
+export { FillControls } from './FillControls';
