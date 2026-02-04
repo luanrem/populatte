@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 29 - Fill Cycle Integration
+**Current focus:** Phase 29 - Fill Cycle Integration (Complete)
 
 ## Current Position
 
 Phase: 29 of 29 (Fill Cycle Integration)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-02-04 - Completed 29-03-PLAN.md
+Plan: 4 of 4 in current phase
+Status: Phase complete
+Last activity: 2026-02-04 - Completed 29-04-PLAN.md
 
-Progress: [█████████░] ~92%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -27,9 +27,9 @@ Progress: [█████████░] ~92%
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 
 **v4.0 velocity:**
-- Plans completed: 17
-- Average duration: 2m 49s
-- Total execution time: 50m 40s
+- Plans completed: 18
+- Average duration: 2m 48s
+- Total execution time: 53m 20s
 
 *Updated after each plan completion*
 
@@ -81,6 +81,9 @@ Recent decisions affecting current work:
 - [29-02]: Reset fillStatus to idle on row navigation (ROW_NEXT, ROW_PREV, MARK_ERROR)
 - [29-02]: Only clear fillProgress in popup when fillStatus is idle
 - [29-03]: Row status update errors do not block fill flow
+- [29-04]: URL change detection uses 100ms polling (navigation events unreliable in content scripts)
+- [29-04]: MutationObserver for text_appears and element_disappears triggers
+- [29-04]: Singleton pattern for active monitor (only one monitor at a time)
 
 ### Roadmap Evolution
 
@@ -90,7 +93,7 @@ Recent decisions affecting current work:
 - v2.2: 4 phases, 4 plans -- Dashboard Upload & Listing UI (shipped 2026-01-30)
 - v2.3: 4 phases, 7 plans -- Field Inventory (shipped 2026-02-02)
 - v3.0: 3 phases, 6 plans -- Backend Mapping (shipped 2026-02-03)
-- v4.0: 6 phases, TBD plans -- Extension Core (in progress)
+- v4.0: 6 phases, 18 plans -- Extension Core (shipped 2026-02-04)
 
 ### Pending Todos
 
@@ -114,9 +117,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Completed 29-03-PLAN.md
+Stopped at: Completed 29-04-PLAN.md (Phase 29 complete)
 Resume file: None
-Next step: Execute 29-04-PLAN.md
+Next step: Ready for next milestone planning
 
 Config (if exists):
 {
