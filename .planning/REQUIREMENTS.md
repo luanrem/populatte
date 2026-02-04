@@ -33,12 +33,12 @@ Requirements for Chrome Extension MVP (COPILOTO mode). Each maps to roadmap phas
 
 ### Extension Authentication
 
-- [ ] **AUTH-01**: User clicks "Connect" in popup to start auth flow
-- [ ] **AUTH-02**: Extension opens web app connection page in new tab
-- [ ] **AUTH-03**: User copies code from web app and pastes in extension
-- [ ] **AUTH-04**: Extension exchanges code for JWT and stores in chrome.storage.local
-- [ ] **AUTH-05**: Connection status indicator shows authenticated/disconnected state
-- [ ] **AUTH-06**: On 401 response, extension prompts user to reconnect
+- [x] **AUTH-01**: User clicks "Connect" in popup to start auth flow
+- [x] **AUTH-02**: Extension opens web app connection page in new tab
+- [x] **AUTH-03**: User copies code from web app and pastes in extension
+- [x] **AUTH-04**: Extension exchanges code for JWT and stores in chrome.storage.local
+- [x] **AUTH-05**: Connection status indicator shows authenticated/disconnected state
+- [x] **AUTH-06**: On 401 response, extension prompts user to reconnect
 
 ### Popup UI
 
@@ -137,12 +137,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BROW-02 | 25 | Complete |
 | BROW-03 | 25 | Complete |
 | BROW-04 | 25 | Complete |
-| AUTH-01 | 26 | Pending |
-| AUTH-02 | 26 | Pending |
-| AUTH-03 | 26 | Pending |
-| AUTH-04 | 26 | Pending |
-| AUTH-05 | 26 | Pending |
-| AUTH-06 | 26 | Pending |
+| AUTH-01 | 26 | Complete |
+| AUTH-02 | 26 | Complete |
+| AUTH-03 | 26 | Complete |
+| AUTH-04 | 26 | Complete |
+| AUTH-05 | 26 | Complete |
+| AUTH-06 | 26 | Complete |
 | POP-01 | 27 | Pending |
 | POP-02 | 27 | Pending |
 | POP-03 | 27 | Pending |
@@ -179,4 +179,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 — Phase 25 requirements complete*
+*Last updated: 2026-02-04 — Phase 26 requirements complete*
