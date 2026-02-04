@@ -1,4 +1,8 @@
-import { Batch, CreateBatchData, UpdateBatchData } from '../entities/batch.entity';
+import {
+  Batch,
+  CreateBatchData,
+  UpdateBatchData,
+} from '../entities/batch.entity';
 import { PaginatedResult } from '../entities/pagination.types';
 import {
   FieldValuesQuery,
