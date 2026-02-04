@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Coffee, RefreshCw } from 'lucide-react';
 import { sendToBackground } from '../../src/messaging';
-import type { StateResponse, ExtensionState } from '../../src/types';
-import { ConnectView, ConnectedIndicator } from './components';
+import type { StateResponse, ExtensionState, VoidResponse } from '../../src/types';
+import {
+  ConnectView,
+  ConnectedIndicator,
+  ProjectSelector,
+  BatchSelector,
+  RowIndicator,
+} from './components';
 
 export default function App() {
   const [state, setState] = useState<ExtensionState | null>(null);
@@ -45,6 +51,34 @@ export default function App() {
     }
   }
 
+  async function handleProjectSelect(projectId: string) {
+    try {
+      await sendToBackground<VoidResponse>({
+        type: 'PROJECT_SELECT',
+        payload: { projectId },
+      });
+      // State update comes via STATE_UPDATED broadcast
+    } catch (err) {
+      console.error('[Popup] Failed to select project:', err);
+    }
+  }
+
+  async function handleBatchSelect(batchId: string, rowTotal: number) {
+    try {
+      // Update local state immediately for rowTotal
+      if (state) {
+        setState({ ...state, rowTotal });
+      }
+      await sendToBackground<VoidResponse>({
+        type: 'BATCH_SELECT',
+        payload: { batchId },
+      });
+      // State update comes via STATE_UPDATED broadcast
+    } catch (err) {
+      console.error('[Popup] Failed to select batch:', err);
+    }
+  }
+
   return (
     <div className="w-[350px] h-[500px] bg-white p-4 flex flex-col">
       <header className="flex items-center gap-2 mb-4 pb-3 border-b">
@@ -77,22 +111,22 @@ export default function App() {
             <>
               <ConnectedIndicator />
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Project:</span>
-                  <span className="text-gray-900">{state.projectId || 'None selected'}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Batch:</span>
-                  <span className="text-gray-900">{state.batchId || 'None selected'}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Row:</span>
-                  <span className="text-gray-900">
-                    {state.rowTotal > 0 ? `${state.rowIndex + 1} of ${state.rowTotal}` : 'N/A'}
-                  </span>
-                </div>
+              <div className="space-y-3">
+                <ProjectSelector
+                  selectedId={state.projectId}
+                  onSelect={handleProjectSelect}
+                />
+                <BatchSelector
+                  projectId={state.projectId}
+                  selectedId={state.batchId}
+                  onSelect={handleBatchSelect}
+                />
               </div>
+
+              <RowIndicator
+                rowIndex={state.rowIndex}
+                rowTotal={state.rowTotal}
+              />
             </>
           ) : (
             <ConnectView onConnected={loadState} />
