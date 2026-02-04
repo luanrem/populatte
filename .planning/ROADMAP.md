@@ -35,10 +35,12 @@ v5.0 enables users to create mappings visually by clicking form fields in the ex
   3. User can update batch name via PUT /projects/:projectId/batches/:batchId
   4. User can soft-delete batch via DELETE /projects/:projectId/batches/:batchId
   5. User can configure identifier fields via PATCH /projects/:projectId/batches/:batchId
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 30-01: TBD
+- [ ] 30-01-PLAN.md — Schema foundation with identifier columns
+- [ ] 30-02-PLAN.md — Batch CRUD operations (update, delete, identifier config)
+- [ ] 30-03-PLAN.md — Project cascade delete and migration
 
 ### Phase 31: Dashboard Management
 **Goal**: Users can manage projects, batches, and view mappings from the dashboard
@@ -102,7 +104,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 30. Backend Foundation | v5.0 | 0/? | Not started | - |
+| 30. Backend Foundation | v5.0 | 0/3 | Planned | - |
 | 31. Dashboard Management | v5.0 | 0/? | Not started | - |
 | 32. Dashboard Mapping Editor | v5.0 | 0/? | Not started | - |
 | 33. Extension Capture Mode | v5.0 | 0/? | Not started | - |
