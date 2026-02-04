@@ -304,6 +304,8 @@ export default defineBackground(() => {
             }
 
             case 'ROW_NEXT': {
+              // Reset fill status when advancing to next row
+              currentFillStatus = 'idle';
               const newIndex = await storage.selection.nextRow();
               await notifyStateUpdate();
               sendResponse({ success: true, data: { rowIndex: newIndex } });
@@ -311,6 +313,8 @@ export default defineBackground(() => {
             }
 
             case 'ROW_PREV': {
+              // Reset fill status when going to previous row
+              currentFillStatus = 'idle';
               const newIndex = await storage.selection.prevRow();
               await notifyStateUpdate();
               sendResponse({ success: true, data: { rowIndex: newIndex } });
@@ -322,6 +326,8 @@ export default defineBackground(() => {
               // Phase 29 will wire up actual PATCH /rows/:id/status API call
               const { reason } = message.payload;
               console.log('[Background] MARK_ERROR with reason:', reason ?? '(none)');
+              // Reset fill status when advancing due to error
+              currentFillStatus = 'idle';
               const newIndex = await storage.selection.nextRow();
               await notifyStateUpdate();
               sendResponse({ success: true, data: { rowIndex: newIndex } });
@@ -368,14 +374,14 @@ export default defineBackground(() => {
               try {
                 // 1. Validate prerequisites
                 const selection = await storage.selection.getSelection();
-                const prefs = await storage.preferences.getPreferences();
 
                 if (!selection.projectId || !selection.batchId) {
                   sendResponse({ success: false, error: 'No project/batch selected' });
                   break;
                 }
 
-                const mappingId = prefs.lastMappingIdByProject[selection.projectId];
+                // Use currentMappingId from module state (represents UI selection)
+                const mappingId = currentMappingId;
                 if (!mappingId) {
                   sendResponse({ success: false, error: 'No mapping selected' });
                   break;

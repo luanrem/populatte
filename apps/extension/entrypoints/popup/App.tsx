@@ -26,10 +26,14 @@ export default function App() {
     // Listen for state updates and fill progress from background
     const listener = (message: { type: string; payload: unknown }): undefined | false => {
       if (message.type === 'STATE_UPDATED') {
-        setState(message.payload as ExtensionState);
-        // Clear fill progress and error on state update
-        setFillProgress(null);
-        setFillError(null);
+        const newState = message.payload as ExtensionState;
+        setState(newState);
+        // Only clear fill progress/error when fillStatus returns to idle
+        // (e.g., after row navigation resets the state)
+        if (newState.fillStatus === 'idle') {
+          setFillProgress(null);
+          setFillError(null);
+        }
         return undefined; // Handled, no response needed
       }
       if (message.type === 'FILL_PROGRESS') {
