@@ -10,6 +10,14 @@ export const createBatchSchema = z.object({
 
 export type CreateBatchDto = z.infer<typeof createBatchSchema>;
 
+export const updateBatchSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  identifierFieldKey: z.string().max(255).nullable().optional(),
+  secondaryFieldKey: z.string().max(255).nullable().optional(),
+});
+
+export type UpdateBatchDto = z.infer<typeof updateBatchSchema>;
+
 export const paginationQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(50),
   offset: z.coerce.number().int().min(0).default(0),

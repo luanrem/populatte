@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 
-import { CreateBatchUseCase } from '../../core/use-cases/batch';
+import {
+  CreateBatchUseCase,
+  DeleteBatchUseCase,
+  UpdateBatchUseCase,
+} from '../../core/use-cases/batch';
 import { ExcelModule } from './excel.module';
 import { IngestionService } from './ingestion.service';
 
@@ -28,7 +32,17 @@ import { IngestionService } from './ingestion.service';
  */
 @Module({
   imports: [ExcelModule],
-  providers: [IngestionService, CreateBatchUseCase],
-  exports: [IngestionService, CreateBatchUseCase],
+  providers: [
+    IngestionService,
+    CreateBatchUseCase,
+    DeleteBatchUseCase,
+    UpdateBatchUseCase,
+  ],
+  exports: [
+    IngestionService,
+    CreateBatchUseCase,
+    DeleteBatchUseCase,
+    UpdateBatchUseCase,
+  ],
 })
 export class IngestionModule {}
