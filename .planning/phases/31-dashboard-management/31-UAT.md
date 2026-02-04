@@ -18,9 +18,8 @@ result: pass
 
 ### R2. Batch Settings Toast (Major Fix)
 expected: Save batch settings - should show "Configurações salvas com sucesso" toast
-result: issue
-reported: "Toast works but hydration error: <p> cannot contain nested <div>. Skeleton inside <p> tag at batch-settings-modal.tsx:146"
-severity: minor
+result: pass
+note: Hydration error fixed (commit 09ada33) - changed <p> to <div>
 
 ### R3. Batch Card Button Positioning (Cosmetic Fix)
 expected: Hover batch card - buttons should be visible in top-right corner, appropriately sized (no chevron)
@@ -33,8 +32,8 @@ result: pass
 ## Re-verification Summary
 
 total: 4
-passed: 3
-issues: 1
+passed: 4
+issues: 0
 pending: 0
 skipped: 0
 
@@ -154,11 +153,12 @@ skipped: 0
   debug_session: ".planning/debug/batch-inline-edit-invalid-data.md"
 
 - truth: "Batch settings modal renders without hydration errors"
-  status: failed
+  status: fixed
   reason: "User reported: Hydration error - <p> cannot contain nested <div>. Skeleton inside <p> tag at batch-settings-modal.tsx:146"
   severity: minor
   test: R2
   root_cause: "Skeleton component renders <div> but is placed inside <p> tag in preview section"
+  fix_commit: "09ada33"
   artifacts:
     - path: "apps/web/components/projects/batch-settings-modal.tsx"
       issue: "Line 146: <p> contains <Skeleton> which renders <div>"
