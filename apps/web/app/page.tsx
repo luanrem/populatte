@@ -141,7 +141,7 @@ export default function LandingPage() {
                   Preencha Automaticamente
                 </h3>
                 <p className="text-muted-foreground text-left">
-                  Clique em "Preencher" e veja a mágica acontecer. A extensão
+                  Clique em &quot;Preencher&quot; e veja a mágica acontecer. A extensão
                   preenche o formulário instantaneamente com os dados corretos.
                 </p>
               </div>

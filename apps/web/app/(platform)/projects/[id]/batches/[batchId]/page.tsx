@@ -61,9 +61,10 @@ export default function BatchDetailPage({
   // Set default view based on batch mode
   useEffect(() => {
     if (batch) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentView(batch.mode === "PROFILE_MODE" ? "inventory" : "table");
     }
-  }, [batch?.mode]);
+  }, [batch]);
 
   const handlePageSizeChange = (newLimit: number) => {
     setLimit(newLimit);

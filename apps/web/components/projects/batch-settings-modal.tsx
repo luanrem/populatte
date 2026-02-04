@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -54,6 +55,7 @@ export function BatchSettingsModal({
   // Sync state when batch changes
   useEffect(() => {
     if (batch) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPrimaryKey(batch.identifierFieldKey ?? NONE_VALUE);
       setSecondaryKey(batch.secondaryFieldKey ?? NONE_VALUE);
     }
@@ -91,6 +93,7 @@ export function BatchSettingsModal({
         secondaryFieldKey: secondaryKey === NONE_VALUE ? null : secondaryKey,
       },
     });
+    toast.success("Configuracoes salvas com sucesso");
     onSave();
     onOpenChange(false);
   };

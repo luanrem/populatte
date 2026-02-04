@@ -190,7 +190,7 @@ export function UploadBatchModal({
           {selectedMode && (
             <div className="space-y-4">
               <div
-                {...getRootProps()}
+                {...(getRootProps() as React.HTMLAttributes<HTMLDivElement>)}
                 className={cn(
                   "flex flex-col items-center justify-center rounded-lg p-8 text-center transition-colors cursor-pointer",
                   isDragActive
