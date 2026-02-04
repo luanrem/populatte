@@ -1,7 +1,7 @@
 import { storage, initializeStorage } from '../src/storage';
 import { broadcast } from '../src/messaging';
 import { exchangeCode, getMe, fetchProjects, fetchBatches, fetchMappingsByUrl, fetchMappingWithSteps, fetchRowByIndex, updateRowStatus } from '../src/api';
-import type { ExtensionState, PopupToBackgroundMessage, FillStatus } from '../src/types';
+import type { ExtensionState, PopupToBackgroundMessage, ContentToBackgroundMessage, FillStatus, SuccessDetectedMessage } from '../src/types';
 
 export default defineBackground(() => {
   console.log('[Populatte] Service worker initialized');
@@ -23,6 +23,20 @@ export default defineBackground(() => {
   // Module-level state for fill tracking
   // ============================================================================
   let currentFillStatus: FillStatus = 'idle';
+
+  // ============================================================================
+  // Success monitoring helpers
+  // ============================================================================
+  async function stopSuccessMonitorInTab(): Promise<void> {
+    try {
+      const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+      if (activeTab?.id) {
+        await browser.tabs.sendMessage(activeTab.id, { type: 'STOP_MONITOR' });
+      }
+    } catch {
+      // Ignore errors (tab may not have content script)
+    }
+  }
 
   // ============================================================================
   // Badge management
@@ -179,7 +193,7 @@ export default defineBackground(() => {
   // Message handlers
   // ============================================================================
   browser.runtime.onMessage.addListener(
-    (message: PopupToBackgroundMessage, _sender, sendResponse) => {
+    (message: PopupToBackgroundMessage | ContentToBackgroundMessage, _sender, sendResponse) => {
       console.log('[Background] Received message:', message.type);
 
       // Handle messages asynchronously
@@ -407,6 +421,9 @@ export default defineBackground(() => {
 
             case 'FILL_START': {
               try {
+                // 0. Stop any existing success monitor from previous fill
+                await stopSuccessMonitorInTab();
+
                 // 1. Validate prerequisites
                 const selection = await storage.selection.getSelection();
 
@@ -499,6 +516,26 @@ export default defineBackground(() => {
                   });
                 }
 
+                // 9.5. Start success monitoring if mapping has successTrigger
+                // COPILOTO mode (successTrigger=null): user clicks Next manually
+                // Auto-detect mode (successTrigger set): monitor runs and auto-advances on success
+                if (result.success && mapping.successTrigger) {
+                  console.log('[Background] Starting success monitor:', mapping.successTrigger);
+
+                  // Send MONITOR_SUCCESS to content script
+                  await browser.tabs.sendMessage(activeTab.id, {
+                    type: 'MONITOR_SUCCESS',
+                    payload: {
+                      trigger: mapping.successTrigger,
+                      config: mapping.successConfig ?? {},
+                      timeoutMs: 30000, // 30 second timeout per SUCC-04
+                    },
+                  });
+
+                  // Note: SUCCESS_DETECTED will be handled by a separate case
+                  // Don't block here - let the user see success state
+                }
+
                 // 10. Update row status in database
                 try {
                   if (result.success) {
@@ -529,6 +566,50 @@ export default defineBackground(() => {
                 console.error('[Background] FILL_START error:', err);
                 sendResponse({ success: false, error: err instanceof Error ? err.message : 'Fill failed' });
               }
+              break;
+            }
+
+            case 'SUCCESS_DETECTED': {
+              // Handle success detection from content script
+              const { success, reason } = (message as SuccessDetectedMessage).payload;
+              console.log('[Background] Success detected:', success, reason);
+
+              if (success) {
+                // Auto-advance to next row
+                currentFillStatus = 'idle';
+                await storage.selection.nextRow();
+                await notifyStateUpdate();
+
+                // Broadcast auto-advanced message to popup
+                broadcast({
+                  type: 'FILL_PROGRESS',
+                  payload: {
+                    currentStep: 0,
+                    totalSteps: 0,
+                    status: `Auto-advanced: ${reason}`,
+                  },
+                });
+              } else {
+                // Timeout or failure - stay on current row, user decides
+                broadcast({
+                  type: 'FILL_PROGRESS',
+                  payload: {
+                    currentStep: 0,
+                    totalSteps: 0,
+                    status: `Monitor timeout: ${reason}`,
+                  },
+                });
+              }
+
+              sendResponse({ success: true });
+              break;
+            }
+
+            case 'FILL_RESULT': {
+              // Content script sends this directly - but we handle it in FILL_START
+              // This is just for completeness if someone sends FILL_RESULT directly
+              console.log('[Background] FILL_RESULT received directly (unexpected)');
+              sendResponse({ success: true });
               break;
             }
 
