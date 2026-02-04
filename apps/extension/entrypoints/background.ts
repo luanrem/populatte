@@ -1,6 +1,6 @@
 import { storage, initializeStorage } from '../src/storage';
 import { broadcast } from '../src/messaging';
-import { exchangeCode, getMe } from '../src/api';
+import { exchangeCode, getMe, fetchProjects, fetchBatches } from '../src/api';
 import type { ExtensionState, PopupToBackgroundMessage } from '../src/types';
 
 export default defineBackground(() => {
@@ -100,6 +100,38 @@ export default defineBackground(() => {
               await storage.selection.clearSelection();
               await notifyStateUpdate();
               sendResponse({ success: true });
+              break;
+            }
+
+            case 'GET_PROJECTS': {
+              try {
+                const projects = await fetchProjects();
+                sendResponse({ success: true, data: { projects } });
+              } catch (err) {
+                console.error('[Background] GET_PROJECTS error:', err);
+                sendResponse({
+                  success: false,
+                  error: err instanceof Error ? err.message : 'Failed to fetch projects',
+                });
+              }
+              break;
+            }
+
+            case 'GET_BATCHES': {
+              const { projectId } = message.payload;
+              try {
+                const allBatches = await fetchBatches(projectId);
+                // Filter out completed batches (where all rows are done)
+                // Per CONTEXT.md: Hide completed batches from dropdown
+                const batches = allBatches.filter((batch) => batch.doneCount < batch.rowCount);
+                sendResponse({ success: true, data: { batches } });
+              } catch (err) {
+                console.error('[Background] GET_BATCHES error:', err);
+                sendResponse({
+                  success: false,
+                  error: err instanceof Error ? err.message : 'Failed to fetch batches',
+                });
+              }
               break;
             }
 
