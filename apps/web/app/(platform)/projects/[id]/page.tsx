@@ -10,6 +10,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { BatchGrid } from "@/components/projects/batch-grid";
 import { DeleteProjectDialog } from "@/components/projects/delete-project-dialog";
 import { InlineEditName } from "@/components/projects/inline-edit-name";
+import { MappingsList } from "@/components/projects/mappings-list";
 import { UploadBatchModal } from "@/components/projects/upload-batch-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -172,13 +173,26 @@ export default function ProjectDetailPage({
         </Button>
       </AppHeader>
 
-      <div className="mx-auto max-w-5xl px-8 py-6">
-        <BatchGrid
-          projectId={id}
-          batches={batches}
-          isLoading={batchesLoading}
-          onUploadClick={() => setUploadModalOpen(true)}
-        />
+      <div className="mx-auto max-w-5xl px-8 py-6 space-y-8">
+        {/* Batches Section */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4">Importacoes</h2>
+          <BatchGrid
+            projectId={id}
+            batches={batches}
+            isLoading={batchesLoading}
+            onUploadClick={() => setUploadModalOpen(true)}
+          />
+        </section>
+
+        {/* Mappings Section */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4">Mappings</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Regras de preenchimento automatico
+          </p>
+          <MappingsList projectId={id} />
+        </section>
       </div>
 
       <UploadBatchModal
