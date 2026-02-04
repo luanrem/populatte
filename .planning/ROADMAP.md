@@ -18,7 +18,7 @@ v5.0 enables users to create mappings visually by clicking form fields in the ex
 ## Phases
 
 - [x] **Phase 30: Backend Foundation** - Project/batch CRUD endpoints and batch identifier configuration
-- [x] **Phase 31: Dashboard Management** - Project/batch CRUD UI and mappings list
+- [ ] **Phase 31: Dashboard Management** - Project/batch CRUD UI and mappings list (gap closure in progress)
 - [ ] **Phase 32: Dashboard Mapping Editor** - Mapping edit page with step management
 - [ ] **Phase 33: Extension Capture Mode** - Click-to-capture selector creation
 - [ ] **Phase 34: Extension Identifier Integration** - Row identifier display in popup
@@ -52,7 +52,7 @@ Plans:
   3. User can edit batch name and configure identifiers in batch settings
   4. User can delete batch with confirmation dialog
   5. User can view all mappings for a project with name, URL, step count, status
-**Plans**: 6 plans
+**Plans**: 7 plans (6 original + 1 gap closure)
 
 Plans:
 - [x] 31-01-PLAN.md — Create inline-edit component and batch CRUD hooks
@@ -61,6 +61,7 @@ Plans:
 - [x] 31-04-PLAN.md — Create mappings API layer and React Query hooks
 - [x] 31-05-PLAN.md — Build mappings list UI components
 - [x] 31-06-PLAN.md — Integrate mappings list into project detail page
+- [ ] 31-07-PLAN.md — Gap closure: fix batch edit blocker, add toast feedback, improve visual polish
 
 ### Phase 32: Dashboard Mapping Editor
 **Goal**: Users can edit mapping details and manage steps with full CRUD operations
@@ -110,7 +111,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 30. Backend Foundation | v5.0 | 3/3 | ✓ Complete | 2026-02-04 |
-| 31. Dashboard Management | v5.0 | 6/6 | ✓ Complete | 2026-02-04 |
+| 31. Dashboard Management | v5.0 | 6/7 | Gap closure | - |
 | 32. Dashboard Mapping Editor | v5.0 | 0/? | Not started | - |
 | 33. Extension Capture Mode | v5.0 | 0/? | Not started | - |
 | 34. Extension Identifier Integration | v5.0 | 0/? | Not started | - |
