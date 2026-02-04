@@ -22,3 +22,10 @@ export type { SelectorConfig, FindResult } from './selector';
 
 export { executeFill, executeClick, executeWait } from './actions';
 export type { ActionResult, FillOptions } from './actions';
+
+// ============================================================================
+// Step Executor
+// ============================================================================
+
+export { executeSteps } from './executor';
+export type { ExecutionResult } from './executor';
