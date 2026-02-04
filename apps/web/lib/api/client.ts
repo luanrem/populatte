@@ -20,6 +20,8 @@
 
 'use client';
 
+import { useMemo } from 'react';
+
 import { useAuth } from '@clerk/nextjs';
 
 import { ApiError, type ApiRequestOptions } from './types';
@@ -156,7 +158,7 @@ export function createApiClient(getToken: GetToken): ApiClient {
 export function useApiClient(): ApiClient {
   const { getToken } = useAuth();
 
-  // Create client with stable getToken reference
-  // getToken from useAuth is stable and can be safely used in the client
-  return createApiClient(getToken);
+  // Memoize the client to prevent infinite re-render loops
+  // Without this, a new object is created every render, breaking useCallback/useEffect deps
+  return useMemo(() => createApiClient(getToken), [getToken]);
 }
