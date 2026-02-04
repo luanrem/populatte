@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 26 - Extension Auth Flow
+**Current focus:** Phase 27 - Popup UI
 
 ## Current Position
 
-Phase: 26 of 29 (Extension Auth Flow)
-Plan: 3 of 3 in current phase (gap closure plan)
-Status: Phase complete (verified 5/5)
-Last activity: 2026-02-04 — Phase verified after gap closure
+Phase: 27 of 29 (Popup UI)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-04 — Completed 27-01-PLAN.md
 
-Progress: [████░░░░░░] ~40%
+Progress: [████░░░░░░] ~42%
 
 ## Performance Metrics
 
@@ -27,9 +27,9 @@ Progress: [████░░░░░░] ~40%
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 
 **v4.0 velocity:**
-- Plans completed: 9
-- Average duration: 3m 32s
-- Total execution time: 32m 42s
+- Plans completed: 10
+- Average duration: 3m 20s
+- Total execution time: 34m 17s
 
 *Updated after each plan completion*
 
@@ -64,6 +64,8 @@ Recent decisions affecting current work:
 - [26-02]: Single text input for 6-digit code (not split digit boxes)
 - [26-02]: Popup components organized in entrypoints/popup/components/ directory
 - [26-03]: Centered card layout for focused single-purpose extension connect flow
+- [27-01]: MVP progress tracking (pendingCount=rowCount, doneCount=0) deferred to Phase 29
+- [27-01]: Completed batches filtered from GET_BATCHES response per CONTEXT.md
 
 ### Roadmap Evolution
 
@@ -97,9 +99,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Completed 26-03-PLAN.md (Phase 26 gap closure complete)
+Stopped at: Completed 27-01-PLAN.md
 Resume file: None
-Next step: /gsd:discuss-phase 27
+Next step: Execute 27-02-PLAN.md
 
 Config (if exists):
 {
