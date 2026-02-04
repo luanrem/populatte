@@ -85,10 +85,12 @@ Plans:
   3. Row indicator shows current position (e.g., "Row 3 of 150")
   4. Fill/Next/Stop buttons enable based on current state
   5. Selections persist when popup closes and restore on reopen
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 27-01: TBD
+- [ ] 27-01-PLAN.md — API handlers for project and batch listing
+- [ ] 27-02-PLAN.md — Selection UI components (ProjectSelector, BatchSelector, RowIndicator)
+- [ ] 27-03-PLAN.md — Fill controls (Fill, Next, Mark Error buttons)
 
 ### Phase 28: Content Script
 **Goal**: Content script can find elements and execute fill/click/wait actions on any page
@@ -130,10 +132,10 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 | 24. Extension Foundation | 3/3 | ✓ Complete | 2026-02-03 |
 | 25. Backend Extensions | 2/2 | ✓ Complete | 2026-02-03 |
 | 26. Extension Auth Flow | 3/3 | ✓ Complete | 2026-02-04 |
-| 27. Popup UI | 0/TBD | Not started | - |
+| 27. Popup UI | 0/3 | Not started | - |
 | 28. Content Script | 0/TBD | Not started | - |
 | 29. Fill Cycle Integration | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-04 — Phase 26 complete (3 plans, including gap closure)*
+*Last updated: 2026-02-04 — Phase 27 planned (3 plans in 3 waves)*
