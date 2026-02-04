@@ -1,7 +1,7 @@
 import { storage, initializeStorage } from '../src/storage';
 import { broadcast } from '../src/messaging';
-import { exchangeCode, getMe, fetchProjects, fetchBatches, fetchMappingsByUrl } from '../src/api';
-import type { ExtensionState, PopupToBackgroundMessage } from '../src/types';
+import { exchangeCode, getMe, fetchProjects, fetchBatches, fetchMappingsByUrl, fetchMappingWithSteps, fetchRowByIndex } from '../src/api';
+import type { ExtensionState, PopupToBackgroundMessage, FillStatus } from '../src/types';
 
 export default defineBackground(() => {
   console.log('[Populatte] Service worker initialized');
@@ -18,6 +18,11 @@ export default defineBackground(() => {
   let hasMapping = false;
   let currentMappingId: string | null = null;
   let currentMappingName: string | null = null;
+
+  // ============================================================================
+  // Module-level state for fill tracking
+  // ============================================================================
+  let currentFillStatus: FillStatus = 'idle';
 
   // ============================================================================
   // Badge management
@@ -155,7 +160,7 @@ export default defineBackground(() => {
       batchId: selection.batchId,
       rowIndex: selection.rowIndex,
       rowTotal: selection.rowTotal,
-      fillStatus: 'idle',
+      fillStatus: currentFillStatus,
       // Mapping state
       mappingId: currentMappingId,
       mappingName: currentMappingName,
@@ -355,6 +360,107 @@ export default defineBackground(() => {
                 sendResponse({ success: true });
               } else {
                 sendResponse({ success: false, error: 'Mapping not found in current matches' });
+              }
+              break;
+            }
+
+            case 'FILL_START': {
+              try {
+                // 1. Validate prerequisites
+                const selection = await storage.selection.getSelection();
+                const prefs = await storage.preferences.getPreferences();
+
+                if (!selection.projectId || !selection.batchId) {
+                  sendResponse({ success: false, error: 'No project/batch selected' });
+                  break;
+                }
+
+                const mappingId = prefs.lastMappingIdByProject[selection.projectId];
+                if (!mappingId) {
+                  sendResponse({ success: false, error: 'No mapping selected' });
+                  break;
+                }
+
+                // 2. Update state to filling
+                currentFillStatus = 'filling';
+                await notifyStateUpdate();
+
+                // 3. Fetch mapping with steps
+                const mapping = await fetchMappingWithSteps(selection.projectId, mappingId);
+                if (!mapping || mapping.steps.length === 0) {
+                  currentFillStatus = 'failed';
+                  await notifyStateUpdate();
+                  sendResponse({ success: false, error: 'Mapping has no steps' });
+                  break;
+                }
+
+                // 4. Fetch current row data
+                const row = await fetchRowByIndex(selection.projectId, selection.batchId, selection.rowIndex);
+
+                // 5. Broadcast initial progress
+                broadcast({
+                  type: 'FILL_PROGRESS',
+                  payload: { currentStep: 0, totalSteps: mapping.steps.length, status: 'Starting...' },
+                });
+
+                // 6. Get active tab and send FILL_EXECUTE to content script
+                const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+                if (!activeTab?.id) {
+                  currentFillStatus = 'failed';
+                  await notifyStateUpdate();
+                  sendResponse({ success: false, error: 'No active tab' });
+                  break;
+                }
+
+                // 7. Transform steps for content script (map backend Step to FillStep)
+                const fillSteps = mapping.steps.map((step) => ({
+                  id: step.id,
+                  stepOrder: step.stepOrder,
+                  action: step.action,
+                  selector: step.selector,
+                  selectorFallbacks: step.selectorFallbacks,
+                  sourceFieldKey: step.sourceFieldKey,
+                  fixedValue: step.fixedValue,
+                  clearBefore: step.clearBefore,
+                  pressEnter: step.pressEnter,
+                  waitMs: step.waitMs,
+                  optional: step.optional,
+                }));
+
+                // 8. Send to content script
+                const result = await browser.tabs.sendMessage(activeTab.id, {
+                  type: 'FILL_EXECUTE',
+                  payload: { steps: fillSteps, rowData: row.data },
+                }) as { success: boolean; data?: { stepResults?: Array<{ success: boolean }> }; error?: string };
+
+                // 9. Process result
+                if (result.success) {
+                  currentFillStatus = 'success';
+                  broadcast({
+                    type: 'FILL_PROGRESS',
+                    payload: { currentStep: mapping.steps.length, totalSteps: mapping.steps.length, status: 'Complete' },
+                  });
+                } else {
+                  // Check if partial success (some steps succeeded)
+                  const successCount = result.data?.stepResults?.filter((r) => r.success).length ?? 0;
+                  currentFillStatus = successCount > 0 ? 'partial' : 'failed';
+                  broadcast({
+                    type: 'FILL_PROGRESS',
+                    payload: {
+                      currentStep: successCount,
+                      totalSteps: mapping.steps.length,
+                      status: result.error ?? 'Fill failed',
+                    },
+                  });
+                }
+
+                await notifyStateUpdate();
+                sendResponse({ success: result.success, data: result.data });
+              } catch (err) {
+                currentFillStatus = 'failed';
+                await notifyStateUpdate();
+                console.error('[Background] FILL_START error:', err);
+                sendResponse({ success: false, error: err instanceof Error ? err.message : 'Fill failed' });
               }
               break;
             }
