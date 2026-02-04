@@ -15,16 +15,22 @@ import {
 } from "@/components/ui/breadcrumb";
 import type { BatchResponse } from "@/lib/api/schemas/batch.schema";
 
+import { InlineEditName } from "./inline-edit-name";
+
 interface BatchDetailHeaderProps {
   batch: BatchResponse;
   projectId: string;
   projectName: string;
+  onNameChange?: (newName: string) => Promise<void>;
+  isUpdating?: boolean;
 }
 
 export function BatchDetailHeader({
   batch,
   projectId,
   projectName,
+  onNameChange,
+  isUpdating,
 }: BatchDetailHeaderProps) {
   const modeConfig = {
     LIST_MODE: {
@@ -92,9 +98,12 @@ export function BatchDetailHeader({
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-4">
             <FileSpreadsheet className="h-5 w-5 text-muted-foreground" />
-            <h2 className="text-xl font-semibold">
-              {batch.name ?? "Sem nome"}
-            </h2>
+            <InlineEditName
+              value={batch.name ?? "Sem nome"}
+              onSave={onNameChange ?? (async () => {})}
+              isLoading={isUpdating}
+              className="text-xl font-semibold"
+            />
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
