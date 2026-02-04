@@ -8,22 +8,37 @@ import {
   ProjectSelector,
   BatchSelector,
   RowIndicator,
+  FillControls,
 } from './components';
 
 export default function App() {
   const [state, setState] = useState<ExtensionState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fillProgress, setFillProgress] = useState<{ current: number; total: number } | null>(null);
+  const [fillError, setFillError] = useState<string | null>(null);
 
   // Load initial state
   useEffect(() => {
     loadState();
 
-    // Listen for state updates from background
+    // Listen for state updates and fill progress from background
     const listener = (message: { type: string; payload: unknown }): undefined | false => {
       if (message.type === 'STATE_UPDATED') {
         setState(message.payload as ExtensionState);
+        // Clear fill progress and error on state update
+        setFillProgress(null);
+        setFillError(null);
         return undefined; // Handled, no response needed
+      }
+      if (message.type === 'FILL_PROGRESS') {
+        const progress = message.payload as { currentStep: number; totalSteps: number; status: string };
+        setFillProgress({ current: progress.currentStep, total: progress.totalSteps });
+        // Check for error in status
+        if (progress.status.toLowerCase().includes('error')) {
+          setFillError(progress.status);
+        }
+        return undefined;
       }
       return false; // Not handling this message, let other listeners respond
     };
@@ -79,6 +94,40 @@ export default function App() {
     }
   }
 
+  // Fill cycle handlers
+  async function handleFill() {
+    // Stub for Phase 29: Will send FILL_START message
+    setFillError(null);
+    try {
+      await sendToBackground<VoidResponse>({ type: 'FILL_START' });
+    } catch (err) {
+      setFillError(err instanceof Error ? err.message : 'Fill failed');
+    }
+  }
+
+  async function handleNext() {
+    setFillError(null);
+    try {
+      await sendToBackground<VoidResponse>({ type: 'ROW_NEXT' });
+      // State update comes via STATE_UPDATED broadcast
+    } catch (err) {
+      console.error('[Popup] Failed to advance row:', err);
+    }
+  }
+
+  async function handleMarkError(reason?: string) {
+    setFillError(null);
+    try {
+      await sendToBackground<VoidResponse>({
+        type: 'MARK_ERROR',
+        payload: { reason },
+      });
+      // State update comes via STATE_UPDATED broadcast
+    } catch (err) {
+      console.error('[Popup] Failed to mark error:', err);
+    }
+  }
+
   return (
     <div className="w-[350px] h-[500px] bg-white p-4 flex flex-col">
       <header className="flex items-center gap-2 mb-4 pb-3 border-b">
@@ -126,6 +175,16 @@ export default function App() {
               <RowIndicator
                 rowIndex={state.rowIndex}
                 rowTotal={state.rowTotal}
+              />
+
+              <FillControls
+                batchId={state.batchId}
+                fillStatus={state.fillStatus}
+                fillProgress={fillProgress}
+                fillError={fillError}
+                onFill={handleFill}
+                onNext={handleNext}
+                onMarkError={handleMarkError}
               />
             </>
           ) : (
