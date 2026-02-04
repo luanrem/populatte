@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 ## Current Position
 
 Phase: 26 of 29 (Extension Auth Flow)
-Plan: 0 of TBD in current phase
-Status: Ready to discuss
-Last activity: 2026-02-03 — Phase 25 complete (Backend Extensions)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-04 — Completed 26-01-PLAN.md
 
 Progress: [███░░░░░░░] ~33%
 
@@ -27,9 +27,9 @@ Progress: [███░░░░░░░] ~33%
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 
 **v4.0 velocity:**
-- Plans completed: 6
-- Average duration: 4m 18s
-- Total execution time: 26m 54s
+- Plans completed: 7
+- Average duration: 4m 1s
+- Total execution time: 28m 54s
 
 *Updated after each plan completion*
 
@@ -59,6 +59,8 @@ Recent decisions affecting current work:
 - [25-02]: FillStatus enum separate from RowStatus (validation vs fill tracking)
 - [25-02]: VALID fill status is final - cannot be changed once set
 - [25-02]: ERROR status can be reset to PENDING for retry capability
+- [26-01]: fetchWithAuth clears auth and broadcasts STATE_UPDATED on 401
+- [26-01]: 30-day token expiry set during AUTH_LOGIN
 
 ### Roadmap Evolution
 
@@ -91,10 +93,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-03
-Stopped at: Phase 25 complete
+Last session: 2026-02-04
+Stopped at: Completed 26-01-PLAN.md
 Resume file: None
-Next step: /gsd:discuss-phase 26
+Next step: /gsd:execute-phase 26
 
 Config (if exists):
 {
