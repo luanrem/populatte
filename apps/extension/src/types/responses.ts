@@ -54,6 +54,11 @@ export interface BatchSummary {
   createdAt: string;
 }
 
+export interface BatchWithProgress extends BatchSummary {
+  pendingCount: number;
+  doneCount: number;
+}
+
 export type RowsResponse = Response<{
   rows: RowData[];
   total: number;
