@@ -15,5 +15,5 @@ export { fetchProjects } from './projects';
 export { fetchBatches } from './batches';
 export { fetchMappingsByUrl, fetchMappingWithSteps } from './mappings';
 export type { MappingListItem, MappingWithSteps, MappingStep } from './mappings';
-export { fetchRowByIndex } from './rows';
+export { fetchRowByIndex, updateRowStatus } from './rows';
 export type { RowData } from './rows';

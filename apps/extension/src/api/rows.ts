@@ -76,3 +76,41 @@ export async function fetchRowByIndex(
     fillStatus: row.fillStatus as 'PENDING' | 'VALID' | 'ERROR',
   };
 }
+
+/**
+ * Update row fill status
+ *
+ * @param projectId - Project ID (for ownership validation)
+ * @param batchId - Batch ID containing the row
+ * @param rowId - Row ID to update
+ * @param status - New fill status (PENDING, VALID, ERROR)
+ * @param errorMessage - Optional error message (only for ERROR status)
+ * @param errorStep - Optional step ID that failed (only for ERROR status)
+ */
+export async function updateRowStatus(
+  projectId: string,
+  batchId: string,
+  rowId: string,
+  status: 'PENDING' | 'VALID' | 'ERROR',
+  errorMessage?: string,
+  errorStep?: string
+): Promise<void> {
+  const response = await fetchWithAuth(
+    `${API_BASE_URL}/projects/${projectId}/batches/${batchId}/rows/${rowId}/status`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({
+        fillStatus: status,
+        ...(errorMessage !== undefined && { fillErrorMessage: errorMessage }),
+        ...(errorStep !== undefined && { fillErrorStep: errorStep }),
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(
+      (error as { message?: string }).message ?? `Failed to update row status: ${response.status}`
+    );
+  }
+}
