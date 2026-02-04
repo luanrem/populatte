@@ -18,10 +18,18 @@ export const batchResponseSchema = z.object({
   rowCount: z.number(),
   columnMetadata: z.array(columnMetadataSchema),
   totalRows: z.number(),
+  identifierFieldKey: z.string().nullable(),
+  secondaryFieldKey: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
   deletedAt: z.string().nullable(),
   deletedBy: z.string().nullable(),
+});
+
+export const updateBatchRequestSchema = z.object({
+  name: z.string().optional(),
+  identifierFieldKey: z.string().nullable().optional(),
+  secondaryFieldKey: z.string().nullable().optional(),
 });
 
 export const batchListResponseSchema = z.object({
@@ -71,3 +79,4 @@ export type BatchListResponse = z.infer<typeof batchListResponseSchema>;
 export type RowResponse = z.infer<typeof rowResponseSchema>;
 export type UploadBatchResponse = z.infer<typeof uploadBatchResponseSchema>;
 export type PaginatedRowsResponse = z.infer<typeof paginatedRowsResponseSchema>;
+export type UpdateBatchRequest = z.infer<typeof updateBatchRequestSchema>;

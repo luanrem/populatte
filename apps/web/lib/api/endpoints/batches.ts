@@ -8,6 +8,7 @@ import {
   type BatchListResponse,
   type BatchResponse,
   type PaginatedRowsResponse,
+  type UpdateBatchRequest,
   type UploadBatchResponse,
 } from '../schemas/batch.schema';
 import {
@@ -163,6 +164,39 @@ export function createBatchEndpoints(
       }
 
       return result.data;
+    },
+
+    async update(
+      projectId: string,
+      batchId: string,
+      body: UpdateBatchRequest,
+    ): Promise<BatchResponse> {
+      const response = await fetchFn(
+        `/projects/${projectId}/batches/${batchId}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(body),
+        },
+      );
+      const data: unknown = await response.json();
+
+      const result = batchResponseSchema.safeParse(data);
+
+      if (!result.success) {
+        console.error(
+          '[API] Update batch response validation failed:',
+          result.error.issues,
+        );
+        throw new Error('Invalid batch data received from server');
+      }
+
+      return result.data;
+    },
+
+    async remove(projectId: string, batchId: string): Promise<void> {
+      await fetchFn(`/projects/${projectId}/batches/${batchId}`, {
+        method: 'DELETE',
+      });
     },
   };
 }
