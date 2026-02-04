@@ -1,6 +1,6 @@
 import { storage, initializeStorage } from '../src/storage';
 import { broadcast } from '../src/messaging';
-import { exchangeCode, getMe, fetchProjects, fetchBatches } from '../src/api';
+import { exchangeCode, getMe, fetchProjects, fetchBatches, fetchMappingsByUrl } from '../src/api';
 import type { ExtensionState, PopupToBackgroundMessage } from '../src/types';
 
 export default defineBackground(() => {
@@ -11,7 +11,137 @@ export default defineBackground(() => {
     console.error('[Populatte] Storage initialization failed:', err);
   });
 
-  // Build current state from storage
+  // ============================================================================
+  // Module-level state for mapping detection
+  // ============================================================================
+  let currentMappingMatches: Array<{ id: string; name: string; stepCount: number }> = [];
+  let hasMapping = false;
+  let currentMappingId: string | null = null;
+  let currentMappingName: string | null = null;
+
+  // ============================================================================
+  // Badge management
+  // ============================================================================
+  async function setBadge(count: number): Promise<void> {
+    if (count > 0) {
+      await browser.action.setBadgeText({ text: String(count) });
+      await browser.action.setBadgeBackgroundColor({ color: '#22c55e' }); // Green
+    } else {
+      await browser.action.setBadgeText({ text: '' });
+    }
+  }
+
+  async function clearBadge(): Promise<void> {
+    await browser.action.setBadgeText({ text: '' });
+  }
+
+  // ============================================================================
+  // Mapping detection
+  // ============================================================================
+  async function checkMappingForTab(tabId: number): Promise<void> {
+    try {
+      // Get current tab URL
+      const tab = await browser.tabs.get(tabId);
+      const currentUrl = tab.url;
+
+      // Skip if no URL or special pages
+      if (!currentUrl || currentUrl.startsWith('chrome://') || currentUrl.startsWith('chrome-extension://')) {
+        await clearMappingState();
+        return;
+      }
+
+      // Get selected projectId from storage
+      const selection = await storage.selection.getSelection();
+      const projectId = selection.projectId;
+
+      // If no project selected, clear badge and return
+      if (!projectId) {
+        await clearMappingState();
+        return;
+      }
+
+      // Fetch mappings matching the current URL
+      const mappings = await fetchMappingsByUrl(projectId, currentUrl);
+
+      // Filter to mappings with stepCount > 0 (no badge for empty mappings)
+      const validMappings = mappings.filter((m) => m.stepCount > 0);
+
+      if (validMappings.length === 0) {
+        await clearMappingState();
+        return;
+      }
+
+      // Store matches
+      currentMappingMatches = validMappings.map((m) => ({
+        id: m.id,
+        name: m.name,
+        stepCount: m.stepCount,
+      }));
+      hasMapping = true;
+
+      // Try to auto-select last used mapping for this project
+      const lastMappingId = await storage.preferences.getLastMappingId(projectId);
+      const lastMatch = lastMappingId
+        ? validMappings.find((m) => m.id === lastMappingId)
+        : null;
+
+      if (lastMatch) {
+        currentMappingId = lastMatch.id;
+        currentMappingName = lastMatch.name;
+      } else if (validMappings.length === 1) {
+        // Auto-select if only one mapping matches
+        const singleMapping = validMappings[0];
+        if (singleMapping) {
+          currentMappingId = singleMapping.id;
+          currentMappingName = singleMapping.name;
+        }
+      } else {
+        // Multiple matches, no auto-select
+        currentMappingId = null;
+        currentMappingName = null;
+      }
+
+      // Set badge with count
+      await setBadge(validMappings.length);
+
+      // Broadcast state update
+      await notifyStateUpdate();
+    } catch (err) {
+      console.error('[Background] checkMappingForTab error:', err);
+      // On error, clear state but don't throw
+      await clearMappingState();
+    }
+  }
+
+  async function clearMappingState(): Promise<void> {
+    currentMappingMatches = [];
+    hasMapping = false;
+    currentMappingId = null;
+    currentMappingName = null;
+    await clearBadge();
+    await notifyStateUpdate();
+  }
+
+  // ============================================================================
+  // Tab listeners for mapping detection
+  // ============================================================================
+  browser.tabs.onActivated.addListener(async (activeInfo) => {
+    await checkMappingForTab(activeInfo.tabId);
+  });
+
+  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, _tab) => {
+    // Only check on URL changes for the active tab
+    if (changeInfo.url) {
+      const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+      if (activeTab?.id === tabId) {
+        await checkMappingForTab(tabId);
+      }
+    }
+  });
+
+  // ============================================================================
+  // State building and notification
+  // ============================================================================
   async function buildState(): Promise<ExtensionState> {
     const [auth, selection] = await Promise.all([
       storage.auth.getAuth(),
@@ -26,6 +156,11 @@ export default defineBackground(() => {
       rowIndex: selection.rowIndex,
       rowTotal: selection.rowTotal,
       fillStatus: 'idle',
+      // Mapping state
+      mappingId: currentMappingId,
+      mappingName: currentMappingName,
+      hasMapping,
+      availableMappings: currentMappingMatches.map((m) => ({ id: m.id, name: m.name })),
     };
   }
 
@@ -35,7 +170,9 @@ export default defineBackground(() => {
     broadcast({ type: 'STATE_UPDATED', payload: state });
   }
 
-  // Register message listener with simple handler
+  // ============================================================================
+  // Message handlers
+  // ============================================================================
   browser.runtime.onMessage.addListener(
     (message: PopupToBackgroundMessage, _sender, sendResponse) => {
       console.log('[Background] Received message:', message.type);
@@ -98,7 +235,7 @@ export default defineBackground(() => {
             case 'AUTH_LOGOUT': {
               await storage.auth.clearAuth();
               await storage.selection.clearSelection();
-              await notifyStateUpdate();
+              await clearMappingState();
               sendResponse({ success: true });
               break;
             }
@@ -142,7 +279,13 @@ export default defineBackground(() => {
               const { projectId } = message.payload;
               await storage.selection.setSelectedProject(projectId);
               await storage.preferences.setLastProjectId(projectId);
-              await notifyStateUpdate();
+              // Re-evaluate mapping for new project
+              const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+              if (activeTab?.id !== undefined) {
+                await checkMappingForTab(activeTab.id);
+              } else {
+                await notifyStateUpdate();
+              }
               sendResponse({ success: true });
               break;
             }
@@ -177,6 +320,42 @@ export default defineBackground(() => {
               const newIndex = await storage.selection.nextRow();
               await notifyStateUpdate();
               sendResponse({ success: true, data: { rowIndex: newIndex } });
+              break;
+            }
+
+            case 'GET_MAPPINGS': {
+              // Return current mapping matches
+              sendResponse({
+                success: true,
+                data: {
+                  mappings: currentMappingMatches.map((m) => ({ id: m.id, name: m.name })),
+                  selectedId: currentMappingId,
+                },
+              });
+              break;
+            }
+
+            case 'MAPPING_SELECT': {
+              const { mappingId } = message.payload;
+              const selection = await storage.selection.getSelection();
+              const projectId = selection.projectId;
+
+              // Find the mapping in current matches
+              const mapping = currentMappingMatches.find((m) => m.id === mappingId);
+              if (mapping) {
+                currentMappingId = mapping.id;
+                currentMappingName = mapping.name;
+
+                // Store as last selected for this project
+                if (projectId) {
+                  await storage.preferences.setLastMappingId(projectId, mappingId);
+                }
+
+                await notifyStateUpdate();
+                sendResponse({ success: true });
+              } else {
+                sendResponse({ success: false, error: 'Mapping not found in current matches' });
+              }
               break;
             }
 

@@ -70,5 +70,10 @@ async function buildExpiredState() {
     rowIndex: selection.rowIndex,
     rowTotal: selection.rowTotal,
     fillStatus: 'idle' as const,
+    // Mapping state cleared on session expiry
+    mappingId: null,
+    mappingName: null,
+    hasMapping: false,
+    availableMappings: [],
   };
 }
