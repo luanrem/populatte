@@ -9,6 +9,11 @@ import {
 import { Batch, UpdateBatchData } from '../../entities/batch.entity';
 import { BatchRepository } from '../../repositories/batch.repository';
 import { ProjectRepository } from '../../repositories/project.repository';
+import { RowRepository } from '../../repositories/row.repository';
+
+export interface UpdateBatchResult extends Batch {
+  totalRows: number;
+}
 
 @Injectable()
 export class UpdateBatchUseCase {
@@ -17,6 +22,7 @@ export class UpdateBatchUseCase {
   public constructor(
     private readonly batchRepository: BatchRepository,
     private readonly projectRepository: ProjectRepository,
+    private readonly rowRepository: RowRepository,
   ) {}
 
   public async execute(
@@ -24,7 +30,7 @@ export class UpdateBatchUseCase {
     batchId: string,
     userId: string,
     data: UpdateBatchData,
-  ): Promise<Batch> {
+  ): Promise<UpdateBatchResult> {
     // 1. Verify project ownership (defense-in-depth)
     const project = await this.projectRepository.findByIdOnly(projectId);
     if (!project) {
@@ -47,7 +53,10 @@ export class UpdateBatchUseCase {
     }
 
     // 3. Validate identifier keys exist in columnMetadata
-    if (data.identifierFieldKey !== undefined && data.identifierFieldKey !== null) {
+    if (
+      data.identifierFieldKey !== undefined &&
+      data.identifierFieldKey !== null
+    ) {
       const validKeys = batch.columnMetadata.map((c) => c.normalizedKey);
       if (!validKeys.includes(data.identifierFieldKey)) {
         throw new BadRequestException(
@@ -55,7 +64,10 @@ export class UpdateBatchUseCase {
         );
       }
     }
-    if (data.secondaryFieldKey !== undefined && data.secondaryFieldKey !== null) {
+    if (
+      data.secondaryFieldKey !== undefined &&
+      data.secondaryFieldKey !== null
+    ) {
       const validKeys = batch.columnMetadata.map((c) => c.normalizedKey);
       if (!validKeys.includes(data.secondaryFieldKey)) {
         throw new BadRequestException(
@@ -70,6 +82,13 @@ export class UpdateBatchUseCase {
       throw new NotFoundException('Batch not found');
     }
 
-    return updated;
+    // 5. Count rows in batch
+    const totalRows = await this.rowRepository.countByBatchId(batchId);
+
+    // 6. Return batch with totalRows
+    return {
+      ...updated,
+      totalRows,
+    };
   }
 }

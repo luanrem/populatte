@@ -153,6 +153,7 @@ export class DrizzleBatchRepository extends BatchRepository {
 
   public async softDeleteRowsByBatchId(
     batchId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _deletedBy: string,
   ): Promise<void> {
     await this.drizzle
