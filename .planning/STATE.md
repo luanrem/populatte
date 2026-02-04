@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-03)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 28 - Content Script
+**Current focus:** Phase 29 - Fill Cycle Integration
 
 ## Current Position
 
-Phase: 28 of 29 (Content Script)
-Plan: 2 of 2 in current phase
-Status: Phase complete (verified 5/5)
-Last activity: 2026-02-04 — Phase 28 executed and verified
+Phase: 29 of 29 (Fill Cycle Integration)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-04 - Completed 29-01-PLAN.md
 
-Progress: [████████░░] ~83%
+Progress: [████████░░] ~86%
 
 ## Performance Metrics
 
@@ -27,9 +27,9 @@ Progress: [████████░░] ~83%
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 
 **v4.0 velocity:**
-- Plans completed: 14
-- Average duration: 2m 59s
-- Total execution time: 42m 28s
+- Plans completed: 15
+- Average duration: 2m 56s
+- Total execution time: 46m 37s
 
 *Updated after each plan completion*
 
@@ -50,9 +50,6 @@ Recent decisions affecting current work:
 - [24-03]: Message types use discriminated unions with explicit type field for type safety
 - [24-03]: WXT storage imports from 'wxt/utils/storage' not 'wxt/storage'
 - [24-03]: Entrypoints use relative imports (../src/messaging) due to WXT @ alias pointing to extension root
-- [24-02]: Storage organized into three flat sections: auth, selection, preferences
-- [24-02]: Explicit typed methods (getAuth, setSelectedProject) instead of generic get/set
-- [24-02]: WXT storage.defineItem() API with fallback defaults for type-safe storage
 - [25-01]: Jose library chosen for extension JWT (already in ecosystem, no CommonJS issues)
 - [25-01]: In-memory lockout map for brute-force protection (5 attempts, 15-minute timeout)
 - [25-01]: 6-digit numeric connection codes (familiar from 2FA, 1M combinations)
@@ -77,6 +74,9 @@ Recent decisions affecting current work:
 - [28-02]: 75ms delay between steps (middle of 50-100ms range)
 - [28-02]: Steps sorted by stepOrder for predictable execution
 - [28-02]: IIFE pattern for async message handlers in WXT
+- [29-01]: Badge shows count (not checkmark) to indicate multiple mapping matches
+- [29-01]: Auto-select single mapping or last used mapping for convenience
+- [29-01]: Green badge color (#22c55e) matches design system success color
 
 ### Roadmap Evolution
 
@@ -110,9 +110,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Phase 28 executed and verified (5/5)
+Stopped at: Completed 29-01-PLAN.md
 Resume file: None
-Next step: /gsd:discuss-phase 29
+Next step: Execute 29-02-PLAN.md
 
 Config (if exists):
 {
