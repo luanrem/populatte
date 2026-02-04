@@ -9,18 +9,18 @@ Requirements for v5.0 Mapping Builder milestone. Each maps to roadmap phases.
 
 ### Backend CRUD
 
-- [ ] **API-01**: PUT /projects/:projectId updates project name
-- [ ] **API-02**: DELETE /projects/:projectId soft-deletes project
-- [ ] **API-03**: PUT /projects/:projectId/batches/:batchId updates batch name
-- [ ] **API-04**: DELETE /projects/:projectId/batches/:batchId soft-deletes batch
-- [ ] **API-05**: PATCH /projects/:projectId/batches/:batchId updates identifier fields
+- [x] **API-01**: PUT /projects/:projectId updates project name
+- [x] **API-02**: DELETE /projects/:projectId soft-deletes project
+- [x] **API-03**: PUT /projects/:projectId/batches/:batchId updates batch name
+- [x] **API-04**: DELETE /projects/:projectId/batches/:batchId soft-deletes batch
+- [x] **API-05**: PATCH /projects/:projectId/batches/:batchId updates identifier fields
 
 ### Batch Identifier
 
-- [ ] **ID-01**: Batch entity has identifierFieldKey column (nullable)
-- [ ] **ID-02**: Batch entity has secondaryFieldKey column (nullable)
-- [ ] **ID-03**: API validates keys exist in batch's field inventory
-- [ ] **ID-04**: Row responses include identifier values when configured
+- [x] **ID-01**: Batch entity has identifierFieldKey column (nullable)
+- [x] **ID-02**: Batch entity has secondaryFieldKey column (nullable)
+- [x] **ID-03**: API validates keys exist in batch's field inventory
+- [x] **ID-04**: Row responses include identifier values when configured
 
 ### Dashboard Project/Batch CRUD
 
@@ -137,15 +137,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| API-01 | 30 | Pending |
-| API-02 | 30 | Pending |
-| API-03 | 30 | Pending |
-| API-04 | 30 | Pending |
-| API-05 | 30 | Pending |
-| ID-01 | 30 | Pending |
-| ID-02 | 30 | Pending |
-| ID-03 | 30 | Pending |
-| ID-04 | 30 | Pending |
+| API-01 | 30 | Complete |
+| API-02 | 30 | Complete |
+| API-03 | 30 | Complete |
+| API-04 | 30 | Complete |
+| API-05 | 30 | Complete |
+| ID-01 | 30 | Complete |
+| ID-02 | 30 | Complete |
+| ID-03 | 30 | Complete |
+| ID-04 | 30 | Complete |
 | CRUD-01 | 31 | Pending |
 | CRUD-02 | 31 | Pending |
 | CRUD-03 | 31 | Pending |
@@ -203,4 +203,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-04*
-*Last updated: 2026-02-04 after roadmap creation*
+*Last updated: 2026-02-04 after phase 30 completion*

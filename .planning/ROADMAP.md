@@ -17,7 +17,7 @@ v5.0 enables users to create mappings visually by clicking form fields in the ex
 
 ## Phases
 
-- [ ] **Phase 30: Backend Foundation** - Project/batch CRUD endpoints and batch identifier configuration
+- [x] **Phase 30: Backend Foundation** - Project/batch CRUD endpoints and batch identifier configuration
 - [ ] **Phase 31: Dashboard Management** - Project/batch CRUD UI and mappings list
 - [ ] **Phase 32: Dashboard Mapping Editor** - Mapping edit page with step management
 - [ ] **Phase 33: Extension Capture Mode** - Click-to-capture selector creation
@@ -38,9 +38,9 @@ v5.0 enables users to create mappings visually by clicking form fields in the ex
 **Plans**: 3 plans
 
 Plans:
-- [ ] 30-01-PLAN.md — Schema foundation with identifier columns
-- [ ] 30-02-PLAN.md — Batch CRUD operations (update, delete, identifier config)
-- [ ] 30-03-PLAN.md — Project cascade delete and migration
+- [x] 30-01-PLAN.md — Schema foundation with identifier columns
+- [x] 30-02-PLAN.md — Batch CRUD operations (update, delete, identifier config)
+- [x] 30-03-PLAN.md — Project cascade delete and migration
 
 ### Phase 31: Dashboard Management
 **Goal**: Users can manage projects, batches, and view mappings from the dashboard
@@ -104,7 +104,7 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 30. Backend Foundation | v5.0 | 0/3 | Planned | - |
+| 30. Backend Foundation | v5.0 | 3/3 | ✓ Complete | 2026-02-04 |
 | 31. Dashboard Management | v5.0 | 0/? | Not started | - |
 | 32. Dashboard Mapping Editor | v5.0 | 0/? | Not started | - |
 | 33. Extension Capture Mode | v5.0 | 0/? | Not started | - |
