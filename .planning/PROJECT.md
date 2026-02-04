@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, field-level analytics with type inference, and mapping/step CRUD for form-filling recipes. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, and field exploration with card-based inventory and value browsing. The Chrome extension will map Excel columns to form fields and auto-populate web forms using the backend mapping layer.
+A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, field-level analytics with type inference, and mapping/step CRUD for form-filling recipes. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, and field exploration with card-based inventory and value browsing. The Chrome extension (WXT + Manifest V3) enables COPILOTO mode: connection code auth, project/batch selection, mapping detection, DOM-based form filling with CSS/XPath selectors, and row status tracking.
 
 ## Core Value
 
@@ -68,21 +68,59 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - ✓ Auto-increment step ordering on create — v3.0
 - ✓ Ownership validation following 404/403 separation pattern — v3.0
 - ✓ Defense-in-depth: step belongs to mapping, mapping belongs to project — v3.0
+- ✓ Extension builds with WXT + Vite + Manifest V3 — v4.0
+- ✓ TypeScript configured for all contexts (popup, background, content script) — v4.0
+- ✓ Type-safe message bus enables communication between all contexts — v4.0
+- ✓ chrome.storage abstraction layer handles session and local persistence — v4.0
+- ✓ Shared types integrated from @populatte/types package — v4.0
+- ✓ Extension loads successfully in Chrome developer mode — v4.0
+- ✓ Web app generates 5-minute connection code via POST /auth/extension-code — v4.0
+- ✓ Extension exchanges code for 30-day JWT via POST /auth/extension-token — v4.0
+- ✓ GET /auth/me validates token and returns user info — v4.0
+- ✓ Extension code is single-use (invalidated after exchange) — v4.0
+- ✓ Extension auth endpoints follow Clean Architecture patterns — v4.0
+- ✓ PATCH /projects/:projectId/batches/:batchId/rows/:rowId updates row status — v4.0
+- ✓ Row status supports PENDING, VALID, ERROR values — v4.0
+- ✓ Optional errorMessage field stores failure reason — v4.0
+- ✓ Row status ownership validation follows 404/403 pattern — v4.0
+- ✓ User clicks "Connect" in popup to start auth flow — v4.0
+- ✓ Extension opens web app connection page in new tab — v4.0
+- ✓ User copies code from web app and pastes in extension — v4.0
+- ✓ Extension exchanges code for JWT and stores in chrome.storage.local — v4.0
+- ✓ Connection status indicator shows authenticated/disconnected state — v4.0
+- ✓ On 401 response, extension prompts user to reconnect — v4.0
+- ✓ Project selector dropdown fetches and displays user's projects — v4.0
+- ✓ Batch selector dropdown fetches batches for selected project — v4.0
+- ✓ Row indicator shows current row number and total rows — v4.0
+- ✓ Fill button triggers form fill for current row — v4.0
+- ✓ Next button advances to next row after fill — v4.0
+- ✓ Stop button aborts ongoing fill operation — v4.0
+- ✓ Mapping indicator shows when current URL has available mapping — v4.0
+- ✓ State persists and restores when popup closes and reopens — v4.0
+- ✓ Selector engine finds elements via CSS selector — v4.0
+- ✓ Selector engine finds elements via XPath — v4.0
+- ✓ Fallback chain tries alternative selectors when primary fails — v4.0
+- ✓ Fill action populates input/textarea/select elements — v4.0
+- ✓ Fill action uses native setters to trigger React/Vue reactivity — v4.0
+- ✓ Click action clicks buttons and links — v4.0
+- ✓ Wait action pauses execution for specified duration — v4.0
+- ✓ Step executor processes steps in order and reports results — v4.0
+- ✓ URL change trigger detects when page navigates to success URL pattern — v4.0
+- ✓ Text appears trigger detects when success message appears on page — v4.0
+- ✓ Element disappears trigger detects when form/modal is removed — v4.0
+- ✓ Timeout prevents infinite waiting (configurable, default 30s) — v4.0
+- ✓ Background detects URL change and checks for matching mappings — v4.0
+- ✓ Background fetches mapping detail with steps for current URL — v4.0
+- ✓ Background sends steps and row data to content script for execution — v4.0
+- ✓ Content script reports fill success/failure to background — v4.0
+- ✓ Background updates row status via API after fill attempt — v4.0
+- ✓ Popup shows fill progress (current step, status) — v4.0
+- ✓ Error state shows retry option for failed fills — v4.0
+- ✓ User can manually advance to next row after verification (COPILOTO mode) — v4.0
 
 ### Active
 
-#### Current Milestone: v4.0 Extension Core
-
-**Goal:** Build Chrome extension MVP with COPILOTO mode — manual row advancement after form fill
-
-**Target features:**
-- Extension foundation with Vite + CRXJS, Manifest V3, TypeScript
-- Connection code auth flow (web app generates code, extension exchanges for JWT)
-- Background service worker with state management and API client
-- Popup UI with project/batch selection and fill controls
-- Content script with selector engine and step execution
-- Full fill cycle: detect mapping → fill form → user confirms → next row
-- Backend additions: row status tracking, extension auth endpoints
+(No active requirements — define next milestone with `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -108,8 +146,8 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ## Context
 
-**Shipped v3.0** with ~6,302 LOC TypeScript in API (58 files changed, +6,254 lines).
-Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, react-intersection-observer, shadcn/ui.
+**Shipped v4.0** with Chrome extension MVP (~2,658 LOC TypeScript in extension, 145 files changed, +40,378 lines).
+Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, react-intersection-observer, shadcn/ui, **WXT 0.20.13**, Manifest V3, React 19 (extension), jose (JWT).
 
 **Architecture patterns established:**
 - Compare-first sync: Guard fetches stored user, compares fields, writes only on mismatch
@@ -224,6 +262,19 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | StepOrder auto-increments via getMaxStepOrder | maxOrder + 1 on creation; no manual order assignment needed | ✓ Good |
 | Strict reorder validation | Validates exact match (length, duplicates, missing, extra IDs) | ✓ Good |
 | Defense-in-depth on step operations | Verify step.mappingId === URL mappingId before ownership chain | ✓ Good |
+| WXT 0.20.13 over CRXJS | Built-in storage and messaging abstractions, MV3 support, multi-browser | ✓ Good |
+| Service Worker state via chrome.storage | 30-second termination risk means all state must be persisted | ✓ Good |
+| Native property setters for form fills | React/Vue controlled components require setter access for reactivity | ✓ Good |
+| Jose library for extension JWT | Already in ecosystem, no CommonJS issues, modern async API | ✓ Good |
+| In-memory lockout map | Simple brute-force protection (5 attempts, 15min timeout), Redis for prod | ✓ Good |
+| 6-digit numeric connection codes | Familiar from 2FA, easy to type, 1M combinations with short expiry | ✓ Good |
+| fetchWithAuth clears auth on 401 | Auto-disconnect on invalid token, broadcasts STATE_UPDATED | ✓ Good |
+| Discriminated union message types | Type-safe message passing with explicit type field | ✓ Good |
+| Module state for current mapping | Represents UI selection, may differ from preferences when auto-selected | ✓ Good |
+| Badge count (not checkmark) for mappings | Indicates multiple mapping matches at a glance | ✓ Good |
+| 100ms URL polling in content script | Navigation events unreliable in content scripts | ✓ Good |
+| MutationObserver for success triggers | Efficient DOM watching for text_appears and element_disappears | ✓ Good |
+| Defensive undefined check in sendMessage | Content script may not respond, prevents crash in FILL_START | ✓ Good |
 
 ---
-*Last updated: 2026-02-03 after v3.0 milestone completed*
+*Last updated: 2026-02-04 after v4.0 milestone completed*

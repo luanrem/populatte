@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-03)
+See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 29 - Fill Cycle Integration (Complete)
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 29 of 29 (Fill Cycle Integration)
-Plan: 5 of 5 in current phase
-Status: Phase complete (gap closure)
-Last activity: 2026-02-04 - Completed 29-05-PLAN.md (gap closure)
+Phase: Ready for next milestone
+Plan: N/A
+Status: v4.0 shipped, planning next
+Last activity: 2026-02-04 — v4.0 milestone complete
 
-Progress: [██████████] 100%
+Progress: N/A (between milestones)
 
 ## Performance Metrics
 
@@ -25,11 +25,7 @@ Progress: [██████████] 100%
 - v2.2: 4 plans, avg 3m 57s, total 15m 54s
 - v2.3: 7 plans, avg 2m 46s, total ~20m 30s
 - v3.0: 6 plans, avg 2m 47s, total ~17min
-
-**v4.0 velocity:**
-- Plans completed: 19
-- Average duration: 2m 48s
-- Total execution time: 53m 20s
+- v4.0: 18 plans, avg 2m 48s, total ~53min
 
 *Updated after each plan completion*
 
@@ -38,53 +34,6 @@ Progress: [██████████] 100%
 ### Decisions
 
 See PROJECT.md Key Decisions table for full log with outcomes.
-Recent decisions affecting current work:
-
-- [Research]: WXT 0.20.13 recommended over CRXJS for built-in storage/messaging abstractions
-- [Research]: Service Worker state MUST use chrome.storage (30-second termination risk)
-- [Research]: Native property setters required for React/Vue form compatibility
-- [24-01]: React 19.2.0 installed at workspace root to resolve lucide-react peer dependency hoisting
-- [24-01]: Created minimal @populatte/types package to establish type sharing infrastructure
-- [24-01]: Using Tailwind CSS v4 with Vite plugin for extension UI consistency with web app
-- [24-02]: Storage organized into three flat sections: auth, selection, preferences with explicit typed methods
-- [24-03]: Message types use discriminated unions with explicit type field for type safety
-- [24-03]: WXT storage imports from 'wxt/utils/storage' not 'wxt/storage'
-- [24-03]: Entrypoints use relative imports (../src/messaging) due to WXT @ alias pointing to extension root
-- [25-01]: Jose library chosen for extension JWT (already in ecosystem, no CommonJS issues)
-- [25-01]: In-memory lockout map for brute-force protection (5 attempts, 15-minute timeout)
-- [25-01]: 6-digit numeric connection codes (familiar from 2FA, 1M combinations)
-- [25-02]: FillStatus enum separate from RowStatus (validation vs fill tracking)
-- [25-02]: VALID fill status is final - cannot be changed once set
-- [25-02]: ERROR status can be reset to PENDING for retry capability
-- [26-01]: fetchWithAuth clears auth and broadcasts STATE_UPDATED on 401
-- [26-01]: 30-day token expiry set during AUTH_LOGIN
-- [26-02]: Single text input for 6-digit code (not split digit boxes)
-- [26-02]: Popup components organized in entrypoints/popup/components/ directory
-- [26-03]: Centered card layout for focused single-purpose extension connect flow
-- [27-01]: MVP progress tracking (pendingCount=rowCount, doneCount=0) deferred to Phase 29
-- [27-01]: Completed batches filtered from GET_BATCHES response per CONTEXT.md
-- [27-02]: Native select elements for simple dropdown UI (no custom dropdowns)
-- [27-02]: Auto-select single batch per CONTEXT.md decision
-- [27-03]: MARK_ERROR stub advances row (actual API call deferred to Phase 29)
-- [27-03]: Next button enabled only after fill completes (success/partial/failed)
-- [28-01]: findElement uses querySelector for CSS and document.evaluate for XPath
-- [28-01]: waitForElement polls at 100ms intervals with 2000ms default timeout
-- [28-01]: executeFill uses native property setters for React/Vue compatibility
-- [28-01]: Select matching: value attribute first, then visible text fallback
-- [28-02]: 75ms delay between steps (middle of 50-100ms range)
-- [28-02]: Steps sorted by stepOrder for predictable execution
-- [28-02]: IIFE pattern for async message handlers in WXT
-- [29-01]: Badge shows count (not checkmark) to indicate multiple mapping matches
-- [29-01]: Auto-select single mapping or last used mapping for convenience
-- [29-01]: Green badge color (#22c55e) matches design system success color
-- [29-02]: Use currentMappingId module state for fill (represents UI selection)
-- [29-02]: Reset fillStatus to idle on row navigation (ROW_NEXT, ROW_PREV, MARK_ERROR)
-- [29-02]: Only clear fillProgress in popup when fillStatus is idle
-- [29-03]: Row status update errors do not block fill flow
-- [29-04]: URL change detection uses 100ms polling (navigation events unreliable in content scripts)
-- [29-04]: MutationObserver for text_appears and element_disappears triggers
-- [29-04]: Singleton pattern for active monitor (only one monitor at a time)
-- [29-05]: Defensive check for undefined sendMessage result before accessing .success
 
 ### Roadmap Evolution
 
@@ -94,7 +43,7 @@ Recent decisions affecting current work:
 - v2.2: 4 phases, 4 plans -- Dashboard Upload & Listing UI (shipped 2026-01-30)
 - v2.3: 4 phases, 7 plans -- Field Inventory (shipped 2026-02-02)
 - v3.0: 3 phases, 6 plans -- Backend Mapping (shipped 2026-02-03)
-- v4.0: 6 phases, 19 plans -- Extension Core (shipped 2026-02-04)
+- v4.0: 6 phases, 18 plans -- Extension Core (shipped 2026-02-04)
 
 ### Pending Todos
 
@@ -118,9 +67,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Completed 29-04-PLAN.md (Phase 29 complete)
+Stopped at: Completed v4.0 milestone archival
 Resume file: None
-Next step: Ready for next milestone planning
+Next step: `/gsd:new-milestone` to define next milestone
 
 Config (if exists):
 {

@@ -1,5 +1,32 @@
 # Project Milestones: Populatte
 
+## v4.0 Extension Core (Shipped: 2026-02-04)
+
+**Delivered:** Chrome extension MVP with COPILOTO mode — connection code authentication, popup UI for project/batch/row selection, content script DOM manipulation with CSS/XPath selectors, and complete fill cycle integration with mapping detection, step execution, success monitoring, and row status persistence.
+
+**Phases completed:** 24-29 (18 plans total)
+
+**Key accomplishments:**
+- Chrome extension foundation with WXT framework, Manifest V3, React popup, service worker, and content script architecture
+- Connection code authentication flow with 5-minute codes, 30-day JWTs, and brute force protection (backend + extension)
+- Popup UI with project/batch selectors, row navigation, and fill controls for COPILOTO manual workflow
+- Content script DOM manipulation layer with CSS/XPath selectors, fallback chains, and native property setters for React/Vue reactivity
+- Complete fill cycle: mapping detection with badge indicator, step execution, success monitoring (URL change, text appears, element disappears), and row status persistence
+- 48/48 requirements satisfied, 100% E2E flow coverage, all gaps closed
+
+**Stats:**
+- 145 files changed (+40,378 lines)
+- ~2,658 lines of TypeScript in extension
+- 6 phases, 18 plans, 101 commits
+- 2 days (2026-02-03 → 2026-02-04)
+- Execution time: ~53min (avg 2m 48s/plan)
+
+**Git range:** `docs(24)` → `docs(29)` gap closure
+
+**What's next:** TBD — `/gsd:new-milestone` to define scope
+
+---
+
 ## v3.0 Backend Mapping (Shipped: 2026-02-03)
 
 **Delivered:** Mapping CRUD layer that associates Excel columns to web form selectors, enabling the Chrome extension to fetch and execute form-filling recipes with full ownership validation and defense-in-depth security.
