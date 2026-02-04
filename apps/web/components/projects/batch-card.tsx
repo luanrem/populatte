@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, ChevronRight, FileSpreadsheet, Rows } from "lucide-react";
+import { Calendar, ChevronRight, FileSpreadsheet, Rows, Settings, Trash2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { BatchResponse } from "@/lib/api/schemas/batch.schema";
 
 interface BatchCardProps {
   batch: BatchResponse;
   projectId: string;
+  onSettingsClick?: (batch: BatchResponse) => void;
+  onDeleteClick?: (batch: BatchResponse) => void;
 }
 
 function formatRelativeDate(dateStr: string): string {
@@ -40,7 +43,12 @@ function formatRelativeDate(dateStr: string): string {
   }
 }
 
-export function BatchCard({ batch, projectId }: BatchCardProps) {
+export function BatchCard({
+  batch,
+  projectId,
+  onSettingsClick,
+  onDeleteClick,
+}: BatchCardProps) {
   const modeConfig = {
     LIST_MODE: {
       text: "Modo Lista",
@@ -58,7 +66,7 @@ export function BatchCard({ batch, projectId }: BatchCardProps) {
 
   return (
     <Link href={`/projects/${projectId}/batches/${batch.id}`}>
-      <Card className="transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
+      <Card className="group transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
         <CardContent className="flex items-center justify-between p-6">
           <div className="flex flex-col gap-3 flex-1">
             <div className="flex items-center gap-2 text-sm font-medium">
@@ -81,7 +89,41 @@ export function BatchCard({ batch, projectId }: BatchCardProps) {
             </div>
           </div>
 
-          <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 ml-4" />
+          <div className="flex items-center gap-1 shrink-0 ml-4">
+            {(onSettingsClick || onDeleteClick) && (
+              <div
+                className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                {onSettingsClick && (
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => onSettingsClick(batch)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span className="sr-only">Configuracoes</span>
+                  </Button>
+                )}
+                {onDeleteClick && (
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => onDeleteClick(batch)}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Excluir</span>
+                  </Button>
+                )}
+              </div>
+            )}
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </div>
         </CardContent>
       </Card>
     </Link>

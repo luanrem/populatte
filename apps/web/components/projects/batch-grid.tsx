@@ -1,10 +1,16 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "sonner";
+
 import { Skeleton } from "@/components/ui/skeleton";
-import type { BatchListResponse } from "@/lib/api/schemas/batch.schema";
+import type { BatchListResponse, BatchResponse } from "@/lib/api/schemas/batch.schema";
+import { useDeleteBatch } from "@/lib/query/hooks/use-batches";
 
 import { BatchCard } from "./batch-card";
 import { BatchEmptyState } from "./batch-empty-state";
+import { BatchSettingsModal } from "./batch-settings-modal";
+import { DeleteBatchDialog } from "./delete-batch-dialog";
 
 interface BatchGridProps {
   projectId: string;
@@ -38,6 +44,37 @@ export function BatchGrid({
   isLoading,
   onUploadClick,
 }: BatchGridProps) {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedBatch, setSelectedBatch] = useState<BatchResponse | null>(null);
+
+  const deleteBatch = useDeleteBatch(projectId);
+
+  const handleSettingsClick = (batch: BatchResponse) => {
+    setSelectedBatch(batch);
+    setSettingsOpen(true);
+  };
+
+  const handleDeleteClick = (batch: BatchResponse) => {
+    setSelectedBatch(batch);
+    setDeleteOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!selectedBatch) return;
+
+    deleteBatch.mutate(
+      { batchId: selectedBatch.id },
+      {
+        onSuccess: () => {
+          setDeleteOpen(false);
+          setSelectedBatch(null);
+          toast.success("Importacao excluida");
+        },
+      }
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -53,10 +90,34 @@ export function BatchGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {batches.items.map((batch) => (
-        <BatchCard key={batch.id} batch={batch} projectId={projectId} />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {batches.items.map((batch) => (
+          <BatchCard
+            key={batch.id}
+            batch={batch}
+            projectId={projectId}
+            onSettingsClick={handleSettingsClick}
+            onDeleteClick={handleDeleteClick}
+          />
+        ))}
+      </div>
+
+      <BatchSettingsModal
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        batch={selectedBatch}
+        projectId={projectId}
+        onSave={() => setSettingsOpen(false)}
+      />
+
+      <DeleteBatchDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        batch={selectedBatch}
+        onConfirm={handleDeleteConfirm}
+        isPending={deleteBatch.isPending}
+      />
+    </>
   );
 }
