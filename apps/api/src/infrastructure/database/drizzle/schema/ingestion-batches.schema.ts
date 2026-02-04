@@ -39,6 +39,8 @@ export const ingestionBatches = pgTable(
     fileCount: integer('file_count').notNull(),
     rowCount: integer('row_count').notNull(),
     columnMetadata: jsonb('column_metadata').notNull().default('[]'),
+    identifierFieldKey: varchar('identifier_field_key', { length: 255 }),
+    secondaryFieldKey: varchar('secondary_field_key', { length: 255 }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
