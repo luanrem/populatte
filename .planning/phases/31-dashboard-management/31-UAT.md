@@ -1,14 +1,42 @@
 ---
 status: complete
 phase: 31-dashboard-management
-source: 31-01-SUMMARY.md, 31-02-SUMMARY.md, 31-03-SUMMARY.md, 31-04-SUMMARY.md, 31-05-SUMMARY.md, 31-06-SUMMARY.md
+source: 31-01-SUMMARY.md, 31-02-SUMMARY.md, 31-03-SUMMARY.md, 31-04-SUMMARY.md, 31-05-SUMMARY.md, 31-06-SUMMARY.md, 31-07-SUMMARY.md
 started: 2026-02-04T19:45:00Z
-updated: 2026-02-04T19:46:00Z
+updated: 2026-02-04T20:30:00Z
 ---
 
 ## Current Test
 
-[testing complete]
+[re-verification complete]
+
+## Re-verification Tests
+
+### R1. Batch Inline Edit (Blocker Fix)
+expected: Edit batch name on detail page - should save without "Invalid batch data" error
+result: pass
+
+### R2. Batch Settings Toast (Major Fix)
+expected: Save batch settings - should show "Configurações salvas com sucesso" toast
+result: issue
+reported: "Toast works but hydration error: <p> cannot contain nested <div>. Skeleton inside <p> tag at batch-settings-modal.tsx:146"
+severity: minor
+
+### R3. Batch Card Button Positioning (Cosmetic Fix)
+expected: Hover batch card - buttons should be visible in top-right corner, appropriately sized (no chevron)
+result: pass
+
+### R4. Section Visual Separation (Cosmetic Fix)
+expected: Project detail page - sections should have larger titles, subtitles, and a separator line between them
+result: pass
+
+## Re-verification Summary
+
+total: 4
+passed: 3
+issues: 1
+pending: 0
+skipped: 0
 
 ## Tests
 
@@ -69,29 +97,71 @@ skipped: 0
   reason: "User reported: Quando clico salvar dá spinner mas não tenho feedback visual se salvou ou não - deveria ter toast"
   severity: major
   test: 3
-  artifacts: []
-  missing: []
+  root_cause: "batch-settings-modal.tsx missing toast import and toast.success() call after save"
+  artifacts:
+    - path: "apps/web/components/projects/batch-settings-modal.tsx"
+      issue: "No toast import, handleSave doesn't call toast.success()"
+  missing:
+    - "Add import { toast } from 'sonner'"
+    - "Add toast.success('Configuracoes salvas com sucesso') after mutateAsync"
+  debug_session: ".planning/debug/batch-settings-no-success-toast.md"
 
 - truth: "Batch card action buttons are well-positioned and visible"
   status: failed
   reason: "User reported: Os botões no hover do card estão muito pequenos, mal posicionados, quase não dá pra ver. Deveria remover a seta e colocar os botões no canto superior/inferior direito do card"
   severity: cosmetic
   test: 3
-  artifacts: []
-  missing: []
+  root_cause: "Buttons use icon-xs (24px with 12px icons) positioned inline with confusing chevron"
+  artifacts:
+    - path: "apps/web/components/projects/batch-card.tsx"
+      issue: "size='icon-xs' too small, ChevronRight confuses purpose, buttons not in standard position"
+  missing:
+    - "Change from size='icon-xs' to size='icon-sm' (32px)"
+    - "Remove ChevronRight icon or move to different position"
+    - "Move buttons to top-right corner with absolute positioning"
+  debug_session: ".planning/debug/batch-card-buttons-cosmetic.md"
 
 - truth: "Project detail page sections (Mappings/Importações) are visually well-separated"
   status: failed
   reason: "User reported: As seções não estão bem separadas. Deveria ter título maior, subtítulo, e borda/divisória entre as seções"
   severity: cosmetic
   test: 4
-  artifacts: []
-  missing: []
+  root_cause: "Sections use only space-y-8 with text-lg titles, no dividers or visual containers"
+  artifacts:
+    - path: "apps/web/app/(platform)/projects/[id]/page.tsx"
+      issue: "Minimal visual hierarchy, no Separator between sections, inconsistent subtitles"
+  missing:
+    - "Add <Separator /> from shadcn/ui between sections"
+    - "Change titles from text-lg to text-xl"
+    - "Add consistent subtitle to Importacoes section"
+  debug_session: "N/A"
 
 - truth: "Batch name can be edited inline on batch detail page"
   status: failed
   reason: "User reported: Deu um erro - Invalid batch data received from server"
   severity: blocker
   test: 5
-  artifacts: []
-  missing: []
+  root_cause: "UpdateBatchUseCase returns raw Batch without totalRows, but frontend schema requires totalRows"
+  artifacts:
+    - path: "apps/api/src/core/use-cases/batch/update-batch.use-case.ts"
+      issue: "Returns Promise<Batch> without totalRows field"
+    - path: "apps/web/lib/api/schemas/batch.schema.ts"
+      issue: "batchResponseSchema requires totalRows: z.number()"
+  missing:
+    - "Inject RowRepository in UpdateBatchUseCase"
+    - "Count rows with rowRepository.countByBatchId(batchId) after update"
+    - "Return { ...updated, totalRows } instead of just updated"
+  debug_session: ".planning/debug/batch-inline-edit-invalid-data.md"
+
+- truth: "Batch settings modal renders without hydration errors"
+  status: failed
+  reason: "User reported: Hydration error - <p> cannot contain nested <div>. Skeleton inside <p> tag at batch-settings-modal.tsx:146"
+  severity: minor
+  test: R2
+  root_cause: "Skeleton component renders <div> but is placed inside <p> tag in preview section"
+  artifacts:
+    - path: "apps/web/components/projects/batch-settings-modal.tsx"
+      issue: "Line 146: <p> contains <Skeleton> which renders <div>"
+  missing:
+    - "Change <p> to <div> or <span> wrapper around the preview content"
+  debug_session: "N/A"
