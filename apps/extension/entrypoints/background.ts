@@ -121,9 +121,12 @@ export default defineBackground(() => {
               const { projectId } = message.payload;
               try {
                 const allBatches = await fetchBatches(projectId);
+                console.log('[Background] GET_BATCHES fetched:', allBatches);
+                // Ensure allBatches is an array
+                const batchesArray = Array.isArray(allBatches) ? allBatches : [];
                 // Filter out completed batches (where all rows are done)
                 // Per CONTEXT.md: Hide completed batches from dropdown
-                const batches = allBatches.filter((batch) => batch.doneCount < batch.rowCount);
+                const batches = batchesArray.filter((batch) => batch.doneCount < batch.rowCount);
                 sendResponse({ success: true, data: { batches } });
               } catch (err) {
                 console.error('[Background] GET_BATCHES error:', err);
@@ -145,8 +148,8 @@ export default defineBackground(() => {
             }
 
             case 'BATCH_SELECT': {
-              const { batchId } = message.payload;
-              await storage.selection.setSelectedBatch(batchId, 0);
+              const { batchId, rowTotal } = message.payload;
+              await storage.selection.setSelectedBatch(batchId, rowTotal);
               await notifyStateUpdate();
               sendResponse({ success: true });
               break;

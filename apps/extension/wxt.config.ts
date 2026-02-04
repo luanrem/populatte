@@ -3,6 +3,11 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
+  dev: {
+    server: {
+      port: 3003,
+    },
+  },
   manifest: {
     name: 'Populatte',
     description: 'Automate web form filling from your data',

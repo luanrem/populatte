@@ -86,7 +86,7 @@ export default function App() {
       }
       await sendToBackground<VoidResponse>({
         type: 'BATCH_SELECT',
-        payload: { batchId },
+        payload: { batchId, rowTotal },
       });
       // State update comes via STATE_UPDATED broadcast
     } catch (err) {

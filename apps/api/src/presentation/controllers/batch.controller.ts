@@ -24,7 +24,7 @@ import {
 } from '../../core/use-cases/batch';
 import { UpdateRowStatusUseCase } from '../../core/use-cases/row';
 import type { ExcelFileInput } from '../../infrastructure/excel/strategies/excel-parsing.strategy';
-import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
+import { DualAuthGuard } from '../../infrastructure/auth/guards/dual-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import {
   createBatchSchema,
@@ -38,7 +38,7 @@ import { FileContentValidationPipe } from '../pipes/file-content-validation.pipe
 import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
 @Controller('projects/:projectId/batches')
-@UseGuards(ClerkAuthGuard)
+@UseGuards(DualAuthGuard)
 export class BatchController {
   public constructor(
     private readonly createBatch: CreateBatchUseCase,

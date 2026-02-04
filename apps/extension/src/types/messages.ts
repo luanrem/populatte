@@ -59,6 +59,7 @@ export interface BatchSelectMessage {
   type: 'BATCH_SELECT';
   payload: {
     batchId: string;
+    rowTotal: number;
   };
 }
 

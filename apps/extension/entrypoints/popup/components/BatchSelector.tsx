@@ -49,7 +49,9 @@ export function BatchSelector({ projectId, selectedId, onSelect }: BatchSelector
       });
 
       if (response.success) {
-        const fetchedBatches = response.data.batches;
+        const fetchedBatches = Array.isArray(response.data.batches)
+          ? response.data.batches
+          : [];
         setBatches(fetchedBatches);
 
         // Per CONTEXT.md: Auto-select if only one batch

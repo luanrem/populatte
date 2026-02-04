@@ -19,7 +19,7 @@ import {
   UpdateProjectUseCase,
   DeleteProjectUseCase,
 } from '../../core/use-cases/project';
-import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
+import { DualAuthGuard } from '../../infrastructure/auth/guards/dual-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import {
   createProjectSchema,
@@ -30,7 +30,7 @@ import {
 import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
 @Controller('projects')
-@UseGuards(ClerkAuthGuard)
+@UseGuards(DualAuthGuard)
 export class ProjectController {
   public constructor(
     private readonly createProject: CreateProjectUseCase,

@@ -34,24 +34,29 @@ export async function fetchBatches(projectId: string): Promise<BatchWithProgress
   const data = await response.json();
 
   // Map API response to BatchWithProgress format
-  // API returns: { id, name, filename, rowCount, createdAt, updatedAt }
-  // For MVP: rowCount as total, 0 as done (progress calculation deferred to Phase 29)
-  return data.map(
-    (batch: {
-      id: string;
-      name: string;
-      filename: string | null;
-      rowCount: number;
-      createdAt: string;
-    }) => ({
+  // API returns: { items: [...], total, limit, offset }
+  // Each item has: { id, name, filename, totalRows, createdAt, updatedAt }
+  // For MVP: totalRows as rowCount, 0 as done (progress calculation deferred to Phase 29)
+  const items = Array.isArray(data.items) ? data.items : (Array.isArray(data) ? data : []);
+
+  return items.map((batch: {
+    id: string;
+    name: string;
+    filename: string | null;
+    totalRows?: number;
+    rowCount?: number;
+    createdAt: string;
+  }) => {
+    const rowCount = batch.totalRows ?? batch.rowCount ?? 0;
+    return {
       id: batch.id,
       name: batch.name,
       filename: batch.filename ?? batch.name,
-      rowCount: batch.rowCount,
+      rowCount,
       createdAt: batch.createdAt,
       // MVP: No progress tracking yet - all rows considered pending
-      pendingCount: batch.rowCount,
+      pendingCount: rowCount,
       doneCount: 0,
-    })
-  );
+    };
+  });
 }
