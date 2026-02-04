@@ -53,14 +53,14 @@ Requirements for Chrome Extension MVP (COPILOTO mode). Each maps to roadmap phas
 
 ### Content Script
 
-- [ ] **CS-01**: Selector engine finds elements via CSS selector
-- [ ] **CS-02**: Selector engine finds elements via XPath
-- [ ] **CS-03**: Fallback chain tries alternative selectors when primary fails
-- [ ] **CS-04**: Fill action populates input/textarea/select elements
-- [ ] **CS-05**: Fill action uses native setters to trigger React/Vue reactivity
-- [ ] **CS-06**: Click action clicks buttons and links
-- [ ] **CS-07**: Wait action pauses execution for specified duration
-- [ ] **CS-08**: Step executor processes steps in order and reports results
+- [x] **CS-01**: Selector engine finds elements via CSS selector
+- [x] **CS-02**: Selector engine finds elements via XPath
+- [x] **CS-03**: Fallback chain tries alternative selectors when primary fails
+- [x] **CS-04**: Fill action populates input/textarea/select elements
+- [x] **CS-05**: Fill action uses native setters to trigger React/Vue reactivity
+- [x] **CS-06**: Click action clicks buttons and links
+- [x] **CS-07**: Wait action pauses execution for specified duration
+- [x] **CS-08**: Step executor processes steps in order and reports results
 
 ### Success Monitor
 
@@ -151,14 +151,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POP-06 | 27 | Complete |
 | POP-07 | 29 | Pending |
 | POP-08 | 27 | Complete |
-| CS-01 | 28 | Pending |
-| CS-02 | 28 | Pending |
-| CS-03 | 28 | Pending |
-| CS-04 | 28 | Pending |
-| CS-05 | 28 | Pending |
-| CS-06 | 28 | Pending |
-| CS-07 | 28 | Pending |
-| CS-08 | 28 | Pending |
+| CS-01 | 28 | Complete |
+| CS-02 | 28 | Complete |
+| CS-03 | 28 | Complete |
+| CS-04 | 28 | Complete |
+| CS-05 | 28 | Complete |
+| CS-06 | 28 | Complete |
+| CS-07 | 28 | Complete |
+| CS-08 | 28 | Complete |
 | SUCC-01 | 29 | Pending |
 | SUCC-02 | 29 | Pending |
 | SUCC-03 | 29 | Pending |
@@ -179,4 +179,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 — Phase 27 requirements complete (POP-07 deferred to Phase 29)*
+*Last updated: 2026-02-04 — Phase 28 requirements complete (CS-01 through CS-08)*

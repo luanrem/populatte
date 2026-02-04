@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 25: Backend Extensions** - Extension auth endpoints, row status tracking
 - [x] **Phase 26: Extension Auth Flow** - Connection code exchange, token storage, auth UI
 - [x] **Phase 27: Popup UI** - Project/batch selectors, row navigation, fill controls
-- [ ] **Phase 28: Content Script** - Selector engine (CSS/XPath), step executor, DOM manipulation
+- [x] **Phase 28: Content Script** - Selector engine (CSS/XPath), step executor, DOM manipulation
 - [ ] **Phase 29: Fill Cycle Integration** - Mapping detection, step orchestration, success monitoring
 
 ## Phase Details
@@ -105,8 +105,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 28-01-PLAN.md — Selector engine and action executors (CSS/XPath, fill/click/wait)
-- [ ] 28-02-PLAN.md — Step executor and content script FILL_EXECUTE integration
+- [x] 28-01-PLAN.md — Selector engine and action executors (CSS/XPath, fill/click/wait)
+- [x] 28-02-PLAN.md — Step executor and content script FILL_EXECUTE integration
 
 ### Phase 29: Fill Cycle Integration
 **Goal**: Complete fill-to-confirm cycle where user fills form, verifies, and advances to next row
@@ -134,9 +134,9 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 | 25. Backend Extensions | 2/2 | ✓ Complete | 2026-02-03 |
 | 26. Extension Auth Flow | 3/3 | ✓ Complete | 2026-02-04 |
 | 27. Popup UI | 3/3 | ✓ Complete | 2026-02-03 |
-| 28. Content Script | 0/TBD | Not started | - |
+| 28. Content Script | 2/2 | ✓ Complete | 2026-02-04 |
 | 29. Fill Cycle Integration | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-03 — Phase 27 complete (3 plans executed)*
+*Last updated: 2026-02-04 — Phase 28 complete (2 plans executed)*
