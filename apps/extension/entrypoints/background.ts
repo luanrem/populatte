@@ -166,6 +166,17 @@ export default defineBackground(() => {
               break;
             }
 
+            case 'MARK_ERROR': {
+              // Stub implementation: Just advance to next row
+              // Phase 29 will wire up actual PATCH /rows/:id/status API call
+              const { reason } = message.payload;
+              console.log('[Background] MARK_ERROR with reason:', reason ?? '(none)');
+              const newIndex = await storage.selection.nextRow();
+              await notifyStateUpdate();
+              sendResponse({ success: true, data: { rowIndex: newIndex } });
+              break;
+            }
+
             default:
               console.log('[Background] Unhandled message type:', (message as { type: string }).type);
               sendResponse({ success: false, error: 'Unknown message type' });

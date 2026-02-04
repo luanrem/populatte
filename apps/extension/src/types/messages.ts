@@ -90,6 +90,13 @@ export interface RowPrevMessage {
   type: 'ROW_PREV';
 }
 
+export interface MarkErrorMessage {
+  type: 'MARK_ERROR';
+  payload: {
+    reason?: string;
+  };
+}
+
 // ============================================================================
 // Fill Messages (Background <-> Content Script)
 // ============================================================================
@@ -209,6 +216,7 @@ export type PopupToBackgroundMessage =
   | RowSelectMessage
   | RowNextMessage
   | RowPrevMessage
+  | MarkErrorMessage
   | FillStartMessage
   | GetStateMessage
   | PingMessage;
