@@ -68,11 +68,12 @@ Plans:
   3. User can paste code from web app and extension validates it
   4. After successful auth, extension shows authenticated state with user indicator
   5. On 401 response, extension clears token and prompts reconnection
-**Plans**: 2 plans
+**Plans**: 3 plans
 
 Plans:
 - [x] 26-01-PLAN.md — Background auth handler and API client layer
 - [x] 26-02-PLAN.md — Auth UI components with connect flow
+- [x] 26-03-PLAN.md — Extension connect page (gap closure)
 
 ### Phase 27: Popup UI
 **Goal**: Users can select project, batch, and navigate rows with fill controls
@@ -128,11 +129,11 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 |-------|----------------|--------|-----------|
 | 24. Extension Foundation | 3/3 | ✓ Complete | 2026-02-03 |
 | 25. Backend Extensions | 2/2 | ✓ Complete | 2026-02-03 |
-| 26. Extension Auth Flow | 2/2 | ✓ Complete | 2026-02-04 |
+| 26. Extension Auth Flow | 3/3 | ✓ Complete | 2026-02-04 |
 | 27. Popup UI | 0/TBD | Not started | - |
 | 28. Content Script | 0/TBD | Not started | - |
 | 29. Fill Cycle Integration | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-04 — Phase 26 complete (2 plans)*
+*Last updated: 2026-02-04 — Phase 26 complete (3 plans, including gap closure)*
