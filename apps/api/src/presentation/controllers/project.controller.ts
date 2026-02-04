@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 
@@ -64,8 +65,17 @@ export class ProjectController {
     return this.getProject.execute(id, user.id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   public async update(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updateProjectSchema)) body: UpdateProjectDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.updateProject.execute(id, user.id, body);
+  }
+
+  @Patch(':id')
+  public async patch(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateProjectSchema)) body: UpdateProjectDto,
     @CurrentUser() user: User,
