@@ -31,6 +31,8 @@ interface BatchSettingsModalProps {
   onSave: () => void;
 }
 
+const NONE_VALUE = "__none__";
+
 export function BatchSettingsModal({
   open,
   onOpenChange,
@@ -38,8 +40,8 @@ export function BatchSettingsModal({
   projectId,
   onSave,
 }: BatchSettingsModalProps) {
-  const [primaryKey, setPrimaryKey] = useState<string>("");
-  const [secondaryKey, setSecondaryKey] = useState<string>("");
+  const [primaryKey, setPrimaryKey] = useState<string>(NONE_VALUE);
+  const [secondaryKey, setSecondaryKey] = useState<string>(NONE_VALUE);
 
   const updateBatch = useUpdateBatch(projectId);
   const { data: rowsData, isLoading: rowsLoading } = useBatchRows(
@@ -52,8 +54,8 @@ export function BatchSettingsModal({
   // Sync state when batch changes
   useEffect(() => {
     if (batch) {
-      setPrimaryKey(batch.identifierFieldKey ?? "");
-      setSecondaryKey(batch.secondaryFieldKey ?? "");
+      setPrimaryKey(batch.identifierFieldKey ?? NONE_VALUE);
+      setSecondaryKey(batch.secondaryFieldKey ?? NONE_VALUE);
     }
   }, [batch]);
 
@@ -65,7 +67,7 @@ export function BatchSettingsModal({
   const columns = batch.columnMetadata;
 
   const getPreviewValue = (key: string): string => {
-    if (!key || !firstRow) return "";
+    if (key === NONE_VALUE || !firstRow) return "";
     const value = firstRow.data[key];
     if (value === null || value === undefined) return "";
     return String(value);
@@ -76,15 +78,17 @@ export function BatchSettingsModal({
 
   const previewText =
     primaryValue && secondaryValue
-      ? `${primaryValue} - ${secondaryValue}`
-      : primaryValue || "Selecione um identificador";
+      ? `Ex: ${primaryValue} - ${secondaryValue}`
+      : primaryValue
+        ? `Ex: ${primaryValue}`
+        : "Selecione um identificador";
 
   const handleSave = async () => {
     await updateBatch.mutateAsync({
       batchId: batch.id,
       data: {
-        identifierFieldKey: primaryKey || null,
-        secondaryFieldKey: secondaryKey || null,
+        identifierFieldKey: primaryKey === NONE_VALUE ? null : primaryKey,
+        secondaryFieldKey: secondaryKey === NONE_VALUE ? null : secondaryKey,
       },
     });
     onSave();
@@ -106,7 +110,7 @@ export function BatchSettingsModal({
                 <SelectValue placeholder="Selecione uma coluna" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Nenhum</SelectItem>
+                <SelectItem value={NONE_VALUE}>Nenhum</SelectItem>
                 {columns.map((col) => (
                   <SelectItem key={col.normalizedKey} value={col.normalizedKey}>
                     {col.originalHeader}
@@ -125,7 +129,7 @@ export function BatchSettingsModal({
                 <SelectValue placeholder="Selecione uma coluna" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Nenhum</SelectItem>
+                <SelectItem value={NONE_VALUE}>Nenhum</SelectItem>
                 {columns.map((col) => (
                   <SelectItem key={col.normalizedKey} value={col.normalizedKey}>
                     {col.originalHeader}
