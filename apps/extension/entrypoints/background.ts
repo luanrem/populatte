@@ -472,7 +472,11 @@ export default defineBackground(() => {
                 const result = await browser.tabs.sendMessage(activeTab.id, {
                   type: 'FILL_EXECUTE',
                   payload: { steps: fillSteps, rowData: row.data },
-                }) as { success: boolean; data?: { stepResults?: Array<{ success: boolean }> }; error?: string };
+                }) as {
+                  success: boolean;
+                  data?: { stepResults?: Array<{ stepId: string; success: boolean; skipped?: boolean; error?: string }> };
+                  error?: string;
+                };
 
                 // 9. Process result
                 if (result.success) {
@@ -493,6 +497,28 @@ export default defineBackground(() => {
                       status: result.error ?? 'Fill failed',
                     },
                   });
+                }
+
+                // 10. Update row status in database
+                try {
+                  if (result.success) {
+                    // All steps succeeded -> VALID
+                    await updateRowStatus(selection.projectId, selection.batchId, row.id, 'VALID');
+                  } else {
+                    // Find first failed step for error tracking
+                    const failedStep = result.data?.stepResults?.find((r) => !r.success && !r.skipped);
+                    await updateRowStatus(
+                      selection.projectId,
+                      selection.batchId,
+                      row.id,
+                      'ERROR',
+                      result.error ?? failedStep?.error ?? 'Fill failed',
+                      failedStep?.stepId
+                    );
+                  }
+                } catch (statusErr) {
+                  // Log but don't fail the entire operation
+                  console.error('[Background] Failed to update row status:', statusErr);
                 }
 
                 await notifyStateUpdate();
