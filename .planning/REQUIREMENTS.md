@@ -1,0 +1,206 @@
+# Requirements: Populatte
+
+**Defined:** 2026-02-04
+**Core Value:** Transform tedious manual data entry into automated form population
+
+## v5.0 Requirements
+
+Requirements for v5.0 Mapping Builder milestone. Each maps to roadmap phases.
+
+### Backend CRUD
+
+- [ ] **API-01**: PUT /projects/:projectId updates project name
+- [ ] **API-02**: DELETE /projects/:projectId soft-deletes project
+- [ ] **API-03**: PUT /projects/:projectId/batches/:batchId updates batch name
+- [ ] **API-04**: DELETE /projects/:projectId/batches/:batchId soft-deletes batch
+- [ ] **API-05**: PATCH /projects/:projectId/batches/:batchId updates identifier fields
+
+### Batch Identifier
+
+- [ ] **ID-01**: Batch entity has identifierFieldKey column (nullable)
+- [ ] **ID-02**: Batch entity has secondaryFieldKey column (nullable)
+- [ ] **ID-03**: API validates keys exist in batch's field inventory
+- [ ] **ID-04**: Row responses include identifier values when configured
+
+### Dashboard Project/Batch CRUD
+
+- [ ] **CRUD-01**: User can edit project name (inline or modal)
+- [ ] **CRUD-02**: User can delete project with confirmation dialog
+- [ ] **CRUD-03**: User can edit batch name
+- [ ] **CRUD-04**: User can delete batch with confirmation dialog
+- [ ] **CRUD-05**: Batch settings page displays identifier configuration
+
+### Dashboard Mappings List
+
+- [ ] **MAP-01**: User can view list of all mappings for a project
+- [ ] **MAP-02**: Each mapping shows name, URL, step count, status
+- [ ] **MAP-03**: Edit button navigates to mapping edit page
+- [ ] **MAP-04**: Delete button soft-deletes mapping with confirmation
+- [ ] **MAP-05**: "+ Novo Mapping" button shows instruction modal
+
+### Dashboard Mapping Edit
+
+- [ ] **EDIT-01**: User can edit mapping name
+- [ ] **EDIT-02**: User can edit target URL
+- [ ] **EDIT-03**: User can toggle active/inactive status
+- [ ] **EDIT-04**: User can configure success trigger (type dropdown + value)
+- [ ] **EDIT-05**: Page displays steps with action icon, selector, source
+- [ ] **EDIT-06**: User can drag-and-drop to reorder steps
+- [ ] **EDIT-07**: User can delete step from mapping
+- [ ] **EDIT-08**: Edit step button opens modal
+- [ ] **EDIT-09**: User can add step manually via button
+
+### Dashboard Step Edit Modal
+
+- [ ] **STEP-01**: User can select action type (fill/click/wait)
+- [ ] **STEP-02**: User can edit primary selector (type dropdown + value input)
+- [ ] **STEP-03**: User can add/remove fallback selectors (max 5)
+- [ ] **STEP-04**: User can select source column from Excel columns dropdown (for fill)
+- [ ] **STEP-05**: User can set fixed value as alternative to column
+- [ ] **STEP-06**: User can toggle options (optional, clearBefore, pressEnter)
+- [ ] **STEP-07**: Wait action shows duration input
+
+### Extension Capture Mode
+
+- [ ] **CAP-01**: "Criar Mapping" button appears when no mapping exists for current URL
+- [ ] **CAP-02**: Capture mode UI renders in popup with sidebar-style layout
+- [ ] **CAP-03**: Current URL auto-captures as targetUrl
+- [ ] **CAP-04**: User can enter mapping name
+- [ ] **CAP-05**: Content script highlights interactive elements on hover (blue border)
+- [ ] **CAP-06**: Content script captures clicked element (prevents default action)
+- [ ] **CAP-07**: Extension generates CSS selector from clicked element
+- [ ] **CAP-08**: Extension auto-detects action type based on element (input→fill, button→click)
+- [ ] **CAP-09**: Step config UI shows action, source, options
+- [ ] **CAP-10**: Excel columns dropdown populated from selected batch's fields
+- [ ] **CAP-11**: User can set fixed value as alternative to column
+- [ ] **CAP-12**: User can toggle options (optional, clearBefore, pressEnter)
+- [ ] **CAP-13**: Steps list shows captured steps with preview
+- [ ] **CAP-14**: User can drag-and-drop to reorder steps in list
+- [ ] **CAP-15**: User can delete step from list
+- [ ] **CAP-16**: "+ Wait" button allows adding manual delay steps
+- [ ] **CAP-17**: "Finalizar" saves mapping and steps to API
+- [ ] **CAP-18**: "Cancelar" discards and exits capture mode
+- [ ] **CAP-19**: Success state shows next action options
+- [ ] **CAP-20**: Loading state displays during save
+
+### Extension Identifier Display
+
+- [ ] **DISP-01**: Popup shows identifier value below row number
+- [ ] **DISP-02**: Popup shows secondary identifier when configured
+- [ ] **DISP-03**: Row data fetch includes identifier values
+
+## Future Requirements
+
+Deferred to future milestones. Tracked but not in current roadmap.
+
+### Auto Mode (AUTOPILOTO)
+
+- **AUTO-01**: Extension auto-advances rows after successful fills
+- **AUTO-02**: User can toggle between COPILOTO (manual) and AUTOPILOTO modes
+- **AUTO-03**: Batch processing runs continuously until stopped
+
+### Advanced Capture
+
+- **ADV-01**: Auto-capture fallback selectors (multiple alternatives)
+- **ADV-02**: Smart field detection (AI-assisted selector suggestions)
+- **ADV-03**: Test mapping in dashboard without extension
+
+### Mapping Management
+
+- **MGT-01**: Duplicate mapping
+- **MGT-02**: Import/export mappings as JSON
+- **MGT-03**: Search/filter mappings list
+
+### Extension Enhancements
+
+- **ENH-01**: Search/select specific row in extension
+- **ENH-02**: Multi-URL workflows (sequential forms)
+
+## Out of Scope
+
+Explicitly excluded. Documented to prevent scope creep.
+
+| Feature | Reason |
+|---------|--------|
+| Auto-capture fallback selectors | Only primary selector in capture; fallbacks added via dashboard |
+| Test mapping in dashboard | Test via extension only — simpler, validates real DOM |
+| Duplicate mapping | Low priority, manual recreation sufficient |
+| Import/export mappings | Future enhancement, not blocking users |
+| Search specific row in extension | Batch identifier display sufficient for v5.0 |
+| Multi-URL workflows | High complexity, single-form MVP first |
+| Smart field detection | Unreliable without training data |
+| XPath generation in capture | CSS selectors more readable; XPath added in dashboard |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| API-01 | — | Pending |
+| API-02 | — | Pending |
+| API-03 | — | Pending |
+| API-04 | — | Pending |
+| API-05 | — | Pending |
+| ID-01 | — | Pending |
+| ID-02 | — | Pending |
+| ID-03 | — | Pending |
+| ID-04 | — | Pending |
+| CRUD-01 | — | Pending |
+| CRUD-02 | — | Pending |
+| CRUD-03 | — | Pending |
+| CRUD-04 | — | Pending |
+| CRUD-05 | — | Pending |
+| MAP-01 | — | Pending |
+| MAP-02 | — | Pending |
+| MAP-03 | — | Pending |
+| MAP-04 | — | Pending |
+| MAP-05 | — | Pending |
+| EDIT-01 | — | Pending |
+| EDIT-02 | — | Pending |
+| EDIT-03 | — | Pending |
+| EDIT-04 | — | Pending |
+| EDIT-05 | — | Pending |
+| EDIT-06 | — | Pending |
+| EDIT-07 | — | Pending |
+| EDIT-08 | — | Pending |
+| EDIT-09 | — | Pending |
+| STEP-01 | — | Pending |
+| STEP-02 | — | Pending |
+| STEP-03 | — | Pending |
+| STEP-04 | — | Pending |
+| STEP-05 | — | Pending |
+| STEP-06 | — | Pending |
+| STEP-07 | — | Pending |
+| CAP-01 | — | Pending |
+| CAP-02 | — | Pending |
+| CAP-03 | — | Pending |
+| CAP-04 | — | Pending |
+| CAP-05 | — | Pending |
+| CAP-06 | — | Pending |
+| CAP-07 | — | Pending |
+| CAP-08 | — | Pending |
+| CAP-09 | — | Pending |
+| CAP-10 | — | Pending |
+| CAP-11 | — | Pending |
+| CAP-12 | — | Pending |
+| CAP-13 | — | Pending |
+| CAP-14 | — | Pending |
+| CAP-15 | — | Pending |
+| CAP-16 | — | Pending |
+| CAP-17 | — | Pending |
+| CAP-18 | — | Pending |
+| CAP-19 | — | Pending |
+| CAP-20 | — | Pending |
+| DISP-01 | — | Pending |
+| DISP-02 | — | Pending |
+| DISP-03 | — | Pending |
+
+**Coverage:**
+- v5.0 requirements: 52 total
+- Mapped to phases: 0
+- Unmapped: 52
+
+---
+*Requirements defined: 2026-02-04*
+*Last updated: 2026-02-04 after initial definition*
