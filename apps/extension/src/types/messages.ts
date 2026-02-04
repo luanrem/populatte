@@ -210,6 +210,34 @@ export interface FillProgressMessage {
 }
 
 // ============================================================================
+// Success Monitoring Messages
+// ============================================================================
+
+export interface MonitorSuccessMessage {
+  type: 'MONITOR_SUCCESS';
+  payload: {
+    trigger: 'url_change' | 'text_appears' | 'element_disappears';
+    config: {
+      selector?: string;
+      pattern?: string;
+    };
+    timeoutMs?: number;
+  };
+}
+
+export interface StopMonitorMessage {
+  type: 'STOP_MONITOR';
+}
+
+export interface SuccessDetectedMessage {
+  type: 'SUCCESS_DETECTED';
+  payload: {
+    success: boolean;
+    reason: string;
+  };
+}
+
+// ============================================================================
 // Utility Messages
 // ============================================================================
 
@@ -252,6 +280,8 @@ export type PopupToBackgroundMessage =
  */
 export type BackgroundToContentMessage =
   | FillExecuteMessage
+  | MonitorSuccessMessage
+  | StopMonitorMessage
   | PingMessage;
 
 /**
@@ -259,6 +289,7 @@ export type BackgroundToContentMessage =
  */
 export type ContentToBackgroundMessage =
   | FillResultMessage
+  | SuccessDetectedMessage
   | PingMessage;
 
 /**

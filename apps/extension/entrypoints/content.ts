@@ -1,6 +1,7 @@
-import type { FillExecuteMessage, PingResponse } from '../src/types';
+import type { FillExecuteMessage, MonitorSuccessMessage, PingResponse } from '../src/types';
 
 import { executeSteps } from '../src/content';
+import { startSuccessMonitor, stopSuccessMonitor } from '../src/content/success-monitor';
 
 export default defineContentScript({
   matches: ['<all_urls>'],
@@ -43,6 +44,34 @@ export default defineContentScript({
             };
           }
         })();
+      }
+
+      // Monitor success handler
+      if (message.type === 'MONITOR_SUCCESS') {
+        const msg = message as MonitorSuccessMessage;
+        const { trigger, config, timeoutMs } = msg.payload;
+        console.log('[Populatte] Starting success monitor:', trigger);
+
+        startSuccessMonitor(
+          { trigger, config, timeoutMs },
+          (success, reason) => {
+            console.log('[Populatte] Success monitor result:', success, reason);
+            // Send result back to background
+            browser.runtime.sendMessage({
+              type: 'SUCCESS_DETECTED',
+              payload: { success, reason },
+            });
+          }
+        );
+
+        return Promise.resolve({ success: true });
+      }
+
+      // Stop monitor handler
+      if (message.type === 'STOP_MONITOR') {
+        console.log('[Populatte] Stopping success monitor');
+        stopSuccessMonitor();
+        return Promise.resolve({ success: true });
       }
 
       return false;
