@@ -493,9 +493,25 @@ export default defineBackground(() => {
                   success: boolean;
                   data?: { stepResults?: Array<{ stepId: string; success: boolean; skipped?: boolean; error?: string }> };
                   error?: string;
-                };
+                } | undefined;
 
-                // 9. Process result
+                // 9. Process result - handle undefined (content script not responding)
+                if (!result) {
+                  console.error('[Background] FILL_EXECUTE: No response from content script');
+                  currentFillStatus = 'failed';
+                  broadcast({
+                    type: 'FILL_PROGRESS',
+                    payload: {
+                      currentStep: 0,
+                      totalSteps: mapping.steps.length,
+                      status: 'Content script not responding',
+                    },
+                  });
+                  await notifyStateUpdate();
+                  sendResponse({ success: false, error: 'Content script not responding' });
+                  break;
+                }
+
                 if (result.success) {
                   currentFillStatus = 'success';
                   broadcast({
