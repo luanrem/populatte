@@ -18,6 +18,8 @@ export class BatchMapper {
       fileCount: row.fileCount,
       rowCount: row.rowCount,
       columnMetadata: (row.columnMetadata ?? []) as ColumnMetadata[],
+      identifierFieldKey: row.identifierFieldKey ?? null,
+      secondaryFieldKey: row.secondaryFieldKey ?? null,
       createdAt: row.createdAt ?? new Date(),
       updatedAt: row.updatedAt ?? new Date(),
       deletedAt: row.deletedAt ?? null,

@@ -26,6 +26,8 @@ export interface Batch {
   fileCount: number;
   rowCount: number;
   columnMetadata: ColumnMetadata[];
+  identifierFieldKey: string | null;
+  secondaryFieldKey: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
@@ -40,4 +42,12 @@ export interface CreateBatchData {
   fileCount: number;
   rowCount: number;
   columnMetadata: ColumnMetadata[];
+  identifierFieldKey?: string | null;
+  secondaryFieldKey?: string | null;
+}
+
+export interface UpdateBatchData {
+  name?: string;
+  identifierFieldKey?: string | null;
+  secondaryFieldKey?: string | null;
 }
