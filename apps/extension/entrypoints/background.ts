@@ -1,6 +1,6 @@
 import { storage, initializeStorage } from '../src/storage';
 import { broadcast } from '../src/messaging';
-import { exchangeCode, getMe, fetchProjects, fetchBatches, fetchMappingsByUrl, fetchMappingWithSteps, fetchRowByIndex } from '../src/api';
+import { exchangeCode, getMe, fetchProjects, fetchBatches, fetchMappingsByUrl, fetchMappingWithSteps, fetchRowByIndex, updateRowStatus } from '../src/api';
 import type { ExtensionState, PopupToBackgroundMessage, FillStatus } from '../src/types';
 
 export default defineBackground(() => {
@@ -322,15 +322,50 @@ export default defineBackground(() => {
             }
 
             case 'MARK_ERROR': {
-              // Stub implementation: Just advance to next row
-              // Phase 29 will wire up actual PATCH /rows/:id/status API call
               const { reason } = message.payload;
-              console.log('[Background] MARK_ERROR with reason:', reason ?? '(none)');
-              // Reset fill status when advancing due to error
-              currentFillStatus = 'idle';
-              const newIndex = await storage.selection.nextRow();
-              await notifyStateUpdate();
-              sendResponse({ success: true, data: { rowIndex: newIndex } });
+              try {
+                const selection = await storage.selection.getSelection();
+
+                if (!selection.projectId || !selection.batchId) {
+                  sendResponse({ success: false, error: 'No project/batch selected' });
+                  break;
+                }
+
+                // Fetch current row to get its ID
+                const row = await fetchRowByIndex(
+                  selection.projectId,
+                  selection.batchId,
+                  selection.rowIndex
+                );
+
+                // Update row status to ERROR
+                await updateRowStatus(
+                  selection.projectId,
+                  selection.batchId,
+                  row.id,
+                  'ERROR',
+                  reason ?? 'Manually marked as error'
+                );
+
+                console.log('[Background] MARK_ERROR: Row marked as error');
+
+                // Reset fill status and advance to next row
+                currentFillStatus = 'idle';
+                const newIndex = await storage.selection.nextRow();
+                await notifyStateUpdate();
+                sendResponse({ success: true, data: { rowIndex: newIndex } });
+              } catch (err) {
+                console.error('[Background] MARK_ERROR error:', err);
+                // Still try to advance even if API call fails
+                currentFillStatus = 'idle';
+                const newIndex = await storage.selection.nextRow();
+                await notifyStateUpdate();
+                sendResponse({
+                  success: false,
+                  error: err instanceof Error ? err.message : 'Failed to mark error',
+                  data: { rowIndex: newIndex },
+                });
+              }
               break;
             }
 
