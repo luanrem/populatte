@@ -48,7 +48,7 @@ Requirements for Chrome Extension MVP (COPILOTO mode). Each maps to roadmap phas
 - [x] **POP-04**: Fill button triggers form fill for current row
 - [x] **POP-05**: Next button advances to next row after fill
 - [x] **POP-06**: Stop button aborts ongoing fill operation
-- [ ] **POP-07**: Mapping indicator shows when current URL has available mapping
+- [x] **POP-07**: Mapping indicator shows when current URL has available mapping
 - [x] **POP-08**: State persists and restores when popup closes and reopens
 
 ### Content Script
@@ -64,21 +64,21 @@ Requirements for Chrome Extension MVP (COPILOTO mode). Each maps to roadmap phas
 
 ### Success Monitor
 
-- [ ] **SUCC-01**: URL change trigger detects when page navigates to success URL pattern
-- [ ] **SUCC-02**: Text appears trigger detects when success message appears on page
-- [ ] **SUCC-03**: Element disappears trigger detects when form/modal is removed
-- [ ] **SUCC-04**: Timeout prevents infinite waiting (configurable, default 30s)
+- [x] **SUCC-01**: URL change trigger detects when page navigates to success URL pattern
+- [x] **SUCC-02**: Text appears trigger detects when success message appears on page
+- [x] **SUCC-03**: Element disappears trigger detects when form/modal is removed
+- [x] **SUCC-04**: Timeout prevents infinite waiting (configurable, default 30s)
 
 ### Fill Cycle Integration
 
-- [ ] **FILL-01**: Background detects URL change and checks for matching mappings
-- [ ] **FILL-02**: Background fetches mapping detail with steps for current URL
-- [ ] **FILL-03**: Background sends steps and row data to content script for execution
-- [ ] **FILL-04**: Content script reports fill success/failure to background
-- [ ] **FILL-05**: Background updates row status via API after fill attempt
-- [ ] **FILL-06**: Popup shows fill progress (current step, status)
-- [ ] **FILL-07**: Error state shows retry option for failed fills
-- [ ] **FILL-08**: User can manually advance to next row after verification
+- [x] **FILL-01**: Background detects URL change and checks for matching mappings
+- [x] **FILL-02**: Background fetches mapping detail with steps for current URL
+- [x] **FILL-03**: Background sends steps and row data to content script for execution
+- [x] **FILL-04**: Content script reports fill success/failure to background
+- [x] **FILL-05**: Background updates row status via API after fill attempt
+- [x] **FILL-06**: Popup shows fill progress (current step, status)
+- [x] **FILL-07**: Error state shows retry option for failed fills
+- [x] **FILL-08**: User can manually advance to next row after verification
 
 ## Future Requirements
 
@@ -149,7 +149,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | POP-04 | 27 | Complete |
 | POP-05 | 27 | Complete |
 | POP-06 | 27 | Complete |
-| POP-07 | 29 | Pending |
+| POP-07 | 29 | Complete |
 | POP-08 | 27 | Complete |
 | CS-01 | 28 | Complete |
 | CS-02 | 28 | Complete |
@@ -159,18 +159,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CS-06 | 28 | Complete |
 | CS-07 | 28 | Complete |
 | CS-08 | 28 | Complete |
-| SUCC-01 | 29 | Pending |
-| SUCC-02 | 29 | Pending |
-| SUCC-03 | 29 | Pending |
-| SUCC-04 | 29 | Pending |
-| FILL-01 | 29 | Pending |
-| FILL-02 | 29 | Pending |
-| FILL-03 | 29 | Pending |
-| FILL-04 | 29 | Pending |
-| FILL-05 | 29 | Pending |
-| FILL-06 | 29 | Pending |
-| FILL-07 | 29 | Pending |
-| FILL-08 | 29 | Pending |
+| SUCC-01 | 29 | Complete |
+| SUCC-02 | 29 | Complete |
+| SUCC-03 | 29 | Complete |
+| SUCC-04 | 29 | Complete |
+| FILL-01 | 29 | Complete |
+| FILL-02 | 29 | Complete |
+| FILL-03 | 29 | Complete |
+| FILL-04 | 29 | Complete |
+| FILL-05 | 29 | Complete |
+| FILL-06 | 29 | Complete |
+| FILL-07 | 29 | Complete |
+| FILL-08 | 29 | Complete |
 
 **Coverage:**
 - v4.0 requirements: 48 total
@@ -179,4 +179,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-03*
-*Last updated: 2026-02-04 — Phase 28 requirements complete (CS-01 through CS-08)*
+*Last updated: 2026-02-04 — Phase 29 requirements complete (all v4.0 requirements complete)*

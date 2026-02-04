@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 26: Extension Auth Flow** - Connection code exchange, token storage, auth UI
 - [x] **Phase 27: Popup UI** - Project/batch selectors, row navigation, fill controls
 - [x] **Phase 28: Content Script** - Selector engine (CSS/XPath), step executor, DOM manipulation
-- [ ] **Phase 29: Fill Cycle Integration** - Mapping detection, step orchestration, success monitoring
+- [x] **Phase 29: Fill Cycle Integration** - Mapping detection, step orchestration, success monitoring
 
 ## Phase Details
 
@@ -123,10 +123,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 29-01-PLAN.md — Mapping detection, badge indicator, and mapping selector UI
-- [ ] 29-02-PLAN.md — Fill orchestration (FILL_START handler, row data fetch, content script execution)
-- [ ] 29-03-PLAN.md — Row status updates (VALID/ERROR persistence, retry via navigation)
-- [ ] 29-04-PLAN.md — Success monitoring (url_change, text_appears, element_disappears triggers)
+- [x] 29-01-PLAN.md — Mapping detection, badge indicator, and mapping selector UI
+- [x] 29-02-PLAN.md — Fill orchestration (FILL_START handler, row data fetch, content script execution)
+- [x] 29-03-PLAN.md — Row status updates (VALID/ERROR persistence, retry via navigation)
+- [x] 29-04-PLAN.md — Success monitoring (url_change, text_appears, element_disappears triggers)
 
 ## Progress
 
@@ -140,8 +140,8 @@ Phases execute in numeric order: 24 -> 25 -> 26 -> 27 -> 28 -> 29
 | 26. Extension Auth Flow | 3/3 | Complete | 2026-02-04 |
 | 27. Popup UI | 3/3 | Complete | 2026-02-03 |
 | 28. Content Script | 2/2 | Complete | 2026-02-04 |
-| 29. Fill Cycle Integration | 0/4 | Not started | - |
+| 29. Fill Cycle Integration | 4/4 | Complete | 2026-02-04 |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-04 — Phase 29 revised (4 plans in 4 waves, added success monitoring)*
+*Last updated: 2026-02-04 — Phase 29 complete (v4.0 Extension Core milestone complete)*
