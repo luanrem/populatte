@@ -1,9 +1,9 @@
 ---
 status: diagnosed
 phase: 26-extension-auth-flow
-source: [26-01-SUMMARY.md, 26-02-SUMMARY.md]
+source: [26-01-SUMMARY.md, 26-02-SUMMARY.md, 26-03-SUMMARY.md]
 started: 2026-02-04T01:05:00Z
-updated: 2026-02-04T01:11:00Z
+updated: 2026-02-04T02:10:00Z
 ---
 
 ## Current Test
@@ -12,56 +12,54 @@ updated: 2026-02-04T01:11:00Z
 
 ## Tests
 
-### 1. Disconnected State Shows Connect UI
-expected: When not authenticated, popup shows "Open Populatte" button, 6-digit code input, and "Connect" button
-result: pass
-
-### 2. Open Populatte Button Works
-expected: Clicking "Open Populatte" opens the web app (localhost:3000) in a new tab
+### 1. Open Populatte Opens Connect Page
+expected: Clicking "Open Populatte" in the extension popup opens /extension/connect. The page loads and shows the connection code interface.
 result: issue
-reported: "it opened in a new tab, but it's a page that doesn't exist"
+reported: "Apareceu a página, só que onde tem o código fica dando um flickering. Ele fica piscando como se estivesse em loading e não deixasse o código mostrar na tela. Toda hora é loading e fica toda hora mudando. Daí eu não consigo ver o código, qual que é."
 severity: major
 
-### 3. Code Input Validates 6 Digits
-expected: Connect button only enables when exactly 6 digits are entered. Non-digit characters are rejected or ignored.
-result: pass
+### 2. Connection Code Generated and Displayed
+expected: The /extension/connect page shows a 6-digit numeric code, a "Copy" button, and a 5-minute expiry notice.
+result: issue
+reported: "Não passou, ele fica dando flickering no código, inclusive eu abri um network aqui e ele fica fazendo milhares de chamadas de extension code."
+severity: major
+
+### 3. Copy Button Works
+expected: Clicking "Copy" copies the code to clipboard and shows "Copied!" feedback.
+result: skipped
+reason: Blocked by infinite API call bug in Tests 1-2
 
 ### 4. Connection Code Exchange
-expected: Enter a valid connection code from the web app, click Connect. Extension authenticates and switches to connected state.
+expected: Enter the code from web app into extension popup, click Connect. Extension authenticates and switches to connected state showing "Connected" indicator.
 result: skipped
-reason: Blocked by Test 2 - web app connection page doesn't exist (404), cannot generate valid code
+reason: Blocked by infinite API call bug - cannot get stable code
 
 ### 5. Connected State Shows Indicator
 expected: After successful authentication, popup shows a green checkmark with "Connected" text instead of the connect form.
 result: skipped
-reason: Blocked by Test 2 - cannot authenticate without valid code from web app
-
-### 6. Invalid Code Shows Error
-expected: Enter an invalid 6-digit code (e.g., "000000"), click Connect. Error message displays explaining the code is invalid.
-result: pass
+reason: Blocked by Tests 1-4 - cannot complete auth flow
 
 ## Summary
 
-total: 6
-passed: 3
-issues: 1
+total: 5
+passed: 0
+issues: 2
 pending: 0
-skipped: 2
+skipped: 3
 
 ## Gaps
 
-- truth: "Clicking Open Populatte opens the web app (localhost:3000) in a new tab"
+- truth: "The /extension/connect page shows a stable connection code without flickering"
   status: failed
-  reason: "User reported: it opened in a new tab, but it's a page that doesn't exist"
+  reason: "User reported: Code flickers constantly, network shows thousands of API calls to /auth/extension-code"
   severity: major
-  test: 2
-  root_cause: "Web app page at /extension/connect was never created. Extension opens this URL but no Next.js page exists. Backend endpoint POST /auth/extension-code exists but has no frontend."
+  test: 1
+  root_cause: "useApiClient() returns a NEW object on every render (line 161 in apps/web/lib/api/client.ts). The object is not memoized, so apiClient changes every render, triggering useCallback recreation, triggering useEffect, calling API, changing state, re-rendering - infinite loop."
   artifacts:
-    - path: "apps/extension/entrypoints/popup/components/ConnectView.tsx"
-      issue: "Opens http://localhost:3000/extension/connect which doesn't exist"
+    - path: "apps/web/lib/api/client.ts"
+      issue: "useApiClient returns createApiClient(getToken) without memoization - new object every render"
+    - path: "apps/web/app/extension/connect/page.tsx"
+      issue: "generateCode useCallback depends on apiClient which changes every render"
   missing:
-    - "Create apps/web/app/extension/connect/page.tsx"
-    - "Page must be authenticated (Clerk)"
-    - "Page calls POST /auth/extension-code to generate 6-digit code"
-    - "Page displays code with copy button and 5-minute expiry notice"
+    - "Memoize return value in useApiClient: return useMemo(() => createApiClient(getToken), [getToken])"
   debug_session: ""
