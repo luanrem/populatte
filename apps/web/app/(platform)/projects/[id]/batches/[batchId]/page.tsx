@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useProject } from "@/lib/query/hooks/use-projects";
-import { useBatch, useBatchRows } from "@/lib/query/hooks/use-batches";
+import { useBatch, useBatchRows, useUpdateBatch } from "@/lib/query/hooks/use-batches";
 import { ApiError } from "@/lib/api/types";
 
 export default function BatchDetailPage({
@@ -45,6 +45,8 @@ export default function BatchDetailPage({
     isPlaceholderData,
   } = useBatchRows(id, batchId, limit, offset);
 
+  const updateBatch = useUpdateBatch(id);
+
   // Handle error toasts
   useEffect(() => {
     if (
@@ -66,6 +68,10 @@ export default function BatchDetailPage({
   const handlePageSizeChange = (newLimit: number) => {
     setLimit(newLimit);
     setOffset(0); // Reset to first page when page size changes
+  };
+
+  const handleBatchNameChange = async (name: string) => {
+    await updateBatch.mutateAsync({ batchId, data: { name } });
   };
 
   // Loading state
@@ -168,6 +174,8 @@ export default function BatchDetailPage({
             batch={batch}
             projectId={id}
             projectName={project.name}
+            onNameChange={handleBatchNameChange}
+            isUpdating={updateBatch.isPending}
           />
 
           {batch.totalRows === 0 ? (
