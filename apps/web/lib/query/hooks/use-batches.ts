@@ -8,6 +8,7 @@ import type {
   BatchListResponse,
   BatchResponse,
   PaginatedRowsResponse,
+  UpdateBatchRequest,
   UploadBatchResponse,
 } from '../../api/schemas/batch.schema';
 import type { FieldStatsResponse } from '../../api/schemas/field-stats.schema';
@@ -101,5 +102,42 @@ export function useFieldValuesInfinite(
       return loadedCount < lastPage.matchingCount ? loadedCount : undefined;
     },
     enabled: !!projectId && !!batchId && !!fieldKey,
+  });
+}
+
+export function useUpdateBatch(projectId: string) {
+  const client = useApiClient();
+  const endpoints = createBatchEndpoints(client.fetch);
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    BatchResponse,
+    Error,
+    { batchId: string; data: UpdateBatchRequest }
+  >({
+    mutationFn: ({ batchId, data }) => endpoints.update(projectId, batchId, data),
+    onSuccess: (_data, variables) => {
+      void queryClient.invalidateQueries({
+        queryKey: ['projects', projectId, 'batches'],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ['projects', projectId, 'batches', variables.batchId],
+      });
+    },
+  });
+}
+
+export function useDeleteBatch(projectId: string) {
+  const client = useApiClient();
+  const endpoints = createBatchEndpoints(client.fetch);
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, { batchId: string }>({
+    mutationFn: ({ batchId }) => endpoints.remove(projectId, batchId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ['projects', projectId, 'batches'],
+      });
+    },
   });
 }
