@@ -7,6 +7,7 @@ import {
   ConnectedIndicator,
   ProjectSelector,
   BatchSelector,
+  MappingSelector,
   RowIndicator,
   FillControls,
 } from './components';
@@ -128,6 +129,18 @@ export default function App() {
     }
   }
 
+  async function handleMappingSelect(mappingId: string) {
+    try {
+      await sendToBackground<VoidResponse>({
+        type: 'MAPPING_SELECT',
+        payload: { mappingId },
+      });
+      // State update comes via STATE_UPDATED broadcast
+    } catch (err) {
+      console.error('[Popup] Failed to select mapping:', err);
+    }
+  }
+
   return (
     <div className="w-[350px] h-[500px] bg-white p-4 flex flex-col">
       <header className="flex items-center gap-2 mb-4 pb-3 border-b">
@@ -170,6 +183,13 @@ export default function App() {
                   selectedId={state.batchId}
                   onSelect={handleBatchSelect}
                 />
+                {state.hasMapping && state.availableMappings.length > 0 && (
+                  <MappingSelector
+                    mappings={state.availableMappings}
+                    selectedId={state.mappingId}
+                    onSelect={handleMappingSelect}
+                  />
+                )}
               </div>
 
               <RowIndicator
