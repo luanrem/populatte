@@ -111,17 +111,19 @@ Plans:
 ### Phase 29: Fill Cycle Integration
 **Goal**: Complete fill-to-confirm cycle where user fills form, verifies, and advances to next row
 **Depends on**: Phase 27, Phase 28
-**Requirements**: SUCC-01, SUCC-02, SUCC-03, SUCC-04, FILL-01, FILL-02, FILL-03, FILL-04, FILL-05, FILL-06, FILL-07, FILL-08
+**Requirements**: POP-07, FILL-01, FILL-02, FILL-03, FILL-04, FILL-05, FILL-06, FILL-07, FILL-08
 **Success Criteria** (what must be TRUE):
-  1. Background detects when user navigates to mapped URL and shows mapping indicator
+  1. Background detects when user navigates to mapped URL and shows mapping indicator (badge)
   2. Clicking Fill executes all steps for current row and updates popup with progress
-  3. Success monitor detects form submission via configured trigger (URL/text/element)
-  4. Row status updates to VALID or ERROR in database after fill attempt
-  5. User can manually advance to next row after verifying fill success
-**Plans**: TBD
+  3. Row status updates to VALID or ERROR in database after fill attempt
+  4. User can manually advance to next row after verifying fill success
+  5. Mark Error updates row status in database with error reason
+**Plans**: 3 plans
 
 Plans:
-- [ ] 29-01: TBD
+- [ ] 29-01-PLAN.md — Mapping detection and badge indicator
+- [ ] 29-02-PLAN.md — Fill orchestration (FILL_START handler, row data fetch, content script execution)
+- [ ] 29-03-PLAN.md — Row status updates (VALID/ERROR persistence)
 
 ## Progress
 
@@ -135,8 +137,8 @@ Phases execute in numeric order: 24 → 25 → 26 → 27 → 28 → 29
 | 26. Extension Auth Flow | 3/3 | ✓ Complete | 2026-02-04 |
 | 27. Popup UI | 3/3 | ✓ Complete | 2026-02-03 |
 | 28. Content Script | 2/2 | ✓ Complete | 2026-02-04 |
-| 29. Fill Cycle Integration | 0/TBD | Not started | - |
+| 29. Fill Cycle Integration | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-03*
-*Last updated: 2026-02-04 — Phase 28 complete (2 plans executed)*
+*Last updated: 2026-02-04 — Phase 29 planned (3 plans in 3 waves)*
