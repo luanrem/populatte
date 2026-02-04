@@ -18,7 +18,7 @@ v5.0 enables users to create mappings visually by clicking form fields in the ex
 ## Phases
 
 - [x] **Phase 30: Backend Foundation** - Project/batch CRUD endpoints and batch identifier configuration
-- [ ] **Phase 31: Dashboard Management** - Project/batch CRUD UI and mappings list
+- [x] **Phase 31: Dashboard Management** - Project/batch CRUD UI and mappings list
 - [ ] **Phase 32: Dashboard Mapping Editor** - Mapping edit page with step management
 - [ ] **Phase 33: Extension Capture Mode** - Click-to-capture selector creation
 - [ ] **Phase 34: Extension Identifier Integration** - Row identifier display in popup
@@ -55,12 +55,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 31-01-PLAN.md — Create inline-edit component and batch CRUD hooks
-- [ ] 31-02-PLAN.md — Wire inline editing and batch CRUD UI
-- [ ] 31-03-PLAN.md — Integrate batch CRUD into grid and detail views
-- [ ] 31-04-PLAN.md — Create mappings API layer and React Query hooks
-- [ ] 31-05-PLAN.md — Build mappings list UI components
-- [ ] 31-06-PLAN.md — Integrate mappings list into project detail page
+- [x] 31-01-PLAN.md — Create inline-edit component and batch CRUD hooks
+- [x] 31-02-PLAN.md — Wire inline editing and batch CRUD UI
+- [x] 31-03-PLAN.md — Integrate batch CRUD into grid and detail views
+- [x] 31-04-PLAN.md — Create mappings API layer and React Query hooks
+- [x] 31-05-PLAN.md — Build mappings list UI components
+- [x] 31-06-PLAN.md — Integrate mappings list into project detail page
 
 ### Phase 32: Dashboard Mapping Editor
 **Goal**: Users can edit mapping details and manage steps with full CRUD operations
@@ -110,7 +110,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 30. Backend Foundation | v5.0 | 3/3 | ✓ Complete | 2026-02-04 |
-| 31. Dashboard Management | v5.0 | 0/6 | Not started | - |
+| 31. Dashboard Management | v5.0 | 6/6 | ✓ Complete | 2026-02-04 |
 | 32. Dashboard Mapping Editor | v5.0 | 0/? | Not started | - |
 | 33. Extension Capture Mode | v5.0 | 0/? | Not started | - |
 | 34. Extension Identifier Integration | v5.0 | 0/? | Not started | - |

@@ -24,19 +24,19 @@ Requirements for v5.0 Mapping Builder milestone. Each maps to roadmap phases.
 
 ### Dashboard Project/Batch CRUD
 
-- [ ] **CRUD-01**: User can edit project name (inline or modal)
-- [ ] **CRUD-02**: User can delete project with confirmation dialog
-- [ ] **CRUD-03**: User can edit batch name
-- [ ] **CRUD-04**: User can delete batch with confirmation dialog
-- [ ] **CRUD-05**: Batch settings page displays identifier configuration
+- [x] **CRUD-01**: User can edit project name (inline or modal)
+- [x] **CRUD-02**: User can delete project with confirmation dialog
+- [x] **CRUD-03**: User can edit batch name
+- [x] **CRUD-04**: User can delete batch with confirmation dialog
+- [x] **CRUD-05**: Batch settings page displays identifier configuration
 
 ### Dashboard Mappings List
 
-- [ ] **MAP-01**: User can view list of all mappings for a project
-- [ ] **MAP-02**: Each mapping shows name, URL, step count, status
-- [ ] **MAP-03**: Edit button navigates to mapping edit page
-- [ ] **MAP-04**: Delete button soft-deletes mapping with confirmation
-- [ ] **MAP-05**: "+ Novo Mapping" button shows instruction modal
+- [x] **MAP-01**: User can view list of all mappings for a project
+- [x] **MAP-02**: Each mapping shows name, URL, step count, status
+- [x] **MAP-03**: Edit button navigates to mapping edit page
+- [x] **MAP-04**: Delete button soft-deletes mapping with confirmation
+- [x] **MAP-05**: "+ Novo Mapping" button shows instruction modal
 
 ### Dashboard Mapping Edit
 
@@ -146,16 +146,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ID-02 | 30 | Complete |
 | ID-03 | 30 | Complete |
 | ID-04 | 30 | Complete |
-| CRUD-01 | 31 | Pending |
-| CRUD-02 | 31 | Pending |
-| CRUD-03 | 31 | Pending |
-| CRUD-04 | 31 | Pending |
-| CRUD-05 | 31 | Pending |
-| MAP-01 | 31 | Pending |
-| MAP-02 | 31 | Pending |
-| MAP-03 | 31 | Pending |
-| MAP-04 | 31 | Pending |
-| MAP-05 | 31 | Pending |
+| CRUD-01 | 31 | Complete |
+| CRUD-02 | 31 | Complete |
+| CRUD-03 | 31 | Complete |
+| CRUD-04 | 31 | Complete |
+| CRUD-05 | 31 | Complete |
+| MAP-01 | 31 | Complete |
+| MAP-02 | 31 | Complete |
+| MAP-03 | 31 | Complete |
+| MAP-04 | 31 | Complete |
+| MAP-05 | 31 | Complete |
 | EDIT-01 | 32 | Pending |
 | EDIT-02 | 32 | Pending |
 | EDIT-03 | 32 | Pending |
@@ -203,4 +203,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-04*
-*Last updated: 2026-02-04 after phase 30 completion*
+*Last updated: 2026-02-04 after phase 31 completion*
