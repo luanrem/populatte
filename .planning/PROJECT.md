@@ -120,7 +120,14 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ### Active
 
-(No active requirements — define next milestone with `/gsd:new-milestone`)
+**v5.0 Mapping Builder**
+
+- [ ] Backend CRUD gaps for projects and batches
+- [ ] Batch identifier fields for row identification in extension
+- [ ] Dashboard mapping UI (list, edit, delete)
+- [ ] Dashboard step management (edit modal, reorder, fallbacks)
+- [ ] Extension capture mode (click-to-capture selectors)
+- [ ] Extension identifier display (show who is being filled)
 
 ### Out of Scope
 
@@ -276,5 +283,15 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | MutationObserver for success triggers | Efficient DOM watching for text_appears and element_disappears | ✓ Good |
 | Defensive undefined check in sendMessage | Content script may not respond, prevents crash in FILL_START | ✓ Good |
 
+## Current Milestone: v5.0 Mapping Builder
+
+**Goal:** Enable users to create mappings visually by clicking form fields in the extension, edit them in the dashboard, and see meaningful row identifiers while filling.
+
+**Target features:**
+- Extension capture mode (click-to-capture selectors)
+- Dashboard mapping/step management UI
+- Batch identifier configuration
+- Project/batch edit and delete operations
+
 ---
-*Last updated: 2026-02-04 after v4.0 milestone completed*
+*Last updated: 2026-02-04 after v5.0 milestone started*

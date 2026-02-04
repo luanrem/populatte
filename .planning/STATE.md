@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 
 ## Current Position
 
-Phase: Ready for next milestone
-Plan: N/A
-Status: v4.0 shipped, planning next
-Last activity: 2026-02-04 — v4.0 milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-04 — Milestone v5.0 started
 
-Progress: N/A (between milestones)
+Progress: N/A (defining requirements)
 
 ## Performance Metrics
 
@@ -67,9 +67,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Completed v4.0 milestone archival
+Stopped at: Defining v5.0 requirements
 Resume file: None
-Next step: `/gsd:new-milestone` to define next milestone
+Next step: Complete requirements → roadmap
 
 Config (if exists):
 {
