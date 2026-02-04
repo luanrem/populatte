@@ -160,22 +160,21 @@ export async function fetchMappingWithSteps(
         id: string;
         stepOrder: number;
         action: string;
-        selectorType: string;
-        selectorValue: string;
+        selector: { type: string; value: string };
         selectorFallbacks?: Array<{ type: string; value: string }>;
-        sourceFieldKey?: string;
-        fixedValue?: string;
+        sourceFieldKey?: string | null;
+        fixedValue?: string | null;
         clearBefore?: boolean;
         pressEnter?: boolean;
-        waitMs?: number;
+        waitMs?: number | null;
         optional?: boolean;
       }) => ({
         id: step.id,
         stepOrder: step.stepOrder,
         action: step.action as 'fill' | 'click' | 'wait',
         selector: {
-          type: step.selectorType as 'css' | 'xpath',
-          value: step.selectorValue,
+          type: step.selector.type as 'css' | 'xpath',
+          value: step.selector.value,
         },
         selectorFallbacks: step.selectorFallbacks?.map((fb) => ({
           type: fb.type as 'css' | 'xpath',

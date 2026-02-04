@@ -20,7 +20,7 @@ import {
   ListMappingsUseCase,
   UpdateMappingUseCase,
 } from '../../core/use-cases/mapping';
-import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
+import { DualAuthGuard } from '../../infrastructure/auth/guards/dual-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import {
   createMappingSchema,
@@ -33,7 +33,7 @@ import {
 import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
 @Controller('projects/:projectId/mappings')
-@UseGuards(ClerkAuthGuard)
+@UseGuards(DualAuthGuard)
 export class MappingController {
   public constructor(
     private readonly createMapping: CreateMappingUseCase,

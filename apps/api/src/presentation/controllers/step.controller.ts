@@ -19,7 +19,7 @@ import {
   ReorderStepsUseCase,
   UpdateStepUseCase,
 } from '../../core/use-cases/step';
-import { ClerkAuthGuard } from '../../infrastructure/auth/guards/clerk-auth.guard';
+import { DualAuthGuard } from '../../infrastructure/auth/guards/dual-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import {
   createStepSchema,
@@ -32,7 +32,7 @@ import {
 import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
 
 @Controller('mappings/:mappingId/steps')
-@UseGuards(ClerkAuthGuard)
+@UseGuards(DualAuthGuard)
 export class StepController {
   public constructor(
     private readonly createStep: CreateStepUseCase,
