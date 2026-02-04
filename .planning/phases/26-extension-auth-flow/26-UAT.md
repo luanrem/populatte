@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 26-extension-auth-flow
 source: [26-01-SUMMARY.md, 26-02-SUMMARY.md]
 started: 2026-02-04T01:05:00Z
@@ -55,7 +55,13 @@ skipped: 2
   reason: "User reported: it opened in a new tab, but it's a page that doesn't exist"
   severity: major
   test: 2
-  root_cause: ""
-  artifacts: []
-  missing: []
+  root_cause: "Web app page at /extension/connect was never created. Extension opens this URL but no Next.js page exists. Backend endpoint POST /auth/extension-code exists but has no frontend."
+  artifacts:
+    - path: "apps/extension/entrypoints/popup/components/ConnectView.tsx"
+      issue: "Opens http://localhost:3000/extension/connect which doesn't exist"
+  missing:
+    - "Create apps/web/app/extension/connect/page.tsx"
+    - "Page must be authenticated (Clerk)"
+    - "Page calls POST /auth/extension-code to generate 6-digit code"
+    - "Page displays code with copy button and 5-minute expiry notice"
   debug_session: ""
