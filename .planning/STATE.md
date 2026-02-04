@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-03)
 ## Current Position
 
 Phase: 27 of 29 (Popup UI)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-04 — Completed 27-01-PLAN.md
+Last activity: 2026-02-04 — Completed 27-02-PLAN.md
 
-Progress: [████░░░░░░] ~42%
+Progress: [████░░░░░░] ~44%
 
 ## Performance Metrics
 
@@ -27,9 +27,9 @@ Progress: [████░░░░░░] ~42%
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 
 **v4.0 velocity:**
-- Plans completed: 10
-- Average duration: 3m 20s
-- Total execution time: 34m 17s
+- Plans completed: 11
+- Average duration: 3m 13s
+- Total execution time: 36m 25s
 
 *Updated after each plan completion*
 
@@ -66,6 +66,8 @@ Recent decisions affecting current work:
 - [26-03]: Centered card layout for focused single-purpose extension connect flow
 - [27-01]: MVP progress tracking (pendingCount=rowCount, doneCount=0) deferred to Phase 29
 - [27-01]: Completed batches filtered from GET_BATCHES response per CONTEXT.md
+- [27-02]: Native select elements for simple dropdown UI (no custom dropdowns)
+- [27-02]: Auto-select single batch per CONTEXT.md decision
 
 ### Roadmap Evolution
 
@@ -99,9 +101,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-04
-Stopped at: Completed 27-01-PLAN.md
+Stopped at: Completed 27-02-PLAN.md
 Resume file: None
-Next step: Execute 27-02-PLAN.md
+Next step: Execute 27-03-PLAN.md
 
 Config (if exists):
 {
