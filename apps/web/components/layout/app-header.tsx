@@ -3,7 +3,7 @@ import { ModeToggle } from "@/components/theme/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface AppHeaderProps {
-  title: string;
+  title: React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -15,9 +15,9 @@ export function AppHeader({ title, children }: AppHeaderProps) {
           <SignedIn>
             <SidebarTrigger />
           </SignedIn>
-          <h1 className="text-xl font-bold text-foreground">
+          <div className="text-xl font-bold text-foreground">
             {title}
-          </h1>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {children}

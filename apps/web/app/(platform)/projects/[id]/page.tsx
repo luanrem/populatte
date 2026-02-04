@@ -2,11 +2,14 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { AppHeader } from "@/components/layout/app-header";
 import { BatchGrid } from "@/components/projects/batch-grid";
+import { DeleteProjectDialog } from "@/components/projects/delete-project-dialog";
+import { InlineEditName } from "@/components/projects/inline-edit-name";
 import { UploadBatchModal } from "@/components/projects/upload-batch-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +21,7 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProject } from "@/lib/query/hooks/use-projects";
+import { useProject, useUpdateProject, useDeleteProject } from "@/lib/query/hooks/use-projects";
 import { useBatches } from "@/lib/query/hooks/use-batches";
 import { ApiError } from "@/lib/api/types";
 
@@ -28,9 +31,19 @@ export default function ProjectDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
   const { data: project, isLoading: projectLoading, isError: projectError, error: projectErrorData } = useProject(id);
   const { data: batches, isLoading: batchesLoading } = useBatches(id);
+  const updateProject = useUpdateProject();
+  const deleteProject = useDeleteProject();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    await deleteProject.mutateAsync(id);
+    toast.success("Projeto excluido");
+    router.push("/projects");
+  };
 
   // Handle error toasts
   useEffect(() => {
@@ -134,7 +147,25 @@ export default function ProjectDetailPage({
         </Breadcrumb>
       </div>
 
-      <AppHeader title={project.name}>
+      <AppHeader
+        title={
+          <InlineEditName
+            value={project.name}
+            onSave={async (name) => {
+              await updateProject.mutateAsync({ id: project.id, data: { name } });
+            }}
+            isLoading={updateProject.isPending}
+          />
+        }
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setDeleteDialogOpen(true)}
+          className="text-muted-foreground hover:text-destructive"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
         <Button size="sm" onClick={() => setUploadModalOpen(true)}>
           <Upload className="mr-2 h-4 w-4" />
           Nova Importacao
@@ -154,6 +185,14 @@ export default function ProjectDetailPage({
         open={uploadModalOpen}
         onOpenChange={setUploadModalOpen}
         projectId={id}
+      />
+
+      <DeleteProjectDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        project={project}
+        isPending={deleteProject.isPending}
       />
     </main>
   );
