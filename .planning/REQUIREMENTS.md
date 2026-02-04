@@ -137,70 +137,70 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| API-01 | — | Pending |
-| API-02 | — | Pending |
-| API-03 | — | Pending |
-| API-04 | — | Pending |
-| API-05 | — | Pending |
-| ID-01 | — | Pending |
-| ID-02 | — | Pending |
-| ID-03 | — | Pending |
-| ID-04 | — | Pending |
-| CRUD-01 | — | Pending |
-| CRUD-02 | — | Pending |
-| CRUD-03 | — | Pending |
-| CRUD-04 | — | Pending |
-| CRUD-05 | — | Pending |
-| MAP-01 | — | Pending |
-| MAP-02 | — | Pending |
-| MAP-03 | — | Pending |
-| MAP-04 | — | Pending |
-| MAP-05 | — | Pending |
-| EDIT-01 | — | Pending |
-| EDIT-02 | — | Pending |
-| EDIT-03 | — | Pending |
-| EDIT-04 | — | Pending |
-| EDIT-05 | — | Pending |
-| EDIT-06 | — | Pending |
-| EDIT-07 | — | Pending |
-| EDIT-08 | — | Pending |
-| EDIT-09 | — | Pending |
-| STEP-01 | — | Pending |
-| STEP-02 | — | Pending |
-| STEP-03 | — | Pending |
-| STEP-04 | — | Pending |
-| STEP-05 | — | Pending |
-| STEP-06 | — | Pending |
-| STEP-07 | — | Pending |
-| CAP-01 | — | Pending |
-| CAP-02 | — | Pending |
-| CAP-03 | — | Pending |
-| CAP-04 | — | Pending |
-| CAP-05 | — | Pending |
-| CAP-06 | — | Pending |
-| CAP-07 | — | Pending |
-| CAP-08 | — | Pending |
-| CAP-09 | — | Pending |
-| CAP-10 | — | Pending |
-| CAP-11 | — | Pending |
-| CAP-12 | — | Pending |
-| CAP-13 | — | Pending |
-| CAP-14 | — | Pending |
-| CAP-15 | — | Pending |
-| CAP-16 | — | Pending |
-| CAP-17 | — | Pending |
-| CAP-18 | — | Pending |
-| CAP-19 | — | Pending |
-| CAP-20 | — | Pending |
-| DISP-01 | — | Pending |
-| DISP-02 | — | Pending |
-| DISP-03 | — | Pending |
+| API-01 | 30 | Pending |
+| API-02 | 30 | Pending |
+| API-03 | 30 | Pending |
+| API-04 | 30 | Pending |
+| API-05 | 30 | Pending |
+| ID-01 | 30 | Pending |
+| ID-02 | 30 | Pending |
+| ID-03 | 30 | Pending |
+| ID-04 | 30 | Pending |
+| CRUD-01 | 31 | Pending |
+| CRUD-02 | 31 | Pending |
+| CRUD-03 | 31 | Pending |
+| CRUD-04 | 31 | Pending |
+| CRUD-05 | 31 | Pending |
+| MAP-01 | 31 | Pending |
+| MAP-02 | 31 | Pending |
+| MAP-03 | 31 | Pending |
+| MAP-04 | 31 | Pending |
+| MAP-05 | 31 | Pending |
+| EDIT-01 | 32 | Pending |
+| EDIT-02 | 32 | Pending |
+| EDIT-03 | 32 | Pending |
+| EDIT-04 | 32 | Pending |
+| EDIT-05 | 32 | Pending |
+| EDIT-06 | 32 | Pending |
+| EDIT-07 | 32 | Pending |
+| EDIT-08 | 32 | Pending |
+| EDIT-09 | 32 | Pending |
+| STEP-01 | 32 | Pending |
+| STEP-02 | 32 | Pending |
+| STEP-03 | 32 | Pending |
+| STEP-04 | 32 | Pending |
+| STEP-05 | 32 | Pending |
+| STEP-06 | 32 | Pending |
+| STEP-07 | 32 | Pending |
+| CAP-01 | 33 | Pending |
+| CAP-02 | 33 | Pending |
+| CAP-03 | 33 | Pending |
+| CAP-04 | 33 | Pending |
+| CAP-05 | 33 | Pending |
+| CAP-06 | 33 | Pending |
+| CAP-07 | 33 | Pending |
+| CAP-08 | 33 | Pending |
+| CAP-09 | 33 | Pending |
+| CAP-10 | 33 | Pending |
+| CAP-11 | 33 | Pending |
+| CAP-12 | 33 | Pending |
+| CAP-13 | 33 | Pending |
+| CAP-14 | 33 | Pending |
+| CAP-15 | 33 | Pending |
+| CAP-16 | 33 | Pending |
+| CAP-17 | 33 | Pending |
+| CAP-18 | 33 | Pending |
+| CAP-19 | 33 | Pending |
+| CAP-20 | 33 | Pending |
+| DISP-01 | 34 | Pending |
+| DISP-02 | 34 | Pending |
+| DISP-03 | 34 | Pending |
 
 **Coverage:**
 - v5.0 requirements: 52 total
-- Mapped to phases: 0
-- Unmapped: 52
+- Mapped to phases: 52
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-04*
-*Last updated: 2026-02-04 after initial definition*
+*Last updated: 2026-02-04 after roadmap creation*
