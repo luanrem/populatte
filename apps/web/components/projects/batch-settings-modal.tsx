@@ -143,14 +143,14 @@ export function BatchSettingsModal({
           </div>
 
           <div className="rounded-md border bg-muted/50 p-3">
-            <p className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground">
               <span className="font-medium text-foreground">Visualizacao:</span>{" "}
               {rowsLoading ? (
                 <Skeleton className="ml-2 inline-block h-4 w-32" />
               ) : (
                 previewText
               )}
-            </p>
+            </div>
           </div>
         </div>
 
