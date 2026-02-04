@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
-import { Batch, CreateBatchData } from '../../../../core/entities/batch.entity';
+import {
+  Batch,
+  CreateBatchData,
+  UpdateBatchData,
+} from '../../../../core/entities/batch.entity';
 import { PaginatedResult } from '../../../../core/entities/pagination.types';
 import {
   FieldValuesQuery,
@@ -12,7 +16,7 @@ import {
   FieldAggregation,
 } from '../../../../core/repositories/batch.repository';
 import { DrizzleService } from '../drizzle.service';
-import { ingestionBatches } from '../schema';
+import { ingestionBatches, ingestionRows } from '../schema';
 import { BatchMapper } from '../mappers/batch.mapper';
 
 @Injectable()
@@ -118,6 +122,51 @@ export class DrizzleBatchRepository extends BatchRepository {
       })
       .where(
         and(eq(ingestionBatches.id, id), isNull(ingestionBatches.deletedAt)),
+      );
+  }
+
+  public async update(
+    id: string,
+    data: UpdateBatchData,
+  ): Promise<Batch | null> {
+    const result = await this.drizzle
+      .getClient()
+      .update(ingestionBatches)
+      .set({
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.identifierFieldKey !== undefined && {
+          identifierFieldKey: data.identifierFieldKey,
+        }),
+        ...(data.secondaryFieldKey !== undefined && {
+          secondaryFieldKey: data.secondaryFieldKey,
+        }),
+        updatedAt: new Date(),
+      })
+      .where(
+        and(eq(ingestionBatches.id, id), isNull(ingestionBatches.deletedAt)),
+      )
+      .returning();
+
+    const row = result[0];
+    return row ? BatchMapper.toDomain(row) : null;
+  }
+
+  public async softDeleteRowsByBatchId(
+    batchId: string,
+    _deletedBy: string,
+  ): Promise<void> {
+    await this.drizzle
+      .getClient()
+      .update(ingestionRows)
+      .set({
+        deletedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(ingestionRows.batchId, batchId),
+          isNull(ingestionRows.deletedAt),
+        ),
       );
   }
 

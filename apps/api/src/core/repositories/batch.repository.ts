@@ -1,4 +1,4 @@
-import { Batch, CreateBatchData } from '../entities/batch.entity';
+import { Batch, CreateBatchData, UpdateBatchData } from '../entities/batch.entity';
 import { PaginatedResult } from '../entities/pagination.types';
 import {
   FieldValuesQuery,
@@ -26,6 +26,16 @@ export abstract class BatchRepository {
   ): Promise<PaginatedResult<Batch>>;
 
   public abstract softDelete(id: string, deletedBy: string): Promise<void>;
+
+  public abstract update(
+    id: string,
+    data: UpdateBatchData,
+  ): Promise<Batch | null>;
+
+  public abstract softDeleteRowsByBatchId(
+    batchId: string,
+    deletedBy: string,
+  ): Promise<void>;
 
   public abstract getFieldAggregations(
     batchId: string,
