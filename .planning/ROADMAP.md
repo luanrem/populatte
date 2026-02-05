@@ -91,10 +91,13 @@ Plans:
   3. User can configure each captured step (action, source column, options)
   4. User can reorder, delete, and add wait steps to the capture list
   5. User can finalize and save mapping to API or cancel capture
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 33-01: TBD
+- [ ] 33-01-PLAN.md — Content script capture foundation (highlighter, selector-gen, badge-tracker)
+- [ ] 33-02-PLAN.md — Message types and API layer for capture (messages, create mapping, batch detail)
+- [ ] 33-03-PLAN.md — Popup capture UI components (CapturePanel, StepList, StepConfig)
+- [ ] 33-04-PLAN.md — Wire capture mode end-to-end (entry, handlers, save flow)
 
 ### Phase 34: Extension Identifier Integration
 **Goal**: Users see meaningful row identifiers while filling forms in the extension
@@ -116,7 +119,7 @@ Plans:
 | 30. Backend Foundation | v5.0 | 3/3 | ✓ Complete | 2026-02-04 |
 | 31. Dashboard Management | v5.0 | 7/7 | ✓ Complete | 2026-02-04 |
 | 32. Dashboard Mapping Editor | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
-| 33. Extension Capture Mode | v5.0 | 0/? | Not started | - |
+| 33. Extension Capture Mode | v5.0 | 0/4 | Planned | - |
 | 34. Extension Identifier Integration | v5.0 | 0/? | Not started | - |
 
 ---
