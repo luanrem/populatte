@@ -206,6 +206,12 @@ export default defineBackground(() => {
             }
 
             case 'GET_STATE': {
+              // Refresh mapping detection before returning state
+              // This ensures hasMapping is accurate after saving a new mapping
+              const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+              if (activeTab?.id !== undefined) {
+                await checkMappingForTab(activeTab.id);
+              }
               const state = await buildState();
               sendResponse({ success: true, data: state });
               break;

@@ -41,6 +41,11 @@ export default function App() {
 
     // Restore capture mode state from session storage
     chrome.storage.session.get(['captureMode', 'batchColumns']).then((data) => {
+      console.log('[App] Restoring capture mode from storage:', {
+        captureMode: data.captureMode,
+        columnsCount: data.batchColumns?.length ?? 0,
+        columns: data.batchColumns,
+      });
       if (data.captureMode) {
         setCaptureMode(true);
         setBatchColumns(data.batchColumns || []);
@@ -183,6 +188,7 @@ export default function App() {
       // Fetch batch columns
       const batch = await fetchBatchDetail(state.projectId, state.batchId);
       const columns = batch.columnMetadata.map((c) => c.header || c.key);
+      console.log('[App] Batch columns loaded:', columns);
       setBatchColumns(columns);
 
       // Start capture mode in content script
@@ -207,6 +213,15 @@ export default function App() {
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
     await sendToBackground({ type: 'CAPTURE_STOP' });
     setCaptureMode(false);
+  }
+
+  async function handleStartFilling() {
+    // Clear persisted capture mode state
+    await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
+    await sendToBackground({ type: 'CAPTURE_STOP' });
+    setCaptureMode(false);
+    // Refresh state to load the newly created mapping
+    await loadState();
   }
 
   async function handleSaveMapping(name: string, steps: CaptureStep[]): Promise<{ id: string }> {
@@ -272,6 +287,7 @@ export default function App() {
           onCancel={handleExitCaptureMode}
           onRemoveStep={handleRemoveStep}
           onHighlight={handleHighlightStep}
+          onStartFilling={handleStartFilling}
         />
       </div>
     );

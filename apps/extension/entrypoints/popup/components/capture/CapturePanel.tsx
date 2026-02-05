@@ -27,6 +27,8 @@ interface CapturePanelProps {
   onRemoveStep?: (stepNumber: number) => void;
   /** Callback to highlight an element on the page */
   onHighlight?: (stepNumber: number) => void;
+  /** Callback when user wants to start filling after save */
+  onStartFilling?: () => void;
 }
 
 /**
@@ -39,7 +41,10 @@ export function CapturePanel({
   onCancel,
   onRemoveStep,
   onHighlight,
+  onStartFilling,
 }: CapturePanelProps) {
+  console.log('[CapturePanel] Received columns:', columns?.length ?? 0, columns);
+
   // State
   const [mappingName, setMappingName] = useState('');
   const [steps, setSteps] = useState<CaptureStep[]>([]);
@@ -325,7 +330,12 @@ export function CapturePanel({
             type="button"
             onClick={() => {
               setSavedMapping(null);
-              onCancel(); // Exit capture mode to normal view
+              // Use dedicated callback if provided, otherwise fallback to cancel
+              if (onStartFilling) {
+                onStartFilling();
+              } else {
+                onCancel();
+              }
             }}
             className="w-full p-3 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300 text-amber-800 font-medium flex items-center justify-center gap-2"
           >

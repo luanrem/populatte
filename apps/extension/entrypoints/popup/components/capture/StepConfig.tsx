@@ -37,6 +37,8 @@ export function StepConfig({
   isNew,
   onHighlight,
 }: StepConfigProps) {
+  console.log('[StepConfig] Received columns:', columns?.length ?? 0, columns);
+
   // Initialize state from step or defaults
   const [action, setAction] = useState<'fill' | 'click' | 'wait'>(step?.action ?? 'wait');
   const [sourceMode, setSourceMode] = useState<SourceMode>(
