@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-04)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** Phase 33 - Extension Capture Mode
+**Current focus:** Phase 33 complete - Ready for Phase 34 (Population Mode)
 
 ## Current Position
 
 Phase: 33 of 34 (Extension Capture Mode)
 Plan: 4 of 4 (Capture Flow Integration)
-Status: Phase complete - awaiting verification checkpoint
-Last activity: 2026-02-05 - Completed 33-04-PLAN.md (Capture Flow Integration)
+Status: Phase 33 COMPLETE
+Last activity: 2026-02-05 - Completed 33-04-PLAN.md with checkpoint verification and bug fixes
 
 Progress: [██████████] 100% (4/4 plans)
 
@@ -27,7 +27,7 @@ Progress: [██████████] 100% (4/4 plans)
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 - v4.0: 18 plans, avg 2m 48s, total ~53min
 - v5.0 (complete): 10 plans, avg ~2m 40s, total ~27min (phases 30-31)
-- v5.0 (phase 33): 4 plans, avg ~6min, total ~24min
+- v5.0 (phase 33): 4 plans, avg ~9min, total ~35min (includes checkpoint bug fixes)
 
 *Updated after each plan completion*
 
@@ -44,6 +44,8 @@ See PROJECT.md Key Decisions table for full log with outcomes.
 | Config replaces list view | Modal-free, simpler navigation | 2026-02-05 |
 | Module-level captureMode instance | Persists across messages, cleaned up on CAPTURE_STOP | 2026-02-05 |
 | Background as message router | Popup cannot directly message content scripts | 2026-02-05 |
+| Storage-based step sync | Popup cannot receive messages when closed, use chrome.storage.local | 2026-02-05 |
+| Background handles storage writes | Content scripts have unreliable storage access in some contexts | 2026-02-05 |
 
 ### Roadmap Evolution
 
@@ -54,7 +56,7 @@ See PROJECT.md Key Decisions table for full log with outcomes.
 - v2.3: 4 phases, 7 plans -- Field Inventory (shipped 2026-02-02)
 - v3.0: 3 phases, 6 plans -- Backend Mapping (shipped 2026-02-03)
 - v4.0: 6 phases, 18 plans -- Extension Core (shipped 2026-02-04)
-- v5.0: 5 phases, 14 plans -- Mapping Builder (phases 30-32 complete + UAT gaps, 2026-02-05)
+- v5.0: 5 phases, 14 plans -- Mapping Builder (phases 30-33 complete, 2026-02-05)
 
 ### Pending Todos
 
@@ -78,9 +80,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 33-04-PLAN.md (Capture Flow Integration) - awaiting verification checkpoint
+Stopped at: Phase 33 complete (Capture Mode) - all 4 plans executed with verification
 Resume file: None
-Next step: Verify capture mode flow, then `/gsd:plan-phase 34` (Population Mode)
+Next step: `/gsd:plan-phase 34` (Population Mode)
 
 Config:
 {
