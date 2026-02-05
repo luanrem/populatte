@@ -130,7 +130,14 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 
 ### Active
 
-(None — next milestone not yet defined)
+- [ ] Chrome Side Panel with persistent UI that stays open during page interaction
+- [ ] Toggle between popup and Side Panel modes
+- [ ] Tabs structure (Captura / Preencher) with state-aware enable/disable
+- [ ] Clickable steps list with element highlighting on page
+- [ ] Recent rows history section with status indicators and click navigation
+- [ ] Capture mode fully functional in Side Panel (persistent capture)
+- [ ] Collapsed mode (~50px) with step icon strip and hover tooltips
+- [ ] Shared component extraction (popup ↔ Side Panel reuse)
 
 ### Out of Scope
 
@@ -156,6 +163,10 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - Smart field detection — unreliable without training data
 - Multi-URL workflows — high complexity, single-form MVP first
 - AUTOPILOTO mode — auto-advance rows after successful fills, deferred
+- Settings page in Side Panel — placeholder only for v5.1
+- Popup layout changes — stays as-is except toggle button
+- Multi-tab capture coordination — single-tab capture only
+- Offline support for recentes — requires sync complexity
 
 ## Context
 
@@ -299,9 +310,18 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Navigation arrows hidden for single-row batches | Reduces UI clutter, conditional rendering | ✓ Good |
 | createPortal for DragOverlay | Prevents clipping by overflow containers | ✓ Good |
 
-## Current Milestone
+## Current Milestone: v5.1 Side Panel & UX Improvements
 
-None — v5.0 shipped. Run `/gsd:new-milestone` to define next scope.
+**Goal:** Replace popup with persistent Side Panel for capture mode and fill workflow, adding tabs, clickable steps, recent rows history, and collapsed mode.
+
+**Target features:**
+- Chrome Side Panel API integration with per-tab behavior
+- Popup ↔ Side Panel toggle
+- Captura / Preencher tabs with capture-state awareness
+- Steps list with click-to-highlight and selector validation
+- Recent rows history with expand/collapse
+- Capture mode in Side Panel (solves popup-closes-on-click problem)
+- Collapsed mode (~50px icon strip) with keyboard shortcut
 
 ---
-*Last updated: 2026-02-05 after v5.0 milestone*
+*Last updated: 2026-02-05 after v5.1 milestone started*
