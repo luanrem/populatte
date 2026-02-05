@@ -658,9 +658,11 @@ export default defineBackground(() => {
 
             case 'ELEMENT_CAPTURED':
             case 'ELEMENT_ALREADY_CAPTURED': {
-              console.log('[Background] Relay element captured to popup:', message.type);
+              console.log('[Background] Relay element captured to popup:', message.type, message.payload);
               // Broadcast to popup - content script messages don't automatically reach popup
+              // Note: Primary sync is via chrome.storage.session, this is a backup mechanism
               broadcast(message);
+              console.log('[Background] Broadcast sent for:', message.type);
               sendResponse({ success: true });
               break;
             }

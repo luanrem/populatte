@@ -231,12 +231,58 @@ export class CaptureMode {
     // Store captured element
     this.capturedElements.set(element, capturedStep);
 
-    // Send message to popup
+    console.log('[CaptureMode] Element captured, saving to storage:', capturedStep);
+
+    // Save directly to session storage for reliable popup sync
+    // This is more reliable than message passing (works even if popup was closed)
+    this.saveStepToStorage(capturedStep);
+
+    // Also send message for immediate response (backup mechanism)
     this.sendMessage({
       type: 'ELEMENT_CAPTURED',
       payload: capturedStep,
     });
   };
+
+  /**
+   * Save captured step to session storage.
+   * Popup listens for storage changes to stay in sync.
+   */
+  private saveStepToStorage(step: CapturedStep): void {
+    if (typeof chrome === 'undefined' || !chrome.storage?.session) {
+      console.warn('[CaptureMode] chrome.storage.session not available');
+      return;
+    }
+
+    chrome.storage.session.get(['capturedSteps']).then((data) => {
+      const currentSteps = (data.capturedSteps ?? []) as CapturedStep[];
+
+      // Create popup-compatible step format
+      const popupStep = {
+        id: crypto.randomUUID(),
+        stepNumber: currentSteps.length + 1,
+        action: step.action,
+        selector: step.selector.primary,
+        fallbacks: step.selector.fallbacks,
+        elementType: step.elementType,
+        elementName: step.elementName,
+        optional: false,
+        clearBefore: false,
+        pressEnter: false,
+      };
+
+      const updatedSteps = [...currentSteps, popupStep];
+
+      console.log('[CaptureMode] Saving steps to storage:', updatedSteps.length);
+
+      chrome.storage.session.set({ capturedSteps: updatedSteps }).then(
+        () => console.log('[CaptureMode] Steps saved successfully'),
+        (err) => console.error('[CaptureMode] Failed to save steps:', err)
+      );
+    }).catch((err) => {
+      console.error('[CaptureMode] Failed to read storage:', err);
+    });
+  }
 
   /**
    * Send message to popup/background.

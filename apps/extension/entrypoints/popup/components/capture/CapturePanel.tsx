@@ -56,7 +56,12 @@ export function CapturePanel({
 
   // Restore persisted state on mount
   useEffect(() => {
+    console.log('[CapturePanel] Restoring state from storage...');
     chrome.storage.session.get(['capturedSteps', 'captureMappingName']).then((data) => {
+      console.log('[CapturePanel] Restored from storage:', {
+        stepsCount: data.capturedSteps?.length ?? 0,
+        mappingName: data.captureMappingName,
+      });
       if (data.capturedSteps && data.capturedSteps.length > 0) {
         setSteps(data.capturedSteps as CaptureStep[]);
       }
@@ -67,65 +72,90 @@ export function CapturePanel({
     });
   }, []);
 
-  // Persist steps to session storage whenever they change
+  // Persist steps to session storage whenever they change (from local edits)
   useEffect(() => {
     if (!isRestoring) {
       chrome.storage.session.set({ capturedSteps: steps });
     }
   }, [steps, isRestoring]);
 
+  // Primary sync: Listen for storage changes from content script
+  // This is more reliable than message passing because:
+  // 1. Works even if popup was closed during capture
+  // 2. Single source of truth (storage)
+  // 3. No message relay complexity
+  useEffect(() => {
+    const handleStorageChange = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      areaName: string
+    ) => {
+      // Only handle session storage changes
+      if (areaName !== 'session') return;
+
+      console.log('[CapturePanel] Storage changed:', Object.keys(changes));
+
+      if (changes.capturedSteps) {
+        const newSteps = changes.capturedSteps.newValue as CaptureStep[] | undefined;
+        console.log('[CapturePanel] Steps updated via storage:', newSteps?.length ?? 0);
+
+        if (newSteps && newSteps.length > 0) {
+          // Only update if content script added a new step (length increased)
+          // This prevents infinite loops when we save our own changes
+          setSteps((currentSteps) => {
+            if (newSteps.length > currentSteps.length) {
+              console.log('[CapturePanel] New step detected via storage, updating');
+              // Get the newly added step for config
+              const latestStep = newSteps[newSteps.length - 1];
+              if (latestStep) {
+                setEditingStep(latestStep);
+                setShowConfig(true);
+                setAddingWait(false);
+              }
+              return newSteps;
+            }
+            return currentSteps;
+          });
+        }
+      }
+    };
+
+    chrome.storage.onChanged.addListener(handleStorageChange);
+    return () => chrome.storage.onChanged.removeListener(handleStorageChange);
+  }, []);
+
   // Ref to track current steps length (avoid stale closure in listener)
   const stepsLengthRef = useRef(steps.length);
   stepsLengthRef.current = steps.length;
 
-  // Listen for captured elements from content script (via background broadcast)
+  // Backup: Listen for captured elements via message passing
+  // Primary sync is via storage.onChanged (see above)
+  // This handles edge cases where storage listener might miss an update
   useEffect(() => {
     const listener = (message: { type: string; payload?: unknown }): undefined | false => {
-      console.log('[CapturePanel] Received message:', message.type);
+      console.log('[CapturePanel] Message received:', message.type);
 
       if (message.type === 'ELEMENT_CAPTURED' && message.payload) {
-        // Payload from capture-mode.ts CapturedStep
-        const payload = message.payload as {
-          stepNumber: number;
-          selector: {
-            primary: { type: 'css'; value: string };
-            fallbacks?: Array<{ type: 'css'; value: string }>;
-          };
-          action: 'fill' | 'click';
-          elementType: string;
-          elementName: string;
-        };
+        console.log('[CapturePanel] ELEMENT_CAPTURED via message (backup path)');
 
-        console.log('[CapturePanel] Processing ELEMENT_CAPTURED:', payload);
+        // The primary storage sync should handle this, but we check
+        // if we need to refresh from storage as a backup
+        chrome.storage.session.get(['capturedSteps']).then((data) => {
+          const storedSteps = data.capturedSteps as CaptureStep[] | undefined;
+          if (storedSteps && storedSteps.length > stepsLengthRef.current) {
+            console.log('[CapturePanel] Message triggered storage refresh:', storedSteps.length);
+            setSteps(storedSteps);
 
-        // Create new step from captured element
-        // Use ref for steps length to avoid stale closure
-        const newStep: CaptureStep = {
-          id: crypto.randomUUID(),
-          stepNumber: stepsLengthRef.current + 1,
-          action: payload.action,
-          selector: payload.selector.primary,
-          fallbacks: payload.selector.fallbacks,
-          elementType: payload.elementType,
-          elementName: payload.elementName,
-          optional: false,
-          clearBefore: false,
-          pressEnter: false,
-        };
-
-        console.log('[CapturePanel] Adding new step:', newStep);
-
-        setSteps((prev) => {
-          const updated = [...prev, newStep];
-          // Persist immediately
-          chrome.storage.session.set({ capturedSteps: updated });
-          return updated;
+            // Open config for the latest step
+            const latestStep = storedSteps[storedSteps.length - 1];
+            if (latestStep) {
+              setEditingStep(latestStep);
+              setShowConfig(true);
+              setAddingWait(false);
+            }
+          } else {
+            console.log('[CapturePanel] Storage already up to date or no new steps');
+          }
         });
-
-        // Auto-open config for new step
-        setEditingStep(newStep);
-        setShowConfig(true);
-        setAddingWait(false);
 
         return undefined;
       }
