@@ -207,7 +207,7 @@ export function StepConfig({
             </button>
           </div>
 
-          {/* Column dropdown */}
+          {/* Column dropdown - ensure it doesn't affect parent layout */}
           {sourceMode === 'column' && (
             <div className="relative">
               <div className="relative">
@@ -220,29 +220,35 @@ export function StepConfig({
                     setShowColumnDropdown(true);
                   }}
                   onFocus={() => setShowColumnDropdown(true)}
+                  onBlur={() => {
+                    // Delay hiding to allow click on dropdown items
+                    setTimeout(() => setShowColumnDropdown(false), 200);
+                  }}
                   placeholder="Search columns..."
                   className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              {showColumnDropdown && filteredColumns.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-40 overflow-y-auto">
-                  {filteredColumns.map((column) => (
-                    <button
-                      key={column}
-                      type="button"
-                      onClick={() => handleColumnSelect(column)}
-                      className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100 ${
-                        column === sourceFieldKey ? 'bg-blue-50 text-blue-700' : ''
-                      }`}
-                    >
-                      {column}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {showColumnDropdown && filteredColumns.length === 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg p-3">
-                  <p className="text-sm text-gray-500">No columns found</p>
+              {showColumnDropdown && (
+                <div className="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                  {filteredColumns.length > 0 ? (
+                    filteredColumns.map((column) => (
+                      <button
+                        key={column}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
+                        onClick={() => handleColumnSelect(column)}
+                        className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100 ${
+                          column === sourceFieldKey ? 'bg-blue-50 text-blue-700' : ''
+                        }`}
+                      >
+                        {column}
+                      </button>
+                    ))
+                  ) : (
+                    <p className="p-3 text-sm text-gray-500">
+                      {columns.length === 0 ? 'No columns available' : 'No matching columns'}
+                    </p>
+                  )}
                 </div>
               )}
             </div>

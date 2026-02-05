@@ -19,6 +19,8 @@ interface CapturePanelProps {
   targetUrl: string;
   /** Available columns from the selected batch */
   columns: string[];
+  /** Project ID for dashboard link */
+  projectId?: string | null;
   /** Callback when mapping is saved - returns created mapping ID */
   onSave: (name: string, steps: CaptureStep[]) => Promise<{ id: string }>;
   /** Callback to cancel capture mode */
@@ -37,6 +39,7 @@ interface CapturePanelProps {
 export function CapturePanel({
   targetUrl,
   columns,
+  projectId,
   onSave,
   onCancel,
   onRemoveStep,
@@ -269,6 +272,11 @@ export function CapturePanel({
 
     try {
       const result = await onSave(mappingName.trim(), steps);
+      const dashboardUrl = projectId
+        ? `${DASHBOARD_URL}/mappings/${result.id}?projectId=${projectId}`
+        : `${DASHBOARD_URL}/mappings/${result.id}`;
+      console.log('[CapturePanel] Mapping saved, ID:', result.id);
+      console.log('[CapturePanel] Dashboard URL:', dashboardUrl);
       setSavedMapping({ id: result.id, name: mappingName.trim() });
     } catch (err) {
       console.error('[CapturePanel] Save error:', err);
@@ -318,7 +326,10 @@ export function CapturePanel({
         {/* Action buttons */}
         <div className="flex flex-col gap-2 pt-3 border-t">
           <a
-            href={`${DASHBOARD_URL}/mappings/${savedMapping.id}`}
+            href={projectId
+              ? `${DASHBOARD_URL}/mappings/${savedMapping.id}?projectId=${projectId}`
+              : `${DASHBOARD_URL}/mappings/${savedMapping.id}`
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="w-full p-3 bg-blue-100 hover:bg-blue-200 rounded-lg border border-blue-300 text-blue-800 font-medium text-center flex items-center justify-center gap-2"

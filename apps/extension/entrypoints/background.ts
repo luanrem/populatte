@@ -62,9 +62,11 @@ export default defineBackground(() => {
       // Get current tab URL
       const tab = await browser.tabs.get(tabId);
       const currentUrl = tab.url;
+      console.log('[Background] checkMappingForTab: tabId=', tabId, 'url=', currentUrl);
 
       // Skip if no URL or special pages
       if (!currentUrl || currentUrl.startsWith('chrome://') || currentUrl.startsWith('chrome-extension://')) {
+        console.log('[Background] checkMappingForTab: Skipping special URL');
         await clearMappingState();
         return;
       }
@@ -72,20 +74,26 @@ export default defineBackground(() => {
       // Get selected projectId from storage
       const selection = await storage.selection.getSelection();
       const projectId = selection.projectId;
+      console.log('[Background] checkMappingForTab: projectId=', projectId);
 
       // If no project selected, clear badge and return
       if (!projectId) {
+        console.log('[Background] checkMappingForTab: No project selected');
         await clearMappingState();
         return;
       }
 
       // Fetch mappings matching the current URL
+      console.log('[Background] checkMappingForTab: Fetching mappings for URL...');
       const mappings = await fetchMappingsByUrl(projectId, currentUrl);
+      console.log('[Background] checkMappingForTab: Found mappings:', mappings.length, mappings.map((m) => ({ id: m.id, name: m.name, stepCount: m.stepCount })));
 
       // Filter to mappings with stepCount > 0 (no badge for empty mappings)
       const validMappings = mappings.filter((m) => m.stepCount > 0);
+      console.log('[Background] checkMappingForTab: Valid mappings (stepCount > 0):', validMappings.length);
 
       if (validMappings.length === 0) {
+        console.log('[Background] checkMappingForTab: No valid mappings found');
         await clearMappingState();
         return;
       }
@@ -208,11 +216,14 @@ export default defineBackground(() => {
             case 'GET_STATE': {
               // Refresh mapping detection before returning state
               // This ensures hasMapping is accurate after saving a new mapping
+              console.log('[Background] GET_STATE: Refreshing mapping detection...');
               const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
               if (activeTab?.id !== undefined) {
+                console.log('[Background] GET_STATE: Checking mapping for tab:', activeTab.id, activeTab.url);
                 await checkMappingForTab(activeTab.id);
               }
               const state = await buildState();
+              console.log('[Background] GET_STATE: Returning state, hasMapping:', state.hasMapping, 'mappingId:', state.mappingId, 'availableMappings:', state.availableMappings.length);
               sendResponse({ success: true, data: state });
               break;
             }
