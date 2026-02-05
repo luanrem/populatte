@@ -119,6 +119,46 @@ export class CaptureMode {
   }
 
   /**
+   * Highlight a step by its step number.
+   * Scrolls the element into view and briefly highlights it.
+   *
+   * @param stepNumber - The step number to highlight
+   */
+  public highlightStep(stepNumber: number): void {
+    // Find element with matching step number
+    let elementToHighlight: HTMLElement | undefined;
+
+    for (const [element, step] of this.capturedElements.entries()) {
+      if (step.stepNumber === stepNumber) {
+        elementToHighlight = element;
+        break;
+      }
+    }
+
+    if (elementToHighlight) {
+      const el = elementToHighlight;
+
+      // Scroll into view
+      el.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+
+      // Flash highlight effect
+      const originalOutline = el.style.outline;
+      const originalOutlineOffset = el.style.outlineOffset;
+
+      el.style.outline = '3px solid #f59e0b'; // Amber color
+      el.style.outlineOffset = '2px';
+
+      setTimeout(() => {
+        el.style.outline = originalOutline;
+        el.style.outlineOffset = originalOutlineOffset;
+      }, 1500);
+    }
+  }
+
+  /**
    * Check if an element has already been captured.
    *
    * @param element - The HTML element to check

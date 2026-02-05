@@ -1,7 +1,17 @@
-import type { FillExecuteMessage, MonitorSuccessMessage, PingResponse } from '../src/types';
+import type {
+  FillExecuteMessage,
+  MonitorSuccessMessage,
+  PingResponse,
+  CaptureHighlightMessage,
+  CaptureRemoveStepMessage,
+} from '../src/types';
 
 import { executeSteps } from '../src/content';
 import { startSuccessMonitor, stopSuccessMonitor } from '../src/content/success-monitor';
+import { CaptureMode } from '../src/content/capture';
+
+// Capture mode instance (persists across messages)
+let captureMode: CaptureMode | null = null;
 
 export default defineContentScript({
   matches: ['<all_urls>'],
@@ -71,6 +81,57 @@ export default defineContentScript({
       if (message.type === 'STOP_MONITOR') {
         console.log('[Populatte] Stopping success monitor');
         stopSuccessMonitor();
+        return Promise.resolve({ success: true });
+      }
+
+      // Capture mode start
+      if (message.type === 'CAPTURE_START') {
+        console.log('[Populatte] Starting capture mode');
+
+        // Clean up existing capture mode if any
+        if (captureMode) {
+          captureMode.deactivate();
+        }
+
+        captureMode = new CaptureMode();
+        captureMode.activate();
+
+        return Promise.resolve({ success: true });
+      }
+
+      // Capture mode stop
+      if (message.type === 'CAPTURE_STOP') {
+        console.log('[Populatte] Stopping capture mode');
+
+        if (captureMode) {
+          captureMode.deactivate();
+          captureMode = null;
+        }
+
+        return Promise.resolve({ success: true });
+      }
+
+      // Highlight captured element
+      if (message.type === 'CAPTURE_HIGHLIGHT') {
+        const msg = message as CaptureHighlightMessage;
+        console.log('[Populatte] Highlight step:', msg.payload.stepNumber);
+
+        if (captureMode) {
+          captureMode.highlightStep(msg.payload.stepNumber);
+        }
+
+        return Promise.resolve({ success: true });
+      }
+
+      // Remove captured step
+      if (message.type === 'CAPTURE_REMOVE_STEP') {
+        const msg = message as CaptureRemoveStepMessage;
+        console.log('[Populatte] Remove step:', msg.payload.stepNumber);
+
+        if (captureMode) {
+          captureMode.removeStep(msg.payload.stepNumber);
+        }
+
         return Promise.resolve({ success: true });
       }
 
