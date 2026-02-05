@@ -107,10 +107,11 @@ Plans:
   1. Popup shows primary identifier value below row number
   2. Popup shows secondary identifier when configured
   3. Row data fetch includes identifier values from API
-**Plans**: 1 plan
+**Plans**: 2 plans (1 original + 1 gap closure)
 
 Plans:
 - [x] 34-01-PLAN.md — Identifier display in popup with copy-to-clipboard and truncation
+- [ ] 34-02-PLAN.md — Gap closure: add standalone Prev/Next navigation arrows to RowIndicator
 
 ## Progress
 
@@ -120,7 +121,7 @@ Plans:
 | 31. Dashboard Management | v5.0 | 7/7 | ✓ Complete | 2026-02-04 |
 | 32. Dashboard Mapping Editor | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
 | 33. Extension Capture Mode | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
-| 34. Extension Identifier Integration | v5.0 | 1/1 | ✓ Complete | 2026-02-05 |
+| 34. Extension Identifier Integration | v5.0 | 1/2 | Gap closure | 2026-02-05 |
 
 ---
 *Created: 2026-02-04*
