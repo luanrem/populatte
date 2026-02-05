@@ -13,19 +13,20 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "@populatte/types": "*",
+    "css-selector-generator": "^3.8.0",
     "lucide-react": "0.555.0",
-    "@populatte/types": "*"
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "wxt": "^0.20.13",
-    "@wxt-dev/module-react": "^1.1.5",
+    "@tailwindcss/vite": "^4",
     "@types/chrome": "^0.0.287",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5",
+    "@wxt-dev/module-react": "^1.1.5",
     "tailwindcss": "^4",
-    "@tailwindcss/vite": "^4"
+    "typescript": "^5",
+    "wxt": "^0.20.13"
   }
 }
