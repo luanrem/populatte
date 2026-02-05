@@ -40,25 +40,25 @@ Requirements for v5.0 Mapping Builder milestone. Each maps to roadmap phases.
 
 ### Dashboard Mapping Edit
 
-- [ ] **EDIT-01**: User can edit mapping name
-- [ ] **EDIT-02**: User can edit target URL
-- [ ] **EDIT-03**: User can toggle active/inactive status
-- [ ] **EDIT-04**: User can configure success trigger (type dropdown + value)
-- [ ] **EDIT-05**: Page displays steps with action icon, selector, source
-- [ ] **EDIT-06**: User can drag-and-drop to reorder steps
-- [ ] **EDIT-07**: User can delete step from mapping
-- [ ] **EDIT-08**: Edit step button opens modal
-- [ ] **EDIT-09**: User can add step manually via button
+- [x] **EDIT-01**: User can edit mapping name
+- [x] **EDIT-02**: User can edit target URL
+- [x] **EDIT-03**: User can toggle active/inactive status
+- [x] **EDIT-04**: User can configure success trigger (type dropdown + value)
+- [x] **EDIT-05**: Page displays steps with action icon, selector, source
+- [x] **EDIT-06**: User can drag-and-drop to reorder steps
+- [x] **EDIT-07**: User can delete step from mapping
+- [x] **EDIT-08**: Edit step button opens modal
+- [x] **EDIT-09**: User can add step manually via button
 
 ### Dashboard Step Edit Modal
 
-- [ ] **STEP-01**: User can select action type (fill/click/wait)
-- [ ] **STEP-02**: User can edit primary selector (type dropdown + value input)
-- [ ] **STEP-03**: User can add/remove fallback selectors (max 5)
-- [ ] **STEP-04**: User can select source column from Excel columns dropdown (for fill)
-- [ ] **STEP-05**: User can set fixed value as alternative to column
-- [ ] **STEP-06**: User can toggle options (optional, clearBefore, pressEnter)
-- [ ] **STEP-07**: Wait action shows duration input
+- [x] **STEP-01**: User can select action type (fill/click/wait)
+- [x] **STEP-02**: User can edit primary selector (type dropdown + value input)
+- [x] **STEP-03**: User can add/remove fallback selectors (max 5)
+- [x] **STEP-04**: User can select source column from Excel columns dropdown (for fill)
+- [x] **STEP-05**: User can set fixed value as alternative to column
+- [x] **STEP-06**: User can toggle options (optional, clearBefore, pressEnter)
+- [x] **STEP-07**: Wait action shows duration input
 
 ### Extension Capture Mode
 
@@ -156,22 +156,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MAP-03 | 31 | Complete |
 | MAP-04 | 31 | Complete |
 | MAP-05 | 31 | Complete |
-| EDIT-01 | 32 | Pending |
-| EDIT-02 | 32 | Pending |
-| EDIT-03 | 32 | Pending |
-| EDIT-04 | 32 | Pending |
-| EDIT-05 | 32 | Pending |
-| EDIT-06 | 32 | Pending |
-| EDIT-07 | 32 | Pending |
-| EDIT-08 | 32 | Pending |
-| EDIT-09 | 32 | Pending |
-| STEP-01 | 32 | Pending |
-| STEP-02 | 32 | Pending |
-| STEP-03 | 32 | Pending |
-| STEP-04 | 32 | Pending |
-| STEP-05 | 32 | Pending |
-| STEP-06 | 32 | Pending |
-| STEP-07 | 32 | Pending |
+| EDIT-01 | 32 | Complete |
+| EDIT-02 | 32 | Complete |
+| EDIT-03 | 32 | Complete |
+| EDIT-04 | 32 | Complete |
+| EDIT-05 | 32 | Complete |
+| EDIT-06 | 32 | Complete |
+| EDIT-07 | 32 | Complete |
+| EDIT-08 | 32 | Complete |
+| EDIT-09 | 32 | Complete |
+| STEP-01 | 32 | Complete |
+| STEP-02 | 32 | Complete |
+| STEP-03 | 32 | Complete |
+| STEP-04 | 32 | Complete |
+| STEP-05 | 32 | Complete |
+| STEP-06 | 32 | Complete |
+| STEP-07 | 32 | Complete |
 | CAP-01 | 33 | Pending |
 | CAP-02 | 33 | Pending |
 | CAP-03 | 33 | Pending |
@@ -203,4 +203,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-04*
-*Last updated: 2026-02-04 after phase 31 completion*
+*Last updated: 2026-02-04 after phase 32 completion*
