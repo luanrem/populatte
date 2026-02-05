@@ -192,6 +192,14 @@ export interface ExtensionState {
   hasMapping: boolean;
   /** Available mappings for selection when multiple match */
   availableMappings: Array<{ id: string; name: string }>;
+  /** Primary identifier field key configured for batch */
+  identifierFieldKey: string | null;
+  /** Secondary identifier field key configured for batch */
+  secondaryFieldKey: string | null;
+  /** Primary identifier value for current row */
+  identifierPrimary: string | null;
+  /** Secondary identifier value for current row */
+  identifierSecondary: string | null;
 }
 
 export type FillStatus = 'idle' | 'pending' | 'filling' | 'success' | 'partial' | 'failed';

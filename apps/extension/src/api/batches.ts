@@ -27,6 +27,8 @@ export interface BatchDetail {
   mode: 'LIST_MODE' | 'PROFILE_MODE';
   totalRows: number;
   columnMetadata: ColumnMetadata[];
+  identifierFieldKey: string | null;
+  secondaryFieldKey: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -132,6 +134,8 @@ export async function fetchBatchDetail(
       header: col.header,
       index: col.index,
     })),
+    identifierFieldKey: data.identifierFieldKey ?? null,
+    secondaryFieldKey: data.secondaryFieldKey ?? null,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   };
