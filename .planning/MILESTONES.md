@@ -1,5 +1,33 @@
 # Project Milestones: Populatte
 
+## v5.0 Mapping Builder (Shipped: 2026-02-05)
+
+**Delivered:** Visual mapping creation via extension capture mode, full dashboard mapping/step management with drag-and-drop, batch identifier configuration for meaningful row labels, and project/batch CRUD operations with cascade soft-delete.
+
+**Phases completed:** 30-34 (20 plans total)
+
+**Key accomplishments:**
+
+- Backend foundation with project/batch CRUD, cascade soft-delete, and batch identifier field configuration
+- Dashboard management UI with inline editing, batch settings modal, and mappings list with CRUD operations
+- Dashboard mapping editor with step management, drag-and-drop reorder, step edit modal, and unsaved changes guard
+- Extension capture mode with click-to-capture selectors, element highlighting, storage-based step sync, and save flow
+- Extension identifier display with row labels, copy-to-clipboard, and standalone prev/next navigation arrows
+- 10 UAT gaps found and closed across 3 phases via dedicated gap closure plans
+
+**Stats:**
+
+- 141 files changed (+21,290 / -211 lines)
+- 5 phases, 20 plans, 52 requirements
+- 111 commits
+- 2 days (2026-02-04 → 2026-02-05)
+
+**Git range:** `docs(30)` → `test(34)`
+
+**What's next:** TBD — `/gsd:new-milestone` to define scope
+
+---
+
 ## v4.0 Extension Core (Shipped: 2026-02-04)
 
 **Delivered:** Chrome extension MVP with COPILOTO mode — connection code authentication, popup UI for project/batch/row selection, content script DOM manipulation with CSS/XPath selectors, and complete fill cycle integration with mapping detection, step execution, success monitoring, and row status persistence.

@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, field-level analytics with type inference, and mapping/step CRUD for form-filling recipes. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, and field exploration with card-based inventory and value browsing. The Chrome extension (WXT + Manifest V3) enables COPILOTO mode: connection code auth, project/batch selection, mapping detection, DOM-based form filling with CSS/XPath selectors, and row status tracking.
+A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, field-level analytics with type inference, mapping/step CRUD for form-filling recipes, and batch identifier configuration. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, field exploration with card-based inventory, and full mapping/step management with drag-and-drop editing. The Chrome extension (WXT + Manifest V3) supports COPILOTO mode (manual fill with row navigation) and capture mode (click-to-capture visual mapping creation), with connection code auth, project/batch selection, mapping detection, DOM-based form filling with CSS/XPath selectors, row status tracking, and meaningful row identifiers.
 
 ## Core Value
 
@@ -117,17 +117,20 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - ✓ Popup shows fill progress (current step, status) — v4.0
 - ✓ Error state shows retry option for failed fills — v4.0
 - ✓ User can manually advance to next row after verification (COPILOTO mode) — v4.0
+- ✓ Project/batch update and soft-delete CRUD with cascade deletion — v5.0
+- ✓ Batch identifier field configuration (primary + secondary) with field inventory validation — v5.0
+- ✓ Dashboard inline editing for projects and batches with batch settings modal — v5.0
+- ✓ Dashboard mappings list with CRUD operations and instruction modal — v5.0
+- ✓ Dashboard mapping editor with properties form, unsaved changes guard, and step management — v5.0
+- ✓ Dashboard step edit modal with action type, selectors, source/fixed value, and options — v5.0
+- ✓ Dashboard drag-and-drop step reorder with portal overlay — v5.0
+- ✓ Extension capture mode with click-to-capture, element highlighting, and storage-based step sync — v5.0
+- ✓ Extension mapping save flow with success state and dashboard link — v5.0
+- ✓ Extension row identifier display with copy-to-clipboard and prev/next navigation — v5.0
 
 ### Active
 
-**v5.0 Mapping Builder**
-
-- [ ] Backend CRUD gaps for projects and batches
-- [ ] Batch identifier fields for row identification in extension
-- [ ] Dashboard mapping UI (list, edit, delete)
-- [ ] Dashboard step management (edit modal, reorder, fallbacks)
-- [ ] Extension capture mode (click-to-capture selectors)
-- [ ] Extension identifier display (show who is being filled)
+(None — next milestone not yet defined)
 
 ### Out of Scope
 
@@ -143,18 +146,21 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - Domain-specific type detection (CPF, CNPJ, EMAIL, PHONE) — deferred to future type enhancement milestone
 - Completeness heatmap, sort/filter controls, bulk copy for field inventory — UI enhancements deferred
 - GIN index on JSONB data column — performance optimization deferred until needed
-- Mapping/step frontend UI — future milestone after backend mapping is solid
-- Step execution engine — Chrome extension responsibility, not API
-- CSS selector validation — extension validates selectors against live DOM
+- CSS selector validation in API — extension validates selectors against live DOM
 - Redis caching for mappings — optimization deferred
 - Mapping versioning/history — future enhancement
 - Mapping import/export — future enhancement
 - Mapping duplication/cloning — future enhancement
+- Auto-capture fallback selectors — only primary selector in capture; fallbacks added via dashboard
+- Test mapping in dashboard — test via extension only, validates real DOM
+- Smart field detection — unreliable without training data
+- Multi-URL workflows — high complexity, single-form MVP first
+- AUTOPILOTO mode — auto-advance rows after successful fills, deferred
 
 ## Context
 
-**Shipped v4.0** with Chrome extension MVP (~2,658 LOC TypeScript in extension, 145 files changed, +40,378 lines).
-Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, react-intersection-observer, shadcn/ui, **WXT 0.20.13**, Manifest V3, React 19 (extension), jose (JWT).
+**Shipped v5.0** with visual mapping builder (141 files changed, +21,290 lines, 20 plans across 5 phases).
+Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, react-intersection-observer, shadcn/ui, dnd-kit, **WXT 0.20.13**, Manifest V3, React 19 (extension), jose (JWT).
 
 **Architecture patterns established:**
 - Compare-first sync: Guard fetches stored user, compares fields, writes only on mismatch
@@ -282,16 +288,20 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | 100ms URL polling in content script | Navigation events unreliable in content scripts | ✓ Good |
 | MutationObserver for success triggers | Efficient DOM watching for text_appears and element_disappears | ✓ Good |
 | Defensive undefined check in sendMessage | Content script may not respond, prevents crash in FILL_START | ✓ Good |
+| Cascade soft-delete without transaction | Idempotent soft-delete is retryable; no atomicity needed for MVP | ✓ Good |
+| Response enrichment in use cases | Use cases inject repositories to add computed data (totalRows) | ✓ Good |
+| Config replaces list view for batch settings | Modal-free, simpler navigation than batch detail tabs | ✓ Good |
+| dnd-kit in extension (same as web) | Consistent DnD behavior across apps | ✓ Good |
+| Storage-based step sync in capture | Popup cannot receive messages when closed; chrome.storage.local | ✓ Good |
+| Background as message router | Popup cannot directly message content scripts | ✓ Good |
+| Module-level captureMode instance | Persists across messages, cleaned up on CAPTURE_STOP | ✓ Good |
+| Store identifier keys at batch selection | Fetch once at BATCH_SELECT, use for all rows | ✓ Good |
+| Navigation arrows hidden for single-row batches | Reduces UI clutter, conditional rendering | ✓ Good |
+| createPortal for DragOverlay | Prevents clipping by overflow containers | ✓ Good |
 
-## Current Milestone: v5.0 Mapping Builder
+## Current Milestone
 
-**Goal:** Enable users to create mappings visually by clicking form fields in the extension, edit them in the dashboard, and see meaningful row identifiers while filling.
-
-**Target features:**
-- Extension capture mode (click-to-capture selectors)
-- Dashboard mapping/step management UI
-- Batch identifier configuration
-- Project/batch edit and delete operations
+None — v5.0 shipped. Run `/gsd:new-milestone` to define next scope.
 
 ---
-*Last updated: 2026-02-04 after v5.0 milestone started*
+*Last updated: 2026-02-05 after v5.0 milestone*

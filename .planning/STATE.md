@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-04)
+See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** v5.0 Mapping Builder COMPLETE — All gaps closed, ready for milestone audit
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 34 of 34 (Extension Identifier Integration)
-Plan: 2 of 2 (Row Navigation Arrows)
-Status: MILESTONE v5.0 COMPLETE (all gaps closed)
-Last activity: 2026-02-05 - Completed 34-02 gap closure, phase 34 verified
+Phase: 34 of 34 (last phase of v5.0)
+Plan: N/A — milestone complete
+Status: v5.0 SHIPPED — ready for next milestone
+Last activity: 2026-02-05 - v5.0 milestone archived
 
-Progress: [██████████] 100% (2/2 plans)
+Progress: [██████████] 100% (v5.0 complete)
 
 ## Performance Metrics
 
@@ -26,33 +26,15 @@ Progress: [██████████] 100% (2/2 plans)
 - v2.3: 7 plans, avg 2m 46s, total ~20m 30s
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 - v4.0: 18 plans, avg 2m 48s, total ~53min
-- v5.0 (complete): 10 plans, avg ~2m 40s, total ~27min (phases 30-31)
-- v5.0 (phase 33): 4 plans, avg ~9min, total ~35min (includes checkpoint bug fixes)
-- v5.0 (phase 34): 2 plans, avg 2m 31s, total ~5min (identifier integration + gap closure)
+- v5.0: 20 plans, 5 phases, 2 days (2026-02-04 → 2026-02-05)
 
-*Updated after each plan completion*
+*Updated after each milestone*
 
 ## Accumulated Context
 
 ### Decisions
 
 See PROJECT.md Key Decisions table for full log with outcomes.
-
-| Decision | Rationale | Date |
-|----------|-----------|------|
-| Use dnd-kit in extension | Same library as web app for consistent DnD behavior | 2026-02-05 |
-| PointerSensor 150ms delay | Distinguish drag from click on touch/mouse | 2026-02-05 |
-| Config replaces list view | Modal-free, simpler navigation | 2026-02-05 |
-| Module-level captureMode instance | Persists across messages, cleaned up on CAPTURE_STOP | 2026-02-05 |
-| Background as message router | Popup cannot directly message content scripts | 2026-02-05 |
-| Storage-based step sync | Popup cannot receive messages when closed, use chrome.storage.local | 2026-02-05 |
-| Background handles storage writes | Content scripts have unreliable storage access in some contexts | 2026-02-05 |
-| Store batch identifier keys at selection | Fetch once at BATCH_SELECT, use for all rows | 2026-02-05 |
-| Extract identifier values in buildState | Use field keys + row data to populate state | 2026-02-05 |
-| Entire row block clickable for copy | No separate button, unified click target | 2026-02-05 |
-| Navigation arrows only when rowTotal > 1 | Reduces UI clutter for single-row batches | 2026-02-05 |
-| Reuse handleNext for arrow and fill buttons | Both send same ROW_NEXT message | 2026-02-05 |
-| Use e.stopPropagation for nested buttons | Prevents parent click handler from firing | 2026-02-05 |
 
 ### Roadmap Evolution
 
@@ -63,7 +45,7 @@ See PROJECT.md Key Decisions table for full log with outcomes.
 - v2.3: 4 phases, 7 plans -- Field Inventory (shipped 2026-02-02)
 - v3.0: 3 phases, 6 plans -- Backend Mapping (shipped 2026-02-03)
 - v4.0: 6 phases, 18 plans -- Extension Core (shipped 2026-02-04)
-- v5.0: 5 phases, 19 plans -- Mapping Builder (shipped 2026-02-05)
+- v5.0: 5 phases, 20 plans -- Mapping Builder (shipped 2026-02-05)
 
 ### Pending Todos
 
@@ -87,9 +69,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 34-02-PLAN.md (gap closure - row navigation arrows)
+Stopped at: v5.0 milestone archived
 Resume file: None
-Next step: `/gsd:audit-milestone` (verify requirements, cross-phase integration, E2E flows)
+Next step: `/gsd:new-milestone` (define next milestone scope)
 
 Config:
 {
