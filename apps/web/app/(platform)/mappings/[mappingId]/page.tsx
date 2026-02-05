@@ -78,15 +78,18 @@ export default function MappingEditorPage({
   // Reset form when mapping data loads
   useEffect(() => {
     if (mapping) {
-      form.reset({
-        name: mapping.name,
-        targetUrl: mapping.targetUrl,
-        isActive: mapping.isActive,
-        successTrigger: mapping.successTrigger,
-        successConfig: mapping.successConfig,
-      });
+      form.reset(
+        {
+          name: mapping.name,
+          targetUrl: mapping.targetUrl,
+          isActive: mapping.isActive,
+          successTrigger: mapping.successTrigger,
+          successConfig: mapping.successConfig,
+        },
+        { keepDirty: false, keepDirtyValues: false },
+      );
     }
-  }, [mapping, form]);
+  }, [mapping, form.reset]);
 
   const handleStepsChange = (orderedStepIds: string[]) => {
     reorderSteps.mutate(orderedStepIds);
@@ -211,13 +214,15 @@ export default function MappingEditorPage({
           </form>
         </Form>
 
-        <StepsSection
-          steps={mapping.steps}
-          projectId={projectId}
-          mappingId={mappingId}
-          onStepsChange={handleStepsChange}
-          excelColumns={[]}
-        />
+        <div className="mt-8">
+          <StepsSection
+            steps={mapping.steps}
+            projectId={projectId}
+            mappingId={mappingId}
+            onStepsChange={handleStepsChange}
+            excelColumns={[]}
+          />
+        </div>
       </div>
     </main>
   );

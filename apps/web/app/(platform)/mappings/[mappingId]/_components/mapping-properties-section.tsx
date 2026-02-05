@@ -93,24 +93,7 @@ export function MappingPropertiesSection({
                   </FormItem>
                 )}
               />
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
 
-      {/* Behavior Card */}
-      <Collapsible defaultOpen>
-        <Card className="py-0">
-          <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-accent/50 py-4 transition-colors">
-              <CardTitle className="flex items-center justify-between text-base">
-                Comportamento
-                <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
-              </CardTitle>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="pt-0 pb-6 space-y-4">
               {/* Active Toggle */}
               <FormField
                 control={control}
@@ -132,7 +115,24 @@ export function MappingPropertiesSection({
                   </FormItem>
                 )}
               />
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
+      {/* Behavior Card */}
+      <Collapsible defaultOpen>
+        <Card className="py-0">
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-accent/50 py-4 transition-colors">
+              <CardTitle className="flex items-center justify-between text-base">
+                Comportamento
+                <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
+              </CardTitle>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="pt-0 pb-6 space-y-4">
               {/* Success Trigger Select */}
               <FormField
                 control={control}
@@ -142,9 +142,9 @@ export function MappingPropertiesSection({
                     <FormLabel>Gatilho de Sucesso</FormLabel>
                     <Select
                       onValueChange={(value) =>
-                        field.onChange(value === '' ? null : value)
+                        field.onChange(value === '__none__' ? null : value)
                       }
-                      value={field.value ?? ''}
+                      value={field.value ?? '__none__'}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -152,7 +152,7 @@ export function MappingPropertiesSection({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Nenhum</SelectItem>
+                        <SelectItem value="__none__">Nenhum</SelectItem>
                         <SelectItem value="url_change">
                           Mudanca de URL
                         </SelectItem>
