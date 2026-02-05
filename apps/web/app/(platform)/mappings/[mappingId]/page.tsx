@@ -76,6 +76,7 @@ export default function MappingEditorPage({
   });
 
   // Reset form when mapping data loads
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (mapping) {
       form.reset(
@@ -89,7 +90,7 @@ export default function MappingEditorPage({
         { keepDirty: false, keepDirtyValues: false },
       );
     }
-  }, [mapping, form.reset]);
+  }, [mapping]);
 
   const handleStepsChange = (orderedStepIds: string[]) => {
     reorderSteps.mutate(orderedStepIds);
@@ -107,7 +108,7 @@ export default function MappingEditorPage({
           successConfig: data.successConfig,
         },
       });
-      form.reset(data);
+      form.reset(data, { keepDirty: false });
       toast.success('Mapeamento salvo');
     } catch {
       toast.error('Erro ao salvar mapeamento');
