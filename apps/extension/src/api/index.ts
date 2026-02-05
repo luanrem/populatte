@@ -12,7 +12,8 @@
 export { API_BASE_URL, fetchWithAuth } from './client';
 export { exchangeCode, getMe } from './auth';
 export { fetchProjects } from './projects';
-export { fetchBatches } from './batches';
+export { fetchBatches, fetchBatchDetail } from './batches';
+export type { BatchDetail } from './batches';
 export { fetchMappingsByUrl, fetchMappingWithSteps } from './mappings';
 export type { MappingListItem, MappingWithSteps, MappingStep } from './mappings';
 export { fetchRowByIndex, updateRowStatus } from './rows';

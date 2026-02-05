@@ -1,6 +1,6 @@
 import { storage, initializeStorage } from '../src/storage';
 import { broadcast } from '../src/messaging';
-import { exchangeCode, getMe, fetchProjects, fetchBatches, fetchMappingsByUrl, fetchMappingWithSteps, fetchRowByIndex, updateRowStatus } from '../src/api';
+import { exchangeCode, getMe, fetchProjects, fetchBatches, fetchMappingsByUrl, fetchMappingWithSteps, fetchRowByIndex, updateRowStatus, fetchBatchDetail } from '../src/api';
 import type { ExtensionState, PopupToBackgroundMessage, ContentToBackgroundMessage, FillStatus, SuccessDetectedMessage } from '../src/types';
 
 export default defineBackground(() => {
@@ -23,6 +23,13 @@ export default defineBackground(() => {
   // Module-level state for fill tracking
   // ============================================================================
   let currentFillStatus: FillStatus = 'idle';
+
+  // ============================================================================
+  // Module-level state for batch identifiers
+  // ============================================================================
+  let batchIdentifierFieldKey: string | null = null;
+  let batchSecondaryFieldKey: string | null = null;
+  let currentRowData: Record<string, unknown> | null = null;
 
   // ============================================================================
   // Success monitoring helpers
@@ -175,6 +182,14 @@ export default defineBackground(() => {
       storage.selection.getSelection(),
     ]);
 
+    // Extract identifier values from current row data
+    const identifierPrimary = batchIdentifierFieldKey && currentRowData?.[batchIdentifierFieldKey]
+      ? String(currentRowData[batchIdentifierFieldKey])
+      : null;
+    const identifierSecondary = batchSecondaryFieldKey && currentRowData?.[batchSecondaryFieldKey]
+      ? String(currentRowData[batchSecondaryFieldKey])
+      : null;
+
     return {
       isAuthenticated: auth.token !== null && !(await storage.auth.isExpired()),
       userEmail: auth.userEmail,
@@ -188,6 +203,11 @@ export default defineBackground(() => {
       mappingName: currentMappingName,
       hasMapping,
       availableMappings: currentMappingMatches.map((m) => ({ id: m.id, name: m.name })),
+      // Identifier state
+      identifierFieldKey: batchIdentifierFieldKey,
+      secondaryFieldKey: batchSecondaryFieldKey,
+      identifierPrimary,
+      identifierSecondary,
     };
   }
 
@@ -329,6 +349,33 @@ export default defineBackground(() => {
             case 'BATCH_SELECT': {
               const { batchId, rowTotal } = message.payload;
               await storage.selection.setSelectedBatch(batchId, rowTotal);
+
+              // Fetch batch detail to get identifier field keys
+              try {
+                const selection = await storage.selection.getSelection();
+                if (selection.projectId) {
+                  const batch = await fetchBatchDetail(selection.projectId, batchId);
+                  batchIdentifierFieldKey = batch.identifierFieldKey;
+                  batchSecondaryFieldKey = batch.secondaryFieldKey;
+                  console.log('[Background] Batch identifier fields loaded:', {
+                    identifierFieldKey: batchIdentifierFieldKey,
+                    secondaryFieldKey: batchSecondaryFieldKey,
+                  });
+
+                  // Fetch current row data to populate identifier values
+                  if (selection.rowIndex >= 0) {
+                    const row = await fetchRowByIndex(selection.projectId, batchId, selection.rowIndex);
+                    currentRowData = row.data;
+                  }
+                }
+              } catch (err) {
+                console.error('[Background] Failed to load batch identifiers:', err);
+                // Continue anyway - identifiers are optional
+                batchIdentifierFieldKey = null;
+                batchSecondaryFieldKey = null;
+                currentRowData = null;
+              }
+
               await notifyStateUpdate();
               sendResponse({ success: true });
               break;
@@ -338,6 +385,19 @@ export default defineBackground(() => {
               // Reset fill status when advancing to next row
               currentFillStatus = 'idle';
               const newIndex = await storage.selection.nextRow();
+
+              // Fetch new row data for identifier display
+              try {
+                const selection = await storage.selection.getSelection();
+                if (selection.projectId && selection.batchId && newIndex >= 0) {
+                  const row = await fetchRowByIndex(selection.projectId, selection.batchId, newIndex);
+                  currentRowData = row.data;
+                }
+              } catch (err) {
+                console.error('[Background] Failed to fetch row data:', err);
+                currentRowData = null;
+              }
+
               await notifyStateUpdate();
               sendResponse({ success: true, data: { rowIndex: newIndex } });
               break;
@@ -347,6 +407,19 @@ export default defineBackground(() => {
               // Reset fill status when going to previous row
               currentFillStatus = 'idle';
               const newIndex = await storage.selection.prevRow();
+
+              // Fetch new row data for identifier display
+              try {
+                const selection = await storage.selection.getSelection();
+                if (selection.projectId && selection.batchId && newIndex >= 0) {
+                  const row = await fetchRowByIndex(selection.projectId, selection.batchId, newIndex);
+                  currentRowData = row.data;
+                }
+              } catch (err) {
+                console.error('[Background] Failed to fetch row data:', err);
+                currentRowData = null;
+              }
+
               await notifyStateUpdate();
               sendResponse({ success: true, data: { rowIndex: newIndex } });
               break;
@@ -471,6 +544,7 @@ export default defineBackground(() => {
 
                 // 4. Fetch current row data
                 const row = await fetchRowByIndex(selection.projectId, selection.batchId, selection.rowIndex);
+                currentRowData = row.data;
 
                 // 5. Broadcast initial progress
                 broadcast({

@@ -379,6 +379,10 @@ export default function App() {
               <RowIndicator
                 rowIndex={state.rowIndex}
                 rowTotal={state.rowTotal}
+                identifierPrimary={state.identifierPrimary}
+                identifierSecondary={state.identifierSecondary}
+                identifierFieldKey={state.identifierFieldKey}
+                secondaryFieldKey={state.secondaryFieldKey}
               />
 
               <FillControls
