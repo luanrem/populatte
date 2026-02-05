@@ -111,7 +111,7 @@ Plans:
 
 Plans:
 - [x] 34-01-PLAN.md — Identifier display in popup with copy-to-clipboard and truncation
-- [ ] 34-02-PLAN.md — Gap closure: add standalone Prev/Next navigation arrows to RowIndicator
+- [x] 34-02-PLAN.md — Gap closure: add standalone Prev/Next navigation arrows to RowIndicator
 
 ## Progress
 
@@ -121,7 +121,7 @@ Plans:
 | 31. Dashboard Management | v5.0 | 7/7 | ✓ Complete | 2026-02-04 |
 | 32. Dashboard Mapping Editor | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
 | 33. Extension Capture Mode | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
-| 34. Extension Identifier Integration | v5.0 | 1/2 | Gap closure | 2026-02-05 |
+| 34. Extension Identifier Integration | v5.0 | 2/2 | ✓ Complete | 2026-02-05 |
 
 ---
 *Created: 2026-02-04*
