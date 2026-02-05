@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 33 of 34 (Extension Capture Mode)
-Plan: 3 of 4 (Capture Mode UI)
-Status: In progress
-Last activity: 2026-02-05 - Completed 33-03-PLAN.md (Capture Mode UI)
+Plan: 4 of 4 (Capture Flow Integration)
+Status: Phase complete - awaiting verification checkpoint
+Last activity: 2026-02-05 - Completed 33-04-PLAN.md (Capture Flow Integration)
 
-Progress: [███████░░░] 75% (3/4 plans)
+Progress: [██████████] 100% (4/4 plans)
 
 ## Performance Metrics
 
@@ -27,6 +27,7 @@ Progress: [███████░░░] 75% (3/4 plans)
 - v3.0: 6 plans, avg 2m 47s, total ~17min
 - v4.0: 18 plans, avg 2m 48s, total ~53min
 - v5.0 (complete): 10 plans, avg ~2m 40s, total ~27min (phases 30-31)
+- v5.0 (phase 33): 4 plans, avg ~6min, total ~24min
 
 *Updated after each plan completion*
 
@@ -41,6 +42,8 @@ See PROJECT.md Key Decisions table for full log with outcomes.
 | Use dnd-kit in extension | Same library as web app for consistent DnD behavior | 2026-02-05 |
 | PointerSensor 150ms delay | Distinguish drag from click on touch/mouse | 2026-02-05 |
 | Config replaces list view | Modal-free, simpler navigation | 2026-02-05 |
+| Module-level captureMode instance | Persists across messages, cleaned up on CAPTURE_STOP | 2026-02-05 |
+| Background as message router | Popup cannot directly message content scripts | 2026-02-05 |
 
 ### Roadmap Evolution
 
@@ -75,9 +78,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 33-03-PLAN.md (Capture Mode UI)
+Stopped at: Completed 33-04-PLAN.md (Capture Flow Integration) - awaiting verification checkpoint
 Resume file: None
-Next step: `/gsd:execute-plan 33-04` (Capture Flow Integration)
+Next step: Verify capture mode flow, then `/gsd:plan-phase 34` (Population Mode)
 
 Config:
 {
