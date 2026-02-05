@@ -47,11 +47,32 @@ export function CapturePanel({
   const [showConfig, setShowConfig] = useState(false);
   const [addingWait, setAddingWait] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(true);
 
   // Loading and success state
   const [isSaving, setIsSaving] = useState(false);
   const [savedMapping, setSavedMapping] = useState<{ id: string; name: string } | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Restore persisted state on mount
+  useEffect(() => {
+    chrome.storage.session.get(['capturedSteps', 'captureMappingName']).then((data) => {
+      if (data.capturedSteps && data.capturedSteps.length > 0) {
+        setSteps(data.capturedSteps as CaptureStep[]);
+      }
+      if (data.captureMappingName) {
+        setMappingName(data.captureMappingName as string);
+      }
+      setIsRestoring(false);
+    });
+  }, []);
+
+  // Persist steps to session storage whenever they change
+  useEffect(() => {
+    if (!isRestoring) {
+      chrome.storage.session.set({ capturedSteps: steps });
+    }
+  }, [steps, isRestoring]);
 
   // Listen for captured elements from content script
   useEffect(() => {
@@ -300,7 +321,11 @@ export function CapturePanel({
         <input
           type="text"
           value={mappingName}
-          onChange={(e) => setMappingName(e.target.value)}
+          onChange={(e) => {
+            const name = e.target.value;
+            setMappingName(name);
+            chrome.storage.session.set({ captureMappingName: name });
+          }}
           placeholder="e.g., Invoice Form, Client Registration..."
           className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={isSaving}

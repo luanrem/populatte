@@ -39,6 +39,14 @@ export default function App() {
       }
     });
 
+    // Restore capture mode state from session storage
+    chrome.storage.session.get(['captureMode', 'batchColumns']).then((data) => {
+      if (data.captureMode) {
+        setCaptureMode(true);
+        setBatchColumns(data.batchColumns || []);
+      }
+    });
+
     // Listen for state updates and fill progress from background
     const listener = (message: { type: string; payload: unknown }): undefined | false => {
       if (message.type === 'STATE_UPDATED') {
@@ -180,6 +188,14 @@ export default function App() {
       // Start capture mode in content script
       await sendToBackground({ type: 'CAPTURE_START', payload: { batchColumns: columns } });
 
+      // Persist capture mode state to session storage
+      await chrome.storage.session.set({
+        captureMode: true,
+        batchColumns: columns,
+        capturedSteps: [],
+        captureMappingName: '',
+      });
+
       setCaptureMode(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start capture mode');
@@ -187,6 +203,8 @@ export default function App() {
   }
 
   async function handleExitCaptureMode() {
+    // Clear persisted capture mode state
+    await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
     await sendToBackground({ type: 'CAPTURE_STOP' });
     setCaptureMode(false);
   }
@@ -212,6 +230,9 @@ export default function App() {
     };
 
     const result = await createMappingWithSteps(state.projectId, payload);
+
+    // Clear persisted capture mode state on successful save
+    await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
 
     // Stop capture mode in content script (cleanup)
     await sendToBackground({ type: 'CAPTURE_STOP' });
