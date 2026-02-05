@@ -20,7 +20,7 @@ v5.0 enables users to create mappings visually by clicking form fields in the ex
 - [x] **Phase 30: Backend Foundation** - Project/batch CRUD endpoints and batch identifier configuration
 - [x] **Phase 31: Dashboard Management** - Project/batch CRUD UI and mappings list
 - [x] **Phase 32: Dashboard Mapping Editor** - Mapping edit page with step management
-- [ ] **Phase 33: Extension Capture Mode** - Click-to-capture selector creation
+- [x] **Phase 33: Extension Capture Mode** - Click-to-capture selector creation
 - [ ] **Phase 34: Extension Identifier Integration** - Row identifier display in popup
 
 ## Phase Details
@@ -94,10 +94,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 33-01-PLAN.md — Content script capture foundation (highlighter, selector-gen, badge-tracker)
-- [ ] 33-02-PLAN.md — Message types and API layer for capture (messages, create mapping, batch detail)
-- [ ] 33-03-PLAN.md — Popup capture UI components (CapturePanel, StepList, StepConfig)
-- [ ] 33-04-PLAN.md — Wire capture mode end-to-end (entry, handlers, save flow)
+- [x] 33-01-PLAN.md — Content script capture foundation (highlighter, selector-gen, badge-tracker)
+- [x] 33-02-PLAN.md — Message types and API layer for capture (messages, create mapping, batch detail)
+- [x] 33-03-PLAN.md — Popup capture UI components (CapturePanel, StepList, StepConfig)
+- [x] 33-04-PLAN.md — Wire capture mode end-to-end (entry, handlers, save flow)
 
 ### Phase 34: Extension Identifier Integration
 **Goal**: Users see meaningful row identifiers while filling forms in the extension
@@ -119,7 +119,7 @@ Plans:
 | 30. Backend Foundation | v5.0 | 3/3 | ✓ Complete | 2026-02-04 |
 | 31. Dashboard Management | v5.0 | 7/7 | ✓ Complete | 2026-02-04 |
 | 32. Dashboard Mapping Editor | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
-| 33. Extension Capture Mode | v5.0 | 0/4 | Planned | - |
+| 33. Extension Capture Mode | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
 | 34. Extension Identifier Integration | v5.0 | 0/? | Not started | - |
 
 ---
