@@ -15,7 +15,10 @@ import { Form } from '@/components/ui/form';
 import { useMapping, useUpdateMapping } from '@/lib/query/hooks/use-mappings';
 import { ApiError } from '@/lib/api/types';
 
+import { useReorderSteps } from '@/lib/query/hooks/use-steps';
+
 import { MappingPropertiesSection } from './_components/mapping-properties-section';
+import { StepsSection } from './_components/steps-section';
 import { UnsavedChangesGuard } from './_components/unsaved-changes-guard';
 
 // Form validation schema
@@ -59,6 +62,7 @@ export default function MappingEditorPage({
   } = useMapping(projectId ?? '', mappingId);
 
   const updateMapping = useUpdateMapping(projectId ?? '');
+  const reorderSteps = useReorderSteps(projectId ?? '', mappingId);
 
   const form = useForm<MappingFormData>({
     resolver: zodResolver(mappingFormSchema),
@@ -83,6 +87,10 @@ export default function MappingEditorPage({
       });
     }
   }, [mapping, form]);
+
+  const handleStepsChange = (orderedStepIds: string[]) => {
+    reorderSteps.mutate(orderedStepIds);
+  };
 
   const handleSave = async (data: MappingFormData) => {
     try {
@@ -202,6 +210,14 @@ export default function MappingEditorPage({
             <MappingPropertiesSection control={form.control} />
           </form>
         </Form>
+
+        <StepsSection
+          steps={mapping.steps}
+          projectId={projectId}
+          mappingId={mappingId}
+          onStepsChange={handleStepsChange}
+          excelColumns={[]}
+        />
       </div>
     </main>
   );
