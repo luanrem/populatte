@@ -219,7 +219,7 @@ export class CaptureMode {
     const elementName =
       (element as HTMLInputElement).name || element.id || '';
 
-    // Create captured step
+    // Create captured step (internal format)
     const capturedStep: CapturedStep = {
       stepNumber,
       selector,
@@ -228,61 +228,36 @@ export class CaptureMode {
       elementName,
     };
 
-    // Store captured element
+    // Store captured element locally
     this.capturedElements.set(element, capturedStep);
 
-    console.log('[CaptureMode] Element captured, saving to storage:', capturedStep);
+    // Create popup-compatible step format for background to save
+    // selector is { type: 'css', value: string } per CaptureStep interface
+    const popupStep = {
+      id: crypto.randomUUID(),
+      stepNumber: this.capturedElements.size, // Will be recalculated by background
+      action: action,
+      selector: selector.primary, // { type: 'css', value: string }
+      fallbacks: selector.fallbacks, // Array<{ type: 'css', value: string }> | undefined
+      elementType: elementType,
+      elementName: elementName,
+      optional: false,
+      clearBefore: false,
+      pressEnter: false,
+    };
 
-    // Save directly to session storage for reliable popup sync
-    // This is more reliable than message passing (works even if popup was closed)
-    this.saveStepToStorage(capturedStep);
+    console.log('[CaptureMode] Sending captured step to background:', popupStep);
 
-    // Also send message for immediate response (backup mechanism)
-    this.sendMessage({
+    // Send to background - it will save to storage and broadcast to popup
+    // This is more reliable than direct storage access from content scripts
+    chrome.runtime.sendMessage({
       type: 'ELEMENT_CAPTURED',
-      payload: capturedStep,
-    });
+      payload: popupStep,
+    }).then(
+      (response) => console.log('[CaptureMode] Background response:', response),
+      (error) => console.error('[CaptureMode] Failed to send:', error)
+    );
   };
-
-  /**
-   * Save captured step to session storage.
-   * Popup listens for storage changes to stay in sync.
-   */
-  private saveStepToStorage(step: CapturedStep): void {
-    if (typeof chrome === 'undefined' || !chrome.storage?.session) {
-      console.warn('[CaptureMode] chrome.storage.session not available');
-      return;
-    }
-
-    chrome.storage.session.get(['capturedSteps']).then((data) => {
-      const currentSteps = (data.capturedSteps ?? []) as CapturedStep[];
-
-      // Create popup-compatible step format
-      const popupStep = {
-        id: crypto.randomUUID(),
-        stepNumber: currentSteps.length + 1,
-        action: step.action,
-        selector: step.selector.primary,
-        fallbacks: step.selector.fallbacks,
-        elementType: step.elementType,
-        elementName: step.elementName,
-        optional: false,
-        clearBefore: false,
-        pressEnter: false,
-      };
-
-      const updatedSteps = [...currentSteps, popupStep];
-
-      console.log('[CaptureMode] Saving steps to storage:', updatedSteps.length);
-
-      chrome.storage.session.set({ capturedSteps: updatedSteps }).then(
-        () => console.log('[CaptureMode] Steps saved successfully'),
-        (err) => console.error('[CaptureMode] Failed to save steps:', err)
-      );
-    }).catch((err) => {
-      console.error('[CaptureMode] Failed to read storage:', err);
-    });
-  }
 
   /**
    * Send message to popup/background.

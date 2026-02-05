@@ -656,11 +656,52 @@ export default defineBackground(() => {
               break;
             }
 
-            case 'ELEMENT_CAPTURED':
+            case 'ELEMENT_CAPTURED': {
+              console.log('[Background] Saving captured step to storage');
+
+              // Content script sends popup-compatible format with selector as { type: 'css', value: string }
+              // This matches the CaptureStep interface expected by the popup
+              const step = message.payload as unknown as {
+                id?: string;
+                stepNumber: number;
+                action: string;
+                selector: { type: 'css'; value: string };
+                fallbacks?: Array<{ type: 'css'; value: string }>;
+                elementType: string;
+                elementName: string;
+                optional?: boolean;
+                clearBefore?: boolean;
+                pressEnter?: boolean;
+              };
+
+              // Get current steps from storage
+              const data = await chrome.storage.session.get(['capturedSteps']);
+              const currentSteps = (data.capturedSteps ?? []) as unknown[];
+
+              // Add new step with correct step number
+              const newStep = {
+                ...step,
+                id: step.id ?? crypto.randomUUID(),
+                stepNumber: currentSteps.length + 1,
+              };
+
+              const updatedSteps = [...currentSteps, newStep];
+
+              // Save to storage - this triggers storage.onChanged in popup
+              await chrome.storage.session.set({ capturedSteps: updatedSteps });
+              console.log('[Background] Steps saved to storage, total:', updatedSteps.length);
+
+              // Also broadcast to popup for immediate update
+              broadcast({ type: 'ELEMENT_CAPTURED', payload: newStep });
+              console.log('[Background] Broadcast sent for ELEMENT_CAPTURED');
+
+              sendResponse({ success: true, stepNumber: newStep.stepNumber });
+              break;
+            }
+
             case 'ELEMENT_ALREADY_CAPTURED': {
-              console.log('[Background] Relay element captured to popup:', message.type, message.payload);
+              console.log('[Background] Relay element already captured to popup:', message.payload);
               // Broadcast to popup - content script messages don't automatically reach popup
-              // Note: Primary sync is via chrome.storage.session, this is a backup mechanism
               broadcast(message);
               console.log('[Background] Broadcast sent for:', message.type);
               sendResponse({ success: true });
