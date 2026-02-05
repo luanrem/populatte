@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Coffee, RefreshCw } from 'lucide-react';
+import { Coffee, RefreshCw, Target } from 'lucide-react';
 import { sendToBackground } from '../../src/messaging';
+import { fetchBatchDetail } from '../../src/api/batches';
+import { createMappingWithSteps } from '../../src/api/mappings';
 import type { StateResponse, ExtensionState, VoidResponse } from '../../src/types';
 import {
   ConnectView,
@@ -10,6 +12,8 @@ import {
   MappingSelector,
   RowIndicator,
   FillControls,
+  CapturePanel,
+  type CaptureStep,
 } from './components';
 
 export default function App() {
@@ -19,9 +23,21 @@ export default function App() {
   const [fillProgress, setFillProgress] = useState<{ current: number; total: number } | null>(null);
   const [fillError, setFillError] = useState<string | null>(null);
 
+  // Capture mode state
+  const [captureMode, setCaptureMode] = useState(false);
+  const [batchColumns, setBatchColumns] = useState<string[]>([]);
+  const [currentUrl, setCurrentUrl] = useState('');
+
   // Load initial state
   useEffect(() => {
     loadState();
+
+    // Get current tab URL
+    browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+      if (tab?.url) {
+        setCurrentUrl(tab.url);
+      }
+    });
 
     // Listen for state updates and fill progress from background
     const listener = (message: { type: string; payload: unknown }): undefined | false => {
@@ -145,6 +161,101 @@ export default function App() {
     }
   }
 
+  // ============================================================================
+  // Capture Mode Handlers
+  // ============================================================================
+
+  async function handleEnterCaptureMode() {
+    if (!state?.batchId || !state?.projectId) {
+      setError('Select a batch first');
+      return;
+    }
+
+    try {
+      // Fetch batch columns
+      const batch = await fetchBatchDetail(state.projectId, state.batchId);
+      const columns = batch.columnMetadata.map((c) => c.header || c.key);
+      setBatchColumns(columns);
+
+      // Start capture mode in content script
+      await sendToBackground({ type: 'CAPTURE_START', payload: { batchColumns: columns } });
+
+      setCaptureMode(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to start capture mode');
+    }
+  }
+
+  async function handleExitCaptureMode() {
+    await sendToBackground({ type: 'CAPTURE_STOP' });
+    setCaptureMode(false);
+  }
+
+  async function handleSaveMapping(name: string, steps: CaptureStep[]): Promise<{ id: string }> {
+    if (!state?.projectId) throw new Error('No project selected');
+
+    const payload = {
+      name,
+      targetUrl: currentUrl,
+      isActive: true,
+      steps: steps.map((s) => ({
+        action: s.action,
+        selector: s.selector ?? { type: 'css' as const, value: '' },
+        selectorFallbacks: s.fallbacks,
+        sourceFieldKey: s.sourceFieldKey,
+        fixedValue: s.fixedValue,
+        clearBefore: s.clearBefore,
+        pressEnter: s.pressEnter,
+        waitMs: s.waitMs,
+        optional: s.optional,
+      })),
+    };
+
+    const result = await createMappingWithSteps(state.projectId, payload);
+
+    // Stop capture mode in content script (cleanup)
+    await sendToBackground({ type: 'CAPTURE_STOP' });
+
+    // Refresh state to show new mapping
+    await loadState();
+
+    return { id: result.id };
+  }
+
+  async function handleRemoveStep(stepNumber: number) {
+    await sendToBackground({
+      type: 'CAPTURE_REMOVE_STEP',
+      payload: { stepNumber },
+    });
+  }
+
+  async function handleHighlightStep(stepNumber: number) {
+    await sendToBackground({
+      type: 'CAPTURE_HIGHLIGHT',
+      payload: { stepNumber },
+    });
+  }
+
+  // ============================================================================
+  // Render
+  // ============================================================================
+
+  // Show capture mode UI if active
+  if (captureMode) {
+    return (
+      <div className="w-[350px] h-[500px] bg-white p-4 flex flex-col">
+        <CapturePanel
+          targetUrl={currentUrl}
+          columns={batchColumns}
+          onSave={handleSaveMapping}
+          onCancel={handleExitCaptureMode}
+          onRemoveStep={handleRemoveStep}
+          onHighlight={handleHighlightStep}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="w-[350px] h-[500px] bg-white p-4 flex flex-col">
       <header className="flex items-center gap-2 mb-4 pb-3 border-b">
@@ -159,7 +270,7 @@ export default function App() {
         </button>
       </header>
 
-      <main className="flex-1 space-y-4">
+      <main className="flex-1 space-y-4 overflow-y-auto">
         {loading && (
           <div className="p-3 bg-gray-50 rounded-lg border">
             <p className="text-sm text-gray-600">Loading...</p>
@@ -195,6 +306,18 @@ export default function App() {
                   />
                 )}
               </div>
+
+              {/* Create Mapping button - shown when batch selected but no mapping for current URL */}
+              {state.batchId && !state.hasMapping && (
+                <button
+                  type="button"
+                  onClick={handleEnterCaptureMode}
+                  className="w-full p-3 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300 text-amber-800 font-medium flex items-center justify-center gap-2"
+                >
+                  <Target className="w-4 h-4" />
+                  Criar Mapping
+                </button>
+              )}
 
               <RowIndicator
                 rowIndex={state.rowIndex}

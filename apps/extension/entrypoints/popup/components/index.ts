@@ -13,3 +13,4 @@ export { MappingSelector } from './MappingSelector';
 export { RowIndicator } from './RowIndicator';
 export { ErrorInput } from './ErrorInput';
 export { FillControls } from './FillControls';
+export * from './capture';
