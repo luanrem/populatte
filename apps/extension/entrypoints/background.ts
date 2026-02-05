@@ -629,6 +629,42 @@ export default defineBackground(() => {
               break;
             }
 
+            // ================================================================
+            // Capture mode message relay
+            // ================================================================
+            case 'CAPTURE_START':
+            case 'CAPTURE_STOP':
+            case 'CAPTURE_HIGHLIGHT':
+            case 'CAPTURE_REMOVE_STEP': {
+              console.log('[Background] Relay capture message to content script:', message.type);
+
+              try {
+                const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+                if (tab?.id) {
+                  const response = await browser.tabs.sendMessage(tab.id, message);
+                  sendResponse(response);
+                } else {
+                  sendResponse({ success: false, error: 'No active tab' });
+                }
+              } catch (error) {
+                console.error('[Background] Failed to relay capture message:', error);
+                sendResponse({
+                  success: false,
+                  error: error instanceof Error ? error.message : 'Failed to communicate with page',
+                });
+              }
+              break;
+            }
+
+            case 'ELEMENT_CAPTURED':
+            case 'ALREADY_CAPTURED': {
+              console.log('[Background] Relay element captured to popup:', message.type);
+              // No explicit relay needed - popup listens on browser.runtime.onMessage
+              // Just acknowledge
+              sendResponse({ success: true });
+              break;
+            }
+
             default:
               console.log('[Background] Unhandled message type:', (message as { type: string }).type);
               sendResponse({ success: false, error: 'Unknown message type' });
