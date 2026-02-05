@@ -35,10 +35,24 @@ export class ElementHighlighter {
   private overlay: HTMLDivElement | null = null;
   private tooltip: HTMLDivElement | null = null;
   private styleElement: HTMLStyleElement | null = null;
-  private isActive = false;
+  private active = false;
   private abortController: AbortController | null = null;
   private onCapture: ((element: HTMLElement) => void) | null = null;
-  private currentTarget: HTMLElement | null = null;
+  private hoveredElement: HTMLElement | null = null;
+
+  /**
+   * Get the currently hovered element (if any).
+   */
+  public getCurrentTarget(): HTMLElement | null {
+    return this.hoveredElement;
+  }
+
+  /**
+   * Check if highlighter is currently active.
+   */
+  public isActive(): boolean {
+    return this.active;
+  }
 
   /**
    * Activate capture mode with element highlighting.
@@ -46,9 +60,9 @@ export class ElementHighlighter {
    * @param onCapture - Callback invoked when user clicks an interactive element
    */
   public activate(onCapture: (element: HTMLElement) => void): void {
-    if (this.isActive) return;
+    if (this.active) return;
 
-    this.isActive = true;
+    this.active = true;
     this.onCapture = onCapture;
     this.abortController = new AbortController();
 
@@ -80,11 +94,11 @@ export class ElementHighlighter {
    * Deactivate capture mode and clean up all resources.
    */
   public deactivate(): void {
-    if (!this.isActive) return;
+    if (!this.active) return;
 
-    this.isActive = false;
+    this.active = false;
     this.onCapture = null;
-    this.currentTarget = null;
+    this.hoveredElement = null;
 
     // Abort all event listeners
     this.abortController?.abort();
@@ -112,7 +126,7 @@ export class ElementHighlighter {
       return;
     }
 
-    this.currentTarget = target;
+    this.hoveredElement = target;
     this.showOverlay(target);
     this.showTooltip(target);
   };
@@ -124,7 +138,7 @@ export class ElementHighlighter {
     if (!relatedTarget || !this.isInteractiveElement(relatedTarget)) {
       this.hideOverlay();
       this.hideTooltip();
-      this.currentTarget = null;
+      this.hoveredElement = null;
     }
   };
 
