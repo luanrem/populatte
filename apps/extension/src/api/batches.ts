@@ -9,6 +9,29 @@ import { API_BASE_URL, fetchWithAuth } from './client';
 import type { BatchWithProgress } from '../types/responses';
 
 /**
+ * Column metadata from batch
+ */
+export interface ColumnMetadata {
+  key: string;
+  header: string;
+  index: number;
+}
+
+/**
+ * Batch detail with column metadata
+ */
+export interface BatchDetail {
+  id: string;
+  name: string;
+  filename: string | null;
+  mode: 'LIST_MODE' | 'PROFILE_MODE';
+  totalRows: number;
+  columnMetadata: ColumnMetadata[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
  * Fetch all batches for a project with progress info
  *
  * @param projectId - Project ID to fetch batches for
@@ -59,4 +82,57 @@ export async function fetchBatches(projectId: string): Promise<BatchWithProgress
       doneCount: 0,
     };
   });
+}
+
+/**
+ * Fetch batch detail including column metadata
+ *
+ * Column metadata provides the list of field keys for source column selection.
+ *
+ * @param projectId - Project ID
+ * @param batchId - Batch ID to fetch
+ * @returns Batch detail with column metadata
+ * @throws Error on network or API failure
+ */
+export async function fetchBatchDetail(
+  projectId: string,
+  batchId: string
+): Promise<BatchDetail> {
+  const response = await fetchWithAuth(
+    `${API_BASE_URL}/projects/${projectId}/batches/${batchId}`
+  );
+
+  if (!response.ok) {
+    try {
+      const errorData = await response.json();
+      const message = errorData.message || errorData.error || 'Failed to fetch batch';
+      throw new Error(message);
+    } catch (e) {
+      if (e instanceof Error && e.message !== 'Failed to fetch batch') {
+        throw e;
+      }
+      throw new Error(`Failed to fetch batch: ${response.statusText}`);
+    }
+  }
+
+  const data = await response.json();
+
+  return {
+    id: data.id,
+    name: data.name,
+    filename: data.filename ?? null,
+    mode: data.mode,
+    totalRows: data.totalRows ?? 0,
+    columnMetadata: (data.columnMetadata ?? []).map((col: {
+      key: string;
+      header: string;
+      index: number;
+    }) => ({
+      key: col.key,
+      header: col.header,
+      index: col.index,
+    })),
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
 }
