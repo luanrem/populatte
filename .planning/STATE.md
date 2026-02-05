@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 33 of 34 (Extension Capture Mode)
-Plan: 2 of 4 (Content Script Foundation + Messages and API)
+Plan: 3 of 4 (Capture Mode UI)
 Status: In progress
-Last activity: 2026-02-05 - Completed 33-01-PLAN.md (Content Script Capture Foundation)
+Last activity: 2026-02-05 - Completed 33-03-PLAN.md (Capture Mode UI)
 
-Progress: [█████░░░░░] 50% (2/4 plans)
+Progress: [███████░░░] 75% (3/4 plans)
 
 ## Performance Metrics
 
@@ -35,6 +35,12 @@ Progress: [█████░░░░░] 50% (2/4 plans)
 ### Decisions
 
 See PROJECT.md Key Decisions table for full log with outcomes.
+
+| Decision | Rationale | Date |
+|----------|-----------|------|
+| Use dnd-kit in extension | Same library as web app for consistent DnD behavior | 2026-02-05 |
+| PointerSensor 150ms delay | Distinguish drag from click on touch/mouse | 2026-02-05 |
+| Config replaces list view | Modal-free, simpler navigation | 2026-02-05 |
 
 ### Roadmap Evolution
 
@@ -69,9 +75,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 33-01-PLAN.md and 33-02-PLAN.md
+Stopped at: Completed 33-03-PLAN.md (Capture Mode UI)
 Resume file: None
-Next step: `/gsd:execute-plan 33-03` (Capture Mode UI)
+Next step: `/gsd:execute-plan 33-04` (Capture Flow Integration)
 
 Config:
 {
