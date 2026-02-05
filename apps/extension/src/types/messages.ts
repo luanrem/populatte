@@ -238,6 +238,63 @@ export interface SuccessDetectedMessage {
 }
 
 // ============================================================================
+// Capture Mode Messages (Popup <-> Content Script)
+// ============================================================================
+
+export interface CaptureStartMessage {
+  type: 'CAPTURE_START';
+  payload: {
+    batchColumns: string[]; // Available columns from selected batch
+  };
+}
+
+export interface CaptureStopMessage {
+  type: 'CAPTURE_STOP';
+}
+
+export interface CaptureHighlightMessage {
+  type: 'CAPTURE_HIGHLIGHT';
+  payload: {
+    stepNumber: number; // Step to highlight on page
+  };
+}
+
+export interface CaptureRemoveStepMessage {
+  type: 'CAPTURE_REMOVE_STEP';
+  payload: {
+    stepNumber: number;
+  };
+}
+
+export interface ElementCapturedMessage {
+  type: 'ELEMENT_CAPTURED';
+  payload: CapturedElementPayload;
+}
+
+export interface CapturedElementPayload {
+  selector: {
+    type: 'css';
+    value: string;
+  };
+  fallbacks?: Array<{
+    type: 'css';
+    value: string;
+  }>;
+  elementType: string;
+  elementName: string;
+  action: 'fill' | 'click';
+  stepNumber: number;
+}
+
+export interface AlreadyCapturedMessage {
+  type: 'ALREADY_CAPTURED';
+  payload: {
+    stepNumber: number;
+    elementType: string;
+  };
+}
+
+// ============================================================================
 // Utility Messages
 // ============================================================================
 
@@ -272,6 +329,10 @@ export type PopupToBackgroundMessage =
   | FillStartMessage
   | GetMappingsMessage
   | MappingSelectMessage
+  | CaptureStartMessage
+  | CaptureStopMessage
+  | CaptureHighlightMessage
+  | CaptureRemoveStepMessage
   | GetStateMessage
   | PingMessage;
 
@@ -282,6 +343,10 @@ export type BackgroundToContentMessage =
   | FillExecuteMessage
   | MonitorSuccessMessage
   | StopMonitorMessage
+  | CaptureStartMessage
+  | CaptureStopMessage
+  | CaptureHighlightMessage
+  | CaptureRemoveStepMessage
   | PingMessage;
 
 /**
@@ -290,6 +355,8 @@ export type BackgroundToContentMessage =
 export type ContentToBackgroundMessage =
   | FillResultMessage
   | SuccessDetectedMessage
+  | ElementCapturedMessage
+  | AlreadyCapturedMessage
   | PingMessage;
 
 /**
@@ -297,7 +364,9 @@ export type ContentToBackgroundMessage =
  */
 export type BackgroundToPopupMessage =
   | StateUpdatedMessage
-  | FillProgressMessage;
+  | FillProgressMessage
+  | ElementCapturedMessage
+  | AlreadyCapturedMessage;
 
 /**
  * All extension messages (for handler type)
