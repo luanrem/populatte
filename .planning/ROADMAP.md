@@ -9,7 +9,7 @@
 - [x] **v2.3 Field Inventory** - Phases 17-20 (shipped 2026-02-02)
 - [x] **v3.0 Backend Mapping** - Phases 21-23 (shipped 2026-02-03)
 - [x] **v4.0 Extension Core** - Phases 24-29 (shipped 2026-02-04)
-- [ ] **v5.0 Mapping Builder** - Phases 30-34 (in progress)
+- [x] **v5.0 Mapping Builder** - Phases 30-34 (shipped 2026-02-05)
 
 ## Overview
 
@@ -21,7 +21,7 @@ v5.0 enables users to create mappings visually by clicking form fields in the ex
 - [x] **Phase 31: Dashboard Management** - Project/batch CRUD UI and mappings list
 - [x] **Phase 32: Dashboard Mapping Editor** - Mapping edit page with step management
 - [x] **Phase 33: Extension Capture Mode** - Click-to-capture selector creation
-- [ ] **Phase 34: Extension Identifier Integration** - Row identifier display in popup
+- [x] **Phase 34: Extension Identifier Integration** - Row identifier display in popup
 
 ## Phase Details
 
@@ -110,7 +110,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 34-01-PLAN.md — Identifier display in popup with copy-to-clipboard and truncation
+- [x] 34-01-PLAN.md — Identifier display in popup with copy-to-clipboard and truncation
 
 ## Progress
 
@@ -120,7 +120,7 @@ Plans:
 | 31. Dashboard Management | v5.0 | 7/7 | ✓ Complete | 2026-02-04 |
 | 32. Dashboard Mapping Editor | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
 | 33. Extension Capture Mode | v5.0 | 4/4 | ✓ Complete | 2026-02-05 |
-| 34. Extension Identifier Integration | v5.0 | 0/1 | In progress | - |
+| 34. Extension Identifier Integration | v5.0 | 1/1 | ✓ Complete | 2026-02-05 |
 
 ---
 *Created: 2026-02-04*

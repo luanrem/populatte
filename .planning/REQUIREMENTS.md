@@ -62,32 +62,32 @@ Requirements for v5.0 Mapping Builder milestone. Each maps to roadmap phases.
 
 ### Extension Capture Mode
 
-- [ ] **CAP-01**: "Criar Mapping" button appears when no mapping exists for current URL
-- [ ] **CAP-02**: Capture mode UI renders in popup with sidebar-style layout
-- [ ] **CAP-03**: Current URL auto-captures as targetUrl
-- [ ] **CAP-04**: User can enter mapping name
-- [ ] **CAP-05**: Content script highlights interactive elements on hover (blue border)
-- [ ] **CAP-06**: Content script captures clicked element (prevents default action)
-- [ ] **CAP-07**: Extension generates CSS selector from clicked element
-- [ ] **CAP-08**: Extension auto-detects action type based on element (input→fill, button→click)
-- [ ] **CAP-09**: Step config UI shows action, source, options
-- [ ] **CAP-10**: Excel columns dropdown populated from selected batch's fields
-- [ ] **CAP-11**: User can set fixed value as alternative to column
-- [ ] **CAP-12**: User can toggle options (optional, clearBefore, pressEnter)
-- [ ] **CAP-13**: Steps list shows captured steps with preview
-- [ ] **CAP-14**: User can drag-and-drop to reorder steps in list
-- [ ] **CAP-15**: User can delete step from list
-- [ ] **CAP-16**: "+ Wait" button allows adding manual delay steps
-- [ ] **CAP-17**: "Finalizar" saves mapping and steps to API
-- [ ] **CAP-18**: "Cancelar" discards and exits capture mode
-- [ ] **CAP-19**: Success state shows next action options
-- [ ] **CAP-20**: Loading state displays during save
+- [x] **CAP-01**: "Criar Mapping" button appears when no mapping exists for current URL
+- [x] **CAP-02**: Capture mode UI renders in popup with sidebar-style layout
+- [x] **CAP-03**: Current URL auto-captures as targetUrl
+- [x] **CAP-04**: User can enter mapping name
+- [x] **CAP-05**: Content script highlights interactive elements on hover (blue border)
+- [x] **CAP-06**: Content script captures clicked element (prevents default action)
+- [x] **CAP-07**: Extension generates CSS selector from clicked element
+- [x] **CAP-08**: Extension auto-detects action type based on element (input→fill, button→click)
+- [x] **CAP-09**: Step config UI shows action, source, options
+- [x] **CAP-10**: Excel columns dropdown populated from selected batch's fields
+- [x] **CAP-11**: User can set fixed value as alternative to column
+- [x] **CAP-12**: User can toggle options (optional, clearBefore, pressEnter)
+- [x] **CAP-13**: Steps list shows captured steps with preview
+- [x] **CAP-14**: User can drag-and-drop to reorder steps in list
+- [x] **CAP-15**: User can delete step from list
+- [x] **CAP-16**: "+ Wait" button allows adding manual delay steps
+- [x] **CAP-17**: "Finalizar" saves mapping and steps to API
+- [x] **CAP-18**: "Cancelar" discards and exits capture mode
+- [x] **CAP-19**: Success state shows next action options
+- [x] **CAP-20**: Loading state displays during save
 
 ### Extension Identifier Display
 
-- [ ] **DISP-01**: Popup shows identifier value below row number
-- [ ] **DISP-02**: Popup shows secondary identifier when configured
-- [ ] **DISP-03**: Row data fetch includes identifier values
+- [x] **DISP-01**: Popup shows identifier value below row number
+- [x] **DISP-02**: Popup shows secondary identifier when configured
+- [x] **DISP-03**: Row data fetch includes identifier values
 
 ## Future Requirements
 
@@ -172,29 +172,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STEP-05 | 32 | Complete |
 | STEP-06 | 32 | Complete |
 | STEP-07 | 32 | Complete |
-| CAP-01 | 33 | Pending |
-| CAP-02 | 33 | Pending |
-| CAP-03 | 33 | Pending |
-| CAP-04 | 33 | Pending |
-| CAP-05 | 33 | Pending |
-| CAP-06 | 33 | Pending |
-| CAP-07 | 33 | Pending |
-| CAP-08 | 33 | Pending |
-| CAP-09 | 33 | Pending |
-| CAP-10 | 33 | Pending |
-| CAP-11 | 33 | Pending |
-| CAP-12 | 33 | Pending |
-| CAP-13 | 33 | Pending |
-| CAP-14 | 33 | Pending |
-| CAP-15 | 33 | Pending |
-| CAP-16 | 33 | Pending |
-| CAP-17 | 33 | Pending |
-| CAP-18 | 33 | Pending |
-| CAP-19 | 33 | Pending |
-| CAP-20 | 33 | Pending |
-| DISP-01 | 34 | Pending |
-| DISP-02 | 34 | Pending |
-| DISP-03 | 34 | Pending |
+| CAP-01 | 33 | Complete |
+| CAP-02 | 33 | Complete |
+| CAP-03 | 33 | Complete |
+| CAP-04 | 33 | Complete |
+| CAP-05 | 33 | Complete |
+| CAP-06 | 33 | Complete |
+| CAP-07 | 33 | Complete |
+| CAP-08 | 33 | Complete |
+| CAP-09 | 33 | Complete |
+| CAP-10 | 33 | Complete |
+| CAP-11 | 33 | Complete |
+| CAP-12 | 33 | Complete |
+| CAP-13 | 33 | Complete |
+| CAP-14 | 33 | Complete |
+| CAP-15 | 33 | Complete |
+| CAP-16 | 33 | Complete |
+| CAP-17 | 33 | Complete |
+| CAP-18 | 33 | Complete |
+| CAP-19 | 33 | Complete |
+| CAP-20 | 33 | Complete |
+| DISP-01 | 34 | Complete |
+| DISP-02 | 34 | Complete |
+| DISP-03 | 34 | Complete |
 
 **Coverage:**
 - v5.0 requirements: 52 total
@@ -203,4 +203,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-04*
-*Last updated: 2026-02-04 after phase 32 completion*
+*Last updated: 2026-02-05 after v5.0 milestone completion*
