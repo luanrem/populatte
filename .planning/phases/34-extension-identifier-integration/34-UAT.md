@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: complete
 phase: 34-extension-identifier-integration
-source: 34-01-SUMMARY.md
-started: 2026-02-05T20:00:00Z
-updated: 2026-02-05T20:10:00Z
+source: [34-01-SUMMARY.md, 34-02-SUMMARY.md]
+started: 2026-02-05T21:00:00Z
+updated: 2026-02-05T21:08:00Z
 ---
 
 ## Current Test
@@ -21,48 +21,37 @@ expected: With a batch that has both primary and secondary identifier fields con
 result: pass
 
 ### 3. Click-to-Copy Primary Identifier
-expected: Click anywhere on the row info block (the area showing row number and identifiers). The primary identifier value should be copied to clipboard and a checkmark feedback ("Copied!") should appear briefly (~1.5 seconds).
+expected: Click anywhere on the row info block (the area showing row number and identifiers). The primary identifier value should be copied to clipboard and a checkmark feedback should appear briefly (~1.5 seconds).
 result: pass
 
 ### 4. Long Value Truncation
 expected: If an identifier value is long, it should be truncated with an ellipsis. Hovering over it should show a tooltip with the full value and field label.
 result: pass
 
-### 5. Row Navigation Updates Identifiers
-expected: Click Next/Prev to navigate between rows. The identifier values should update to reflect the current row's data (different values per row).
-result: issue
-reported: "não consigo clicar em next... está disabilitado"
-severity: major
+### 5. Prev/Next Navigation Arrows
+expected: With a batch that has more than 1 row, you should see ChevronLeft and ChevronRight arrow buttons flanking the row counter (e.g., < Row 1/10 >). These buttons should be visible immediately after selecting the batch, without needing to fill first.
+result: pass
 
-### 6. Graceful Fallback (No Identifiers)
+### 6. Row Navigation Updates Identifiers
+expected: Click the Next arrow to advance to the next row. The identifier values should update to reflect the new row's data. Click Prev to go back. Identifier values update accordingly.
+result: pass
+
+### 7. Navigation Boundary Checks
+expected: At the first row (row 1), the Prev arrow should be disabled. At the last row, the Next arrow should be disabled.
+result: pass
+
+### 8. Graceful Fallback (No Identifiers)
 expected: With a batch that has NO identifier fields configured, the popup should show only the row number. No empty identifier section or broken layout should appear.
 result: pass
 
 ## Summary
 
-total: 6
-passed: 5
-issues: 1
+total: 8
+passed: 8
+issues: 0
 pending: 0
 skipped: 0
 
 ## Gaps
 
-- truth: "Identifier values update when navigating between rows via Next/Prev buttons"
-  status: failed
-  reason: "User reported: não consigo clicar em next... está disabilitado"
-  severity: major
-  test: 5
-  root_cause: "Next button gated by fillStatus (only enabled after fill completes). No Prev button exists. RowIndicator has no standalone navigation controls."
-  artifacts:
-    - path: "apps/extension/entrypoints/popup/components/FillControls.tsx"
-      issue: "Line 36 - canConfirm only true for post-fill statuses, never for idle"
-    - path: "apps/extension/entrypoints/popup/App.tsx"
-      issue: "No handlePrev function, no standalone navigation UI"
-    - path: "apps/extension/entrypoints/popup/components/RowIndicator.tsx"
-      issue: "Display-only, no navigation controls"
-  missing:
-    - "Add Prev/Next arrow buttons to RowIndicator independent of fillStatus"
-    - "Add handlePrev function to App.tsx sending ROW_PREV message"
-    - "Enable navigation whenever rowTotal > 1"
-  debug_session: ".planning/debug/next-button-disabled.md"
+[none]
