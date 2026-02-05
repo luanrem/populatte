@@ -56,6 +56,8 @@ export class MappingController {
       targetUrl: body.targetUrl,
       successTrigger: body.successTrigger,
       successConfig: body.successConfig,
+      isActive: body.isActive,
+      steps: body.steps,
     });
   }
 

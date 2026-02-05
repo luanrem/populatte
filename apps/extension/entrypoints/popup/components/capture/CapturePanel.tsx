@@ -265,13 +265,39 @@ export function CapturePanel({
 
   // Handle save with loading state
   const handleSave = useCallback(async () => {
-    if (!mappingName.trim() || steps.length === 0) return;
+    console.log('[CapturePanel] Save clicked');
+    console.log('[CapturePanel] mappingName:', mappingName);
+    console.log('[CapturePanel] steps count:', steps.length);
+    console.log('[CapturePanel] steps:', JSON.stringify(steps, null, 2));
+
+    if (!mappingName.trim() || steps.length === 0) {
+      console.log('[CapturePanel] Validation failed - name empty or no steps');
+      return;
+    }
+
+    // Validate all steps before saving
+    for (const step of steps) {
+      // Fill actions need either sourceFieldKey or fixedValue
+      if (step.action === 'fill' && !step.sourceFieldKey && !step.fixedValue) {
+        console.log('[CapturePanel] Validation failed - fill step missing source:', step.id);
+        setSaveError('All fill steps must have a source column or fixed value configured');
+        return;
+      }
+      // All non-wait steps need a valid selector
+      if (step.action !== 'wait' && !step.selector?.value) {
+        console.log('[CapturePanel] Validation failed - step missing selector:', step.id);
+        setSaveError('All steps must have a valid selector');
+        return;
+      }
+    }
 
     setIsSaving(true);
     setSaveError(null);
 
     try {
+      console.log('[CapturePanel] Calling onSave with steps:', steps.length);
       const result = await onSave(mappingName.trim(), steps);
+      console.log('[CapturePanel] API response:', JSON.stringify(result, null, 2));
       const dashboardUrl = projectId
         ? `${DASHBOARD_URL}/mappings/${result.id}?projectId=${projectId}`
         : `${DASHBOARD_URL}/mappings/${result.id}`;
@@ -284,7 +310,7 @@ export function CapturePanel({
     } finally {
       setIsSaving(false);
     }
-  }, [mappingName, steps, onSave]);
+  }, [mappingName, steps, onSave, projectId]);
 
   // Handle highlight from config
   const handleConfigHighlight = useCallback((step: CaptureStep) => {

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { SuccessTrigger } from '../../core/entities/mapping.entity';
+import { SelectorType, StepAction } from '../../core/entities/step.entity';
 
 // Helper: coerce empty string to null before enum validation
 const successTriggerSchema = z.preprocess(
@@ -15,12 +16,56 @@ const successConfigSchema = z
   .nullable()
   .optional();
 
-// Create mapping schema
+// Inline step schema for mapping creation (same as createStepSchema but embedded)
+const inlineStepSchema = z
+  .object({
+    action: z.nativeEnum(StepAction),
+    selector: z.object({
+      type: z.nativeEnum(SelectorType),
+      value: z.string().min(1),
+    }),
+    selectorFallbacks: z
+      .array(
+        z.object({
+          type: z.nativeEnum(SelectorType),
+          value: z.string().min(1),
+        }),
+      )
+      .optional(),
+    sourceFieldKey: z.string().min(1).nullable().optional(),
+    fixedValue: z.string().nullable().optional(),
+    optional: z.boolean().optional(),
+    clearBefore: z.boolean().optional(),
+    pressEnter: z.boolean().optional(),
+    waitMs: z.number().int().min(0).nullable().optional(),
+    stepOrder: z.number().int().min(1).optional(),
+  })
+  .refine(
+    (data) => {
+      // Reject if BOTH sourceFieldKey AND fixedValue are provided (non-null, non-empty)
+      const hasSourceFieldKey =
+        data.sourceFieldKey !== undefined &&
+        data.sourceFieldKey !== null &&
+        data.sourceFieldKey !== '';
+      const hasFixedValue =
+        data.fixedValue !== undefined &&
+        data.fixedValue !== null &&
+        data.fixedValue !== '';
+      return !(hasSourceFieldKey && hasFixedValue);
+    },
+    {
+      message: 'Cannot provide both sourceFieldKey and fixedValue',
+    },
+  );
+
+// Create mapping schema - now supports inline steps
 export const createMappingSchema = z.object({
   name: z.string().min(3).max(100),
   targetUrl: z.string().url(),
   successTrigger: successTriggerSchema,
   successConfig: successConfigSchema,
+  isActive: z.boolean().optional(),
+  steps: z.array(inlineStepSchema).optional(),
 });
 
 // Update mapping schema (all fields optional)

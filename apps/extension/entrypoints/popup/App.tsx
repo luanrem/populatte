@@ -233,6 +233,11 @@ export default function App() {
   }
 
   async function handleSaveMapping(name: string, steps: CaptureStep[]): Promise<{ id: string }> {
+    console.log('[App] handleSaveMapping called');
+    console.log('[App] name:', name);
+    console.log('[App] steps count:', steps.length);
+    console.log('[App] steps raw:', JSON.stringify(steps, null, 2));
+
     if (!state?.projectId) throw new Error('No project selected');
 
     const payload = {
@@ -253,8 +258,10 @@ export default function App() {
     };
 
     console.log('[App] Creating mapping with payload:', JSON.stringify(payload, null, 2));
+    console.log('[App] Payload steps count:', payload.steps.length);
     const result = await createMappingWithSteps(state.projectId, payload);
     console.log('[App] Mapping created successfully:', result.id);
+    console.log('[App] API response full:', JSON.stringify(result, null, 2));
 
     // Clear persisted capture mode state on successful save
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
