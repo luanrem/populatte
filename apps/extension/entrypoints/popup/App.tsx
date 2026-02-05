@@ -154,6 +154,16 @@ export default function App() {
     }
   }
 
+  async function handlePrev() {
+    setFillError(null);
+    try {
+      await sendToBackground<VoidResponse>({ type: 'ROW_PREV' });
+      // State update comes via STATE_UPDATED broadcast
+    } catch (err) {
+      console.error('[Popup] Failed to go to previous row:', err);
+    }
+  }
+
   async function handleMarkError(reason?: string) {
     setFillError(null);
     try {
@@ -383,6 +393,8 @@ export default function App() {
                 identifierSecondary={state.identifierSecondary}
                 identifierFieldKey={state.identifierFieldKey}
                 secondaryFieldKey={state.secondaryFieldKey}
+                onPrev={handlePrev}
+                onNext={handleNext}
               />
 
               <FillControls

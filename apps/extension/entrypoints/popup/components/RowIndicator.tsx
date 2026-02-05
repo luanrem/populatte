@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface RowIndicatorProps {
   rowIndex: number;
@@ -7,6 +8,8 @@ interface RowIndicatorProps {
   identifierSecondary: string | null;
   identifierFieldKey: string | null;
   secondaryFieldKey: string | null;
+  onPrev: () => void;
+  onNext: () => void;
 }
 
 /**
@@ -23,6 +26,8 @@ export function RowIndicator({
   identifierSecondary,
   identifierFieldKey,
   secondaryFieldKey,
+  onPrev,
+  onNext,
 }: RowIndicatorProps) {
   const [copied, setCopied] = useState(false);
 
@@ -77,9 +82,42 @@ export function RowIndicator({
         }
       }}
     >
-      {/* Row number - always shown, secondary emphasis */}
-      <div className="text-xs text-gray-500">
-        Row {rowIndex + 1} of {rowTotal}
+      {/* Row number with navigation arrows */}
+      <div className="flex items-center justify-center gap-2">
+        {/* Previous button - only show when multiple rows */}
+        {rowTotal > 1 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrev();
+            }}
+            disabled={rowIndex <= 0}
+            className="p-0.5 rounded-full hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-500"
+            title="Previous row"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        )}
+
+        {/* Row counter */}
+        <div className="text-xs text-gray-500">
+          Row {rowIndex + 1} of {rowTotal}
+        </div>
+
+        {/* Next button - only show when multiple rows */}
+        {rowTotal > 1 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onNext();
+            }}
+            disabled={rowIndex >= rowTotal - 1}
+            className="p-0.5 rounded-full hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-500"
+            title="Next row"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Identifiers - only shown when primary identifier has a value */}
