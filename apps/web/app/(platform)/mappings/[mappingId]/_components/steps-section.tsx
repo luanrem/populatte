@@ -1,21 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   DndContext,
+  DragOverlay,
   closestCenter,
   PointerSensor,
   TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
   arrayMove,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Plus } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import type { Step } from '@/lib/api/schemas/step.schema';
@@ -29,6 +32,7 @@ interface StepsSectionProps {
   mappingId: string;
   onStepsChange: (orderedIds: string[]) => void;
   excelColumns: string[];
+  isReordering?: boolean;
 }
 
 export function StepsSection({
@@ -37,6 +41,7 @@ export function StepsSection({
   mappingId,
   onStepsChange,
   excelColumns,
+  isReordering = false,
 }: StepsSectionProps) {
   // Track step IDs for drag-and-drop ordering
   // We derive the initial order from props and only track local reordering
@@ -47,6 +52,7 @@ export function StepsSection({
   const [editingStep, setEditingStep] = useState<Step | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [lastSyncedIds, setLastSyncedIds] = useState(stepIdsFromProps);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   // Sync orderedStepIds when steps prop changes (e.g., after save or server update)
   // Only update if the prop IDs actually changed (avoids cascading renders)
@@ -65,7 +71,12 @@ export function StepsSection({
     }),
   );
 
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id as string);
+  }
+
   function handleDragEnd(event: DragEndEvent) {
+    setActiveId(null);
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
@@ -108,6 +119,9 @@ export function StepsSection({
           <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
             {steps.length}
           </span>
+          {isReordering && (
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          )}
         </div>
         <Button size="sm" onClick={handleAddStep}>
           <Plus className="mr-2 h-4 w-4" />
@@ -131,6 +145,7 @@ export function StepsSection({
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
             <SortableContext
@@ -150,6 +165,22 @@ export function StepsSection({
                 ))}
               </div>
             </SortableContext>
+            {typeof document !== 'undefined' &&
+              createPortal(
+                <DragOverlay>
+                  {activeId ? (
+                    <StepCard
+                      step={orderedSteps.find((s) => s.id === activeId)!}
+                      index={orderedStepIds.indexOf(activeId)}
+                      projectId={projectId}
+                      mappingId={mappingId}
+                      onEdit={() => {}}
+                      isDragOverlay
+                    />
+                  ) : null}
+                </DragOverlay>,
+                document.body,
+              )}
           </DndContext>
         </div>
       )}

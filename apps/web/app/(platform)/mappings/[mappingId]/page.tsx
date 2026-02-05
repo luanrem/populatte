@@ -222,6 +222,7 @@ export default function MappingEditorPage({
             mappingId={mappingId}
             onStepsChange={handleStepsChange}
             excelColumns={[]}
+            isReordering={reorderSteps.isPending}
           />
         </div>
       </div>

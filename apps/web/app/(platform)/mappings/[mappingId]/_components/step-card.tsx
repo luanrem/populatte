@@ -35,6 +35,7 @@ interface StepCardProps {
   projectId: string;
   mappingId: string;
   onEdit: () => void;
+  isDragOverlay?: boolean;
 }
 
 // Action type colors for left border stripe (from CONTEXT.md)
@@ -67,6 +68,7 @@ export function StepCard({
   projectId,
   mappingId,
   onEdit,
+  isDragOverlay = false,
 }: StepCardProps) {
   const deleteStep = useDeleteStep(projectId, mappingId);
 
@@ -77,12 +79,14 @@ export function StepCard({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: step.id });
+  } = useSortable({ id: step.id, disabled: isDragOverlay });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  const style = isDragOverlay
+    ? undefined
+    : {
+        transform: CSS.Transform.toString(transform),
+        transition,
+      };
 
   const ActionIcon = actionIcons[step.action];
 
@@ -91,12 +95,13 @@ export function StepCard({
   }
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={isDragOverlay ? undefined : setNodeRef} style={style}>
       <Card
         className={cn(
           'border-l-4',
           actionColors[step.action],
-          isDragging && 'opacity-50 shadow-lg',
+          isDragging && 'opacity-50',
+          isDragOverlay && 'shadow-lg opacity-90',
         )}
       >
         <div className="flex items-center gap-3 p-4">
