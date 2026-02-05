@@ -73,12 +73,13 @@ Plans:
   3. User can reorder steps via drag-and-drop
   4. User can add, edit, and delete steps
   5. Step edit modal allows configuring action type, selectors, source/fixed value, and options
-**Plans**: 3 plans
+**Plans**: 4 plans (3 original + 1 gap closure)
 
 Plans:
 - [x] 32-01-PLAN.md — API layer, schemas, React Query hooks, and UI dependencies
 - [x] 32-02-PLAN.md — Mapping editor page with properties form and unsaved changes guard
 - [x] 32-03-PLAN.md — Steps section with drag-and-drop and step editor modal
+- [ ] 32-04-PLAN.md — Gap closure: fix card layout, form state sync, and drag-and-drop feedback
 
 ### Phase 33: Extension Capture Mode
 **Goal**: Users can create mappings visually by clicking form fields in the extension
@@ -114,7 +115,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 30. Backend Foundation | v5.0 | 3/3 | ✓ Complete | 2026-02-04 |
 | 31. Dashboard Management | v5.0 | 7/7 | ✓ Complete | 2026-02-04 |
-| 32. Dashboard Mapping Editor | v5.0 | 3/3 | ✓ Complete | 2026-02-04 |
+| 32. Dashboard Mapping Editor | v5.0 | 3/4 | In Progress | 2026-02-04 |
 | 33. Extension Capture Mode | v5.0 | 0/? | Not started | - |
 | 34. Extension Identifier Integration | v5.0 | 0/? | Not started | - |
 
