@@ -657,10 +657,10 @@ export default defineBackground(() => {
             }
 
             case 'ELEMENT_CAPTURED':
-            case 'ALREADY_CAPTURED': {
+            case 'ELEMENT_ALREADY_CAPTURED': {
               console.log('[Background] Relay element captured to popup:', message.type);
-              // No explicit relay needed - popup listens on browser.runtime.onMessage
-              // Just acknowledge
+              // Broadcast to popup - content script messages don't automatically reach popup
+              broadcast(message);
               sendResponse({ success: true });
               break;
             }

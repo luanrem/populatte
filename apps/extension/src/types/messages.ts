@@ -272,25 +272,28 @@ export interface ElementCapturedMessage {
 }
 
 export interface CapturedElementPayload {
+  stepNumber: number;
   selector: {
-    type: 'css';
-    value: string;
+    primary: {
+      type: 'css';
+      value: string;
+    };
+    fallbacks?: Array<{
+      type: 'css';
+      value: string;
+    }>;
   };
-  fallbacks?: Array<{
-    type: 'css';
-    value: string;
-  }>;
+  action: 'fill' | 'click';
   elementType: string;
   elementName: string;
-  action: 'fill' | 'click';
-  stepNumber: number;
 }
 
-export interface AlreadyCapturedMessage {
-  type: 'ALREADY_CAPTURED';
+export interface ElementAlreadyCapturedMessage {
+  type: 'ELEMENT_ALREADY_CAPTURED';
   payload: {
     stepNumber: number;
     elementType: string;
+    elementName: string;
   };
 }
 
@@ -356,7 +359,7 @@ export type ContentToBackgroundMessage =
   | FillResultMessage
   | SuccessDetectedMessage
   | ElementCapturedMessage
-  | AlreadyCapturedMessage
+  | ElementAlreadyCapturedMessage
   | PingMessage;
 
 /**
@@ -366,7 +369,7 @@ export type BackgroundToPopupMessage =
   | StateUpdatedMessage
   | FillProgressMessage
   | ElementCapturedMessage
-  | AlreadyCapturedMessage;
+  | ElementAlreadyCapturedMessage;
 
 /**
  * All extension messages (for handler type)

@@ -5,7 +5,7 @@
  * Manages mapping name, step list, and step configuration.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CheckCircle, Clock, ExternalLink, Play, Plus, Target } from 'lucide-react';
 import { StepList, type CaptureStep } from './StepList';
 import { StepConfig } from './StepConfig';
@@ -74,24 +74,38 @@ export function CapturePanel({
     }
   }, [steps, isRestoring]);
 
-  // Listen for captured elements from content script
+  // Ref to track current steps length (avoid stale closure in listener)
+  const stepsLengthRef = useRef(steps.length);
+  stepsLengthRef.current = steps.length;
+
+  // Listen for captured elements from content script (via background broadcast)
   useEffect(() => {
     const listener = (message: { type: string; payload?: unknown }): undefined | false => {
-      if (message.type === 'ELEMENT_CAPTURED') {
+      console.log('[CapturePanel] Received message:', message.type);
+
+      if (message.type === 'ELEMENT_CAPTURED' && message.payload) {
+        // Payload from capture-mode.ts CapturedStep
         const payload = message.payload as {
-          selector: { type: 'css'; value: string };
-          fallbacks?: Array<{ type: 'css'; value: string }>;
-          elementType?: string;
-          elementName?: string;
+          stepNumber: number;
+          selector: {
+            primary: { type: 'css'; value: string };
+            fallbacks?: Array<{ type: 'css'; value: string }>;
+          };
+          action: 'fill' | 'click';
+          elementType: string;
+          elementName: string;
         };
 
+        console.log('[CapturePanel] Processing ELEMENT_CAPTURED:', payload);
+
         // Create new step from captured element
+        // Use ref for steps length to avoid stale closure
         const newStep: CaptureStep = {
           id: crypto.randomUUID(),
-          stepNumber: steps.length + 1,
-          action: getDefaultAction(payload.elementType ?? ''),
-          selector: payload.selector,
-          fallbacks: payload.fallbacks,
+          stepNumber: stepsLengthRef.current + 1,
+          action: payload.action,
+          selector: payload.selector.primary,
+          fallbacks: payload.selector.fallbacks,
           elementType: payload.elementType,
           elementName: payload.elementName,
           optional: false,
@@ -99,7 +113,15 @@ export function CapturePanel({
           pressEnter: false,
         };
 
-        setSteps((prev) => [...prev, newStep]);
+        console.log('[CapturePanel] Adding new step:', newStep);
+
+        setSteps((prev) => {
+          const updated = [...prev, newStep];
+          // Persist immediately
+          chrome.storage.session.set({ capturedSteps: updated });
+          return updated;
+        });
+
         // Auto-open config for new step
         setEditingStep(newStep);
         setShowConfig(true);
@@ -112,21 +134,7 @@ export function CapturePanel({
 
     browser.runtime.onMessage.addListener(listener);
     return () => browser.runtime.onMessage.removeListener(listener);
-  }, [steps.length]);
-
-  // Determine default action based on element type
-  function getDefaultAction(elementType: string): 'fill' | 'click' | 'wait' {
-    const fillTypes = ['input', 'textarea', 'select', 'checkbox', 'radio'];
-    const clickTypes = ['button', 'a', 'link'];
-
-    if (fillTypes.includes(elementType.toLowerCase())) {
-      return 'fill';
-    }
-    if (clickTypes.includes(elementType.toLowerCase())) {
-      return 'click';
-    }
-    return 'fill'; // Default to fill
-  }
+  }, []); // Empty dependency - setup once
 
   // Handle step reordering
   const handleReorder = useCallback((newSteps: CaptureStep[]) => {
