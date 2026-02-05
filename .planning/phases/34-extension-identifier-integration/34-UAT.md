@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 34-extension-identifier-integration
 source: 34-01-SUMMARY.md
 started: 2026-02-05T20:00:00Z
@@ -53,7 +53,16 @@ skipped: 0
   reason: "User reported: não consigo clicar em next... está disabilitado"
   severity: major
   test: 5
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Next button gated by fillStatus (only enabled after fill completes). No Prev button exists. RowIndicator has no standalone navigation controls."
+  artifacts:
+    - path: "apps/extension/entrypoints/popup/components/FillControls.tsx"
+      issue: "Line 36 - canConfirm only true for post-fill statuses, never for idle"
+    - path: "apps/extension/entrypoints/popup/App.tsx"
+      issue: "No handlePrev function, no standalone navigation UI"
+    - path: "apps/extension/entrypoints/popup/components/RowIndicator.tsx"
+      issue: "Display-only, no navigation controls"
+  missing:
+    - "Add Prev/Next arrow buttons to RowIndicator independent of fillStatus"
+    - "Add handlePrev function to App.tsx sending ROW_PREV message"
+    - "Enable navigation whenever rowTotal > 1"
+  debug_session: ".planning/debug/next-button-disabled.md"
