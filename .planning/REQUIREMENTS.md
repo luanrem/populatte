@@ -9,12 +9,12 @@ Requirements for Side Panel & UX Improvements milestone. Each maps to roadmap ph
 
 ### Side Panel Foundation
 
-- [ ] **SP-01**: Side Panel renders with React entry via WXT `entrypoints/sidepanel/` convention
-- [ ] **SP-02**: Extension icon click opens Side Panel directly (`openPanelOnActionClick: true`)
-- [ ] **SP-03**: Side Panel persists while interacting with page and across navigations
-- [ ] **SP-04**: Side Panel is per-tab (independent state per tab)
-- [ ] **SP-05**: Popup removed — all UI lives in Side Panel
-- [ ] **SP-06**: Port-based lifecycle detection (detect Side Panel close for cleanup)
+- [x] **SP-01**: Side Panel renders with React entry via WXT `entrypoints/sidepanel/` convention
+- [x] **SP-02**: Extension icon click opens Side Panel directly (`openPanelOnActionClick: true`)
+- [x] **SP-03**: Side Panel persists while interacting with page and across navigations
+- [x] **SP-04**: Side Panel is per-tab (independent state per tab)
+- [x] **SP-05**: Popup removed — all UI lives in Side Panel
+- [x] **SP-06**: Port-based lifecycle detection (detect Side Panel close for cleanup)
 
 ### Tabs
 
@@ -94,12 +94,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SP-01 | Phase 35 | Pending |
-| SP-02 | Phase 35 | Pending |
-| SP-03 | Phase 35 | Pending |
-| SP-04 | Phase 35 | Pending |
-| SP-05 | Phase 35 | Pending |
-| SP-06 | Phase 35 | Pending |
+| SP-01 | Phase 35 | Complete |
+| SP-02 | Phase 35 | Complete |
+| SP-03 | Phase 35 | Complete |
+| SP-04 | Phase 35 | Complete |
+| SP-05 | Phase 35 | Complete |
+| SP-06 | Phase 35 | Complete |
 | TAB-01 | Phase 36 | Pending |
 | TAB-02 | Phase 36 | Pending |
 | TAB-03 | Phase 36 | Pending |
@@ -137,4 +137,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-05 after initial definition*
+*Last updated: 2026-02-06 — Phase 35 requirements (SP-01 through SP-06) marked Complete*

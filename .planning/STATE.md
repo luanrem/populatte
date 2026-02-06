@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** v5.1 Side Panel & UX Improvements — Phase 35 (Side Panel Setup)
+**Current focus:** v5.1 Side Panel & UX Improvements — Phase 36 (Tabs Structure)
 
 ## Current Position
 
-Phase: 35 of 40 (Side Panel Setup) — first phase of v5.1
-Plan: 2 of TBD in phase
-Status: In progress
-Last activity: 2026-02-06 — Completed 35-02-PLAN.md (port communication & per-tab state)
+Phase: 36 of 40 (Tabs Structure) — second phase of v5.1
+Plan: —
+Status: Ready to plan
+Last activity: 2026-02-06 — Phase 35 complete (Side Panel Setup, 2 plans, verified)
 
-Progress: [█░░░░░░░░░] ~2%
+Progress: [██░░░░░░░░] 17%
 
 ## Performance Metrics
 
@@ -36,10 +36,11 @@ Progress: [█░░░░░░░░░] ~2%
 
 See PROJECT.md Key Decisions table for full log with outcomes.
 
-Recent decisions from 35-02:
+Recent decisions from Phase 35:
 - SP-03: Port-based communication for sidepanel (enables disconnect detection)
 - SP-04: Per-tab independence via Map<tabId, TabState> (URL-dependent state isolated per tab)
 - SP-06: Background keeps auth alive after panel close (instant resume)
+- Selection state (project/batch/row) remains global, not per-tab
 
 ### Roadmap Evolution
 
@@ -74,10 +75,10 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-06T03:08:16Z
-Stopped at: Completed 35-02-PLAN.md
+Last session: 2026-02-06
+Stopped at: Phase 35 complete, verified
 Resume file: None
-Next step: Continue with remaining Phase 35 plans
+Next step: `/gsd:plan-phase 36`
 
 Config:
 {

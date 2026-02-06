@@ -17,7 +17,7 @@ Migrate the extension UI from a popup to Chrome's persistent Side Panel, solving
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 35: Side Panel Setup** - WXT sidepanel entrypoint, lifecycle detection, popup removal, icon-click behavior
+- [x] **Phase 35: Side Panel Setup** - WXT sidepanel entrypoint, lifecycle detection, popup removal, icon-click behavior
 - [ ] **Phase 36: Tabs Structure** - Two-tab architecture (Captura / Preencher) with state-aware enable/disable
 - [ ] **Phase 37: Aba Preencher** - Fill workflow UI migrated to Side Panel with steps list and element highlighting
 - [ ] **Phase 38: Secao Recentes** - Recent rows history section with click navigation and persistent storage
@@ -39,8 +39,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 35-01-PLAN.md — Create sidepanel entrypoint, move popup components, update manifest
-- [ ] 35-02-PLAN.md — Per-tab state Map, port-based communication, tab lifecycle management
+- [x] 35-01-PLAN.md — Create sidepanel entrypoint, move popup components, update manifest
+- [x] 35-02-PLAN.md — Per-tab state Map, port-based communication, tab lifecycle management
 
 ### Phase 36: Tabs Structure
 **Goal**: Users see two tabs (Captura / Preencher) with context-aware activation reflecting the current extension mode
@@ -138,7 +138,7 @@ Phase 37 (Aba Preencher)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 35. Side Panel Setup | v5.1 | 0/2 | Not started | - |
+| 35. Side Panel Setup | v5.1 | 2/2 | Complete | 2026-02-06 |
 | 36. Tabs Structure | v5.1 | 0/TBD | Not started | - |
 | 37. Aba Preencher | v5.1 | 0/TBD | Not started | - |
 | 38. Secao Recentes | v5.1 | 0/TBD | Not started | - |
@@ -147,4 +147,4 @@ Phase 37 (Aba Preencher)
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-05*
+*Last updated: 2026-02-06*
