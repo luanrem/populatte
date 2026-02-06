@@ -11,7 +11,7 @@ export default defineConfig({
   manifest: {
     name: 'Populatte',
     description: 'Automate web form filling from your data',
-    permissions: ['storage', 'activeTab', 'scripting'],
+    permissions: ['storage', 'activeTab', 'scripting', 'sidePanel'],
     host_permissions: ['<all_urls>'],
     action: {
       default_title: 'Populatte',

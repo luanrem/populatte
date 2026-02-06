@@ -11,6 +11,11 @@ export default defineBackground(() => {
     console.error('[Populatte] Storage initialization failed:', err);
   });
 
+  // Enable Side Panel on icon click (replaces popup)
+  browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch((err) => {
+    console.error('[Populatte] Failed to set panel behavior:', err);
+  });
+
   // ============================================================================
   // Module-level state for mapping detection
   // ============================================================================
