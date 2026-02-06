@@ -36,11 +36,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Side Panel content persists across page navigations within the same tab
   4. Each tab has independent Side Panel state (switching tabs shows correct context)
   5. Closing the Side Panel triggers cleanup in the background script (port disconnect detected)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 35-01: TBD
-- [ ] 35-02: TBD
+- [ ] 35-01-PLAN.md — Create sidepanel entrypoint, move popup components, update manifest
+- [ ] 35-02-PLAN.md — Per-tab state Map, port-based communication, tab lifecycle management
 
 ### Phase 36: Tabs Structure
 **Goal**: Users see two tabs (Captura / Preencher) with context-aware activation reflecting the current extension mode
@@ -138,7 +138,7 @@ Phase 37 (Aba Preencher)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 35. Side Panel Setup | v5.1 | 0/TBD | Not started | - |
+| 35. Side Panel Setup | v5.1 | 0/2 | Not started | - |
 | 36. Tabs Structure | v5.1 | 0/TBD | Not started | - |
 | 37. Aba Preencher | v5.1 | 0/TBD | Not started | - |
 | 38. Secao Recentes | v5.1 | 0/TBD | Not started | - |
