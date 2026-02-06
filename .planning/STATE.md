@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 
 ## Current Position
 
-Phase: 36 of 40 (Tabs Structure) — second phase of v5.1
-Plan: —
-Status: Ready to plan
-Last activity: 2026-02-06 — Phase 35 complete (Side Panel Setup, 2 plans, verified)
+Phase: 35 of 40 (Side Panel Setup) — first phase of v5.1
+Plan: 3 of 3 in phase
+Status: Phase complete (gap closure)
+Last activity: 2026-02-06 — Completed 35-03-PLAN.md (Port Communication Bug Fixes)
 
 Progress: [██░░░░░░░░] 17%
 
@@ -41,6 +41,8 @@ Recent decisions from Phase 35:
 - SP-04: Per-tab independence via Map<tabId, TabState> (URL-dependent state isolated per tab)
 - SP-06: Background keeps auth alive after panel close (instant resume)
 - Selection state (project/batch/row) remains global, not per-tab
+- SP-07 (35-03): Remove immediate STATE_UPDATED push on connect (caused race with GET_STATE)
+- SP-08 (35-03): Initialize activeTabId in GET_STATE handler for fresh extension load
 
 ### Roadmap Evolution
 
@@ -76,9 +78,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Phase 35 complete, verified
+Stopped at: Phase 35 complete (3 plans, gap closure successful)
 Resume file: None
-Next step: `/gsd:plan-phase 36`
+Next step: `/gsd:plan-phase 36` (Tabs Structure)
 
 Config:
 {
