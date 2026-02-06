@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { sendToBackground } from '../../../src/messaging';
+import { sendViaPort } from '../../../src/messaging';
 import type { VoidResponse } from '../../../src/types';
 
 interface CodeInputFormProps {
+  port: chrome.runtime.Port;
   onSuccess: () => void;
 }
 
@@ -13,7 +14,7 @@ interface CodeInputFormProps {
  * Handles 6-digit code entry with validation and loading state.
  * Sends AUTH_LOGIN message to background on submit.
  */
-export function CodeInputForm({ onSuccess }: CodeInputFormProps) {
+export function CodeInputForm({ port, onSuccess }: CodeInputFormProps) {
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ export function CodeInputForm({ onSuccess }: CodeInputFormProps) {
     setLoading(true);
 
     try {
-      const response = await sendToBackground<VoidResponse>({
+      const response = await sendViaPort<VoidResponse>(port, {
         type: 'AUTH_LOGIN',
         payload: { code },
       });

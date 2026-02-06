@@ -2,6 +2,7 @@ import { ExternalLink } from 'lucide-react';
 import { CodeInputForm } from './CodeInputForm';
 
 interface ConnectViewProps {
+  port: chrome.runtime.Port;
   onConnected: () => void;
 }
 
@@ -13,7 +14,7 @@ interface ConnectViewProps {
  * 2. Button to open web app connection page
  * 3. Code input form for manual entry
  */
-export function ConnectView({ onConnected }: ConnectViewProps) {
+export function ConnectView({ port, onConnected }: ConnectViewProps) {
   function handleOpenWebApp() {
     // Open web app connection page in new tab
     // Using localhost for development (matches API_BASE_URL pattern)
@@ -48,7 +49,7 @@ export function ConnectView({ onConnected }: ConnectViewProps) {
         <div className="flex-1 border-t border-gray-200" />
       </div>
 
-      <CodeInputForm onSuccess={onConnected} />
+      <CodeInputForm port={port} onSuccess={onConnected} />
     </div>
   );
 }

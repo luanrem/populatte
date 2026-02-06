@@ -439,7 +439,7 @@ export default function App() {
               />
             </>
           ) : (
-            <ConnectView onConnected={loadState} />
+            <ConnectView port={port!} onConnected={loadState} />
           )
         )}
       </main>
