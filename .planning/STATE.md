@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 37 of 40 (Aba Preencher) — third phase of v5.1
-Plan: 1 of 3 in phase
-Status: In progress (compact layout and steps list complete)
-Last activity: 2026-02-06 — Completed 37-01-PLAN.md (Compact Layout and Steps List)
+Plan: 2 of 3 in phase
+Status: In progress (element highlighting and validation complete)
+Last activity: 2026-02-06 — Completed 37-02-PLAN.md (Element Highlighting and Selector Validation)
 
-Progress: [███░░░░░░░] 34%
+Progress: [███░░░░░░░] 35%
 
 ## Performance Metrics
 
@@ -70,6 +70,12 @@ Recent decisions from Phase 37:
 - FILL-06 (37-01): Per-step fill result indicators (green check for success, red cross for failed)
 - FILL-07 (37-01): No max height on steps list - entire panel scrolls (avoids nested scroll)
 - FILL-08 (37-01): CSS tooltip for invalid selector badges (instant hover using group-hover pattern)
+- FILL-09 (37-02): Amber outline (#f59e0b) for step highlighting (distinct from blue capture mode)
+- FILL-10 (37-02): Auto-dismiss highlights after 3 seconds (non-intrusive feedback)
+- FILL-11 (37-02): Single match gets focus + scroll to center; multiple matches highlighted without focus
+- FILL-12 (37-02): Iframe search for element finding and validation
+- FILL-13 (37-02): Toast "Elemento nao encontrado na pagina" with auto-clear after 3 seconds
+- FILL-14 (37-02): Validation on mapping load, fill results cleared on row navigation
 
 ### Roadmap Evolution
 
@@ -105,9 +111,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Completed 37-01-PLAN.md (Compact Layout and Steps List)
+Stopped at: Completed 37-02-PLAN.md (Element Highlighting and Selector Validation)
 Resume file: None
-Next step: Continue Phase 37 with Plan 02 (Element Highlighting) or Plan 03 (Validation)
+Next step: Continue Phase 37 with Plan 03 (Step Configuration and Inline Editing)
 
 Config:
 {
