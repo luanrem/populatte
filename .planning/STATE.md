@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 
 ## Current Position
 
-Phase: 35 of 40 (Side Panel Setup) — first phase of v5.1
-Plan: 5 of 5 in phase (gap closure complete)
-Status: Phase complete (all gap closure tasks finished)
-Last activity: 2026-02-06 — Completed 35-05-PLAN.md (Port Disconnection Gap Closure)
+Phase: 36 of 40 (Tabs Structure) — second phase of v5.1
+Plan: 1 of 1 in phase
+Status: Phase complete (tab structure established)
+Last activity: 2026-02-06 — Completed 36-01-PLAN.md (Tab Bar and Layout)
 
-Progress: [██░░░░░░░░] 17%
+Progress: [██░░░░░░░░] 18%
 
 ## Performance Metrics
 
@@ -48,6 +48,13 @@ Recent decisions from Phase 35:
 - SP-11 (35-05): useRef for port to avoid stale closures in onDisconnect
 - SP-12 (35-05): Keepalive alarm at 4 minutes to extend SW lifetime
 - SP-13 (35-05): Defensive postMessage with immediate PortDisconnectedError rejection
+
+Recent decisions from Phase 36:
+- Tab bar uses shadcn-style aesthetic with Tailwind (shadcn components not installed in extension)
+- Captura tab disabled when capture not active, shows tooltip "Inicie a captura primeiro"
+- Blue pulsing dot on Captura tab when capture is active
+- Auto-switch to Captura tab on capture mode entry and storage restoration
+- Fixed pre-existing port reference bugs (lines 270 and 321 from popup→sidepanel migration)
 
 ### Roadmap Evolution
 
@@ -83,9 +90,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Phase 35 complete (5 plans, all gap closure tasks finished)
+Stopped at: Phase 36 complete (36-01-PLAN.md - Tab Bar and Layout)
 Resume file: None
-Next step: `/gsd:plan-phase 36` (Tabs Structure)
+Next step: `/gsd:plan-phase 37` (Preencher Content)
 
 Config:
 {
