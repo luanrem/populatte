@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** v5.1 Side Panel & UX Improvements — Phase 36 (Tabs Structure)
+**Current focus:** v5.1 Side Panel & UX Improvements — Phase 37 (Aba Preencher)
 
 ## Current Position
 
-Phase: 36 of 40 (Tabs Structure) — second phase of v5.1
-Plan: 3 of 3 in phase
-Status: Phase complete (tab UX polish with instant tooltip and optimistic switching)
-Last activity: 2026-02-06 — Completed 36-03-PLAN.md (Gap Closure - Tooltip and Tab Switch)
+Phase: 37 of 40 (Aba Preencher) — third phase of v5.1
+Plan: 1 of 3 in phase
+Status: In progress (compact layout and steps list complete)
+Last activity: 2026-02-06 — Completed 37-01-PLAN.md (Compact Layout and Steps List)
 
-Progress: [███░░░░░░░] 33%
+Progress: [███░░░░░░░] 34%
 
 ## Performance Metrics
 
@@ -61,6 +61,16 @@ Recent decisions from Phase 36:
 - TAB-07 (36-03): Custom CSS tooltip replaces native title (instant hover, click-triggered display)
 - TAB-08 (36-03): Optimistic tab switch before async ops (instant feedback, rollback on error)
 
+Recent decisions from Phase 37:
+- FILL-01 (37-01): Compact inline ConnectedIndicator in header (dot + text, not block element)
+- FILL-02 (37-01): Sticky footer pattern with RowIndicator + FillControls always visible
+- FILL-03 (37-01): Empty state shows Coffee icon with "Selecione um projeto e batch para comecar"
+- FILL-04 (37-01): Steps list collapsed by default, expandable via chevron toggle
+- FILL-05 (37-01): Drag-and-drop reordering enabled using @dnd-kit (same pattern as capture)
+- FILL-06 (37-01): Per-step fill result indicators (green check for success, red cross for failed)
+- FILL-07 (37-01): No max height on steps list - entire panel scrolls (avoids nested scroll)
+- FILL-08 (37-01): CSS tooltip for invalid selector badges (instant hover using group-hover pattern)
+
 ### Roadmap Evolution
 
 - v1.0: 3 phases, 5 plans -- End-to-End Auth & User Sync (shipped 2026-01-28)
@@ -95,9 +105,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Phase 36 complete (36-03-PLAN.md - Gap Closure)
+Stopped at: Completed 37-01-PLAN.md (Compact Layout and Steps List)
 Resume file: None
-Next step: `/gsd:plan-phase 37` (Preencher Content)
+Next step: Continue Phase 37 with Plan 02 (Element Highlighting) or Plan 03 (Validation)
 
 Config:
 {
