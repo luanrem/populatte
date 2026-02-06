@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Coffee, RefreshCw, Target } from 'lucide-react';
 import { sendViaPort, PortDisconnectedError } from '../../src/messaging';
 import { fetchBatchDetail } from '../../src/api/batches';
-import { createMappingWithSteps } from '../../src/api/mappings';
+import { createMappingWithSteps, fetchMappingWithSteps, type MappingStep } from '../../src/api/mappings';
 import { preferencesStorage } from '../../src/storage/preferences';
 import type { StateResponse, ExtensionState, VoidResponse } from '../../src/types';
 import {
@@ -37,10 +37,26 @@ export default function App() {
   // Tab state
   const [activeTab, setActiveTab] = useState<'preencher' | 'captura'>('preencher');
 
+  // Mapping steps state
+  const [mappingSteps, setMappingSteps] = useState<MappingStep[]>([]);
+  const [stepValidation, setStepValidation] = useState<Map<string, boolean>>(new Map());
+  const [fillResultsMap, setFillResultsMap] = useState<Map<string, 'success' | 'failed'>>(new Map());
+
   // Persist tab changes to storage
   useEffect(() => {
     preferencesStorage.setLastActiveTab(activeTab);
   }, [activeTab]);
+
+  // Fetch mapping steps when mapping is selected
+  useEffect(() => {
+    if (state?.projectId && state?.mappingId) {
+      fetchMappingWithSteps(state.projectId, state.mappingId)
+        .then((mapping) => setMappingSteps(mapping.steps))
+        .catch((err) => console.error('[App] Failed to fetch mapping steps:', err));
+    } else {
+      setMappingSteps([]);
+    }
+  }, [state?.projectId, state?.mappingId]);
 
   // Load initial state
   useEffect(() => {
@@ -397,6 +413,19 @@ export default function App() {
   }
 
   // ============================================================================
+  // Preencher Tab Handlers
+  // ============================================================================
+
+  function handleStepReorder(reorderedSteps: MappingStep[]) {
+    setMappingSteps(reorderedSteps);
+  }
+
+  function handleStepHighlight(step: MappingStep) {
+    // TODO: Wire in Plan 02 - highlight element on page
+    console.log('[App] Step highlight requested:', step.id, step.selector);
+  }
+
+  // ============================================================================
   // Render
   // ============================================================================
 
@@ -405,6 +434,7 @@ export default function App() {
       <header className="flex items-center gap-2 mb-4 pb-3 border-b">
         <Coffee className="w-6 h-6 text-amber-700" />
         <h1 className="text-lg font-semibold text-gray-900">Populatte</h1>
+        {state?.isAuthenticated && <ConnectedIndicator />}
         <button
           onClick={loadState}
           className="ml-auto p-1 hover:bg-gray-100 rounded"
@@ -430,11 +460,6 @@ export default function App() {
         {state && !loading && (
           state.isAuthenticated ? (
             <>
-              {/* Global connection status */}
-              <div className="mb-4">
-                <ConnectedIndicator />
-              </div>
-
               {/* Tab bar */}
               <TabBar
                 activeTab={activeTab}
@@ -443,80 +468,93 @@ export default function App() {
               />
 
               {/* Tab content */}
-              <div className="flex-1 overflow-y-auto space-y-4 pt-4">
-                {activeTab === 'preencher' ? (
-                  <>
-                    {/* Preencher tab content - Fill workflow */}
-                    <div className="space-y-3">
-                      <ProjectSelector
-                        selectedId={state.projectId}
-                        onSelect={handleProjectSelect}
-                        port={portRef.current!}
-                      />
-                      <BatchSelector
-                        projectId={state.projectId}
-                        selectedId={state.batchId}
-                        onSelect={handleBatchSelect}
-                        port={portRef.current!}
-                      />
-                      {state.hasMapping && state.availableMappings.length > 0 && (
-                        <MappingSelector
-                          mappings={state.availableMappings}
-                          selectedId={state.mappingId}
-                          onSelect={handleMappingSelect}
-                        />
-                      )}
+              {activeTab === 'preencher' ? (
+                <div className="flex-1 flex flex-col overflow-hidden pt-4">
+                  {/* Empty state when no batch selected */}
+                  {!state.batchId ? (
+                    <div className="flex flex-col items-center justify-center flex-1 text-center px-4">
+                      <Coffee className="w-12 h-12 text-gray-300 mb-3" />
+                      <p className="text-sm text-gray-400">Selecione um projeto e batch para comecar</p>
                     </div>
+                  ) : (
+                    <>
+                      {/* Scrollable content area */}
+                      <div className="flex-1 overflow-y-auto space-y-2 pb-4">
+                        {/* Selectors */}
+                        <ProjectSelector
+                          selectedId={state.projectId}
+                          onSelect={handleProjectSelect}
+                          port={portRef.current!}
+                        />
+                        <BatchSelector
+                          projectId={state.projectId}
+                          selectedId={state.batchId}
+                          onSelect={handleBatchSelect}
+                          port={portRef.current!}
+                        />
+                        {state.hasMapping && state.availableMappings.length > 0 && (
+                          <MappingSelector
+                            mappings={state.availableMappings}
+                            selectedId={state.mappingId}
+                            onSelect={handleMappingSelect}
+                          />
+                        )}
 
-                    {/* Create Mapping button - shown when batch selected but no mapping for current URL */}
-                    {state.batchId && !state.hasMapping && (
-                      <button
-                        type="button"
-                        onClick={handleEnterCaptureMode}
-                        className="w-full p-3 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300 text-amber-800 font-medium flex items-center justify-center gap-2"
-                      >
-                        <Target className="w-4 h-4" />
-                        Criar Mapping
-                      </button>
-                    )}
+                        {/* Create Mapping button - shown when batch selected but no mapping for current URL */}
+                        {!state.hasMapping && !captureMode && (
+                          <button
+                            type="button"
+                            onClick={handleEnterCaptureMode}
+                            className="w-full p-3 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300 text-amber-800 font-medium flex items-center justify-center gap-2"
+                          >
+                            <Target className="w-4 h-4" />
+                            Criar Mapping
+                          </button>
+                        )}
 
-                    <RowIndicator
-                      rowIndex={state.rowIndex}
-                      rowTotal={state.rowTotal}
-                      identifierPrimary={state.identifierPrimary}
-                      identifierSecondary={state.identifierSecondary}
-                      identifierFieldKey={state.identifierFieldKey}
-                      secondaryFieldKey={state.secondaryFieldKey}
-                      onPrev={handlePrev}
-                      onNext={handleNext}
-                    />
+                        {/* Steps list placeholder - will be added in Task 2 */}
+                      </div>
 
-                    <FillControls
-                      batchId={state.batchId}
-                      fillStatus={state.fillStatus}
-                      fillProgress={fillProgress}
-                      fillError={fillError}
-                      onFill={handleFill}
-                      onNext={handleNext}
-                      onMarkError={handleMarkError}
-                    />
-                  </>
-                ) : (
-                  <>
-                    {/* Captura tab content */}
-                    <CapturePanel
-                      targetUrl={currentUrl}
-                      columns={batchColumns}
-                      projectId={state?.projectId}
-                      onSave={handleSaveMapping}
-                      onCancel={handleExitCaptureMode}
-                      onRemoveStep={handleRemoveStep}
-                      onHighlight={handleHighlightStep}
-                      onStartFilling={handleStartFilling}
-                    />
-                  </>
-                )}
-              </div>
+                      {/* Sticky footer with row indicator and fill controls */}
+                      <div className="sticky bottom-0 bg-white pt-2 border-t space-y-2">
+                        <RowIndicator
+                          rowIndex={state.rowIndex}
+                          rowTotal={state.rowTotal}
+                          identifierPrimary={state.identifierPrimary}
+                          identifierSecondary={state.identifierSecondary}
+                          identifierFieldKey={state.identifierFieldKey}
+                          secondaryFieldKey={state.secondaryFieldKey}
+                          onPrev={handlePrev}
+                          onNext={handleNext}
+                        />
+                        <FillControls
+                          batchId={state.batchId}
+                          fillStatus={state.fillStatus}
+                          fillProgress={fillProgress}
+                          fillError={fillError}
+                          onFill={handleFill}
+                          onNext={handleNext}
+                          onMarkError={handleMarkError}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="flex-1 overflow-y-auto pt-4">
+                  {/* Captura tab content */}
+                  <CapturePanel
+                    targetUrl={currentUrl}
+                    columns={batchColumns}
+                    projectId={state?.projectId}
+                    onSave={handleSaveMapping}
+                    onCancel={handleExitCaptureMode}
+                    onRemoveStep={handleRemoveStep}
+                    onHighlight={handleHighlightStep}
+                    onStartFilling={handleStartFilling}
+                  />
+                </div>
+              )}
             </>
           ) : (
             <ConnectView port={portRef.current!} onConnected={loadState} />
