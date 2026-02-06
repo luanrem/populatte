@@ -18,7 +18,7 @@ Migrate the extension UI from a popup to Chrome's persistent Side Panel, solving
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 35: Side Panel Setup** - WXT sidepanel entrypoint, lifecycle detection, popup removal, icon-click behavior
-- [x] **Phase 36: Tabs Structure** - Two-tab architecture (Captura / Preencher) with state-aware enable/disable
+- [ ] **Phase 36: Tabs Structure** - Two-tab architecture (Captura / Preencher) with state-aware enable/disable
 - [ ] **Phase 37: Aba Preencher** - Fill workflow UI migrated to Side Panel with steps list and element highlighting
 - [ ] **Phase 38: Secao Recentes** - Recent rows history section with click navigation and persistent storage
 - [ ] **Phase 39: Aba Captura** - Capture mode fully operational inside persistent Side Panel
@@ -54,11 +54,12 @@ Plans:
   2. Captura tab is grayed out and shows a tooltip when capture mode is not active
   3. Captura tab shows a visual active badge when capture mode is running
   4. Side Panel opens on Preencher tab by default and remembers the last active tab across reopens
-**Plans**: 2 plans
+**Plans**: 3 plans
 
 Plans:
 - [x] 36-01-PLAN.md — TabBar component and App.tsx layout restructure with per-tab content areas
 - [x] 36-02-PLAN.md — Tab state persistence, capture-mode-aware initialization, and auto-switch logic
+- [ ] 36-03-PLAN.md — Fix tooltip delay and optimistic tab switch on capture entry (gap closure)
 
 ### Phase 37: Aba Preencher
 **Goal**: Users can perform the complete fill workflow (connect, select project/batch, navigate rows, fill forms) from the Side Panel with visible step details
@@ -143,7 +144,7 @@ Phase 37 (Aba Preencher)
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 35. Side Panel Setup | v5.1 | 5/5 | Complete | 2026-02-06 |
-| 36. Tabs Structure | v5.1 | 2/2 | Complete | 2026-02-06 |
+| 36. Tabs Structure | v5.1 | 2/3 | Gap closure | - |
 | 37. Aba Preencher | v5.1 | 0/TBD | Not started | - |
 | 38. Secao Recentes | v5.1 | 0/TBD | Not started | - |
 | 39. Aba Captura | v5.1 | 0/TBD | Not started | - |
@@ -151,4 +152,4 @@ Phase 37 (Aba Preencher)
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-06 — Phase 36 complete*
+*Last updated: 2026-02-06 — Phase 36 gap closure plan added*
