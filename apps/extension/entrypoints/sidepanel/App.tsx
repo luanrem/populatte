@@ -52,10 +52,50 @@ export default function App() {
   useEffect(() => {
     if (state?.projectId && state?.mappingId) {
       fetchMappingWithSteps(state.projectId, state.mappingId)
-        .then((mapping) => setMappingSteps(mapping.steps))
+        .then(async (mapping) => {
+          setMappingSteps(mapping.steps);
+
+          // Validate selectors on page
+          if (portRef.current && mapping.steps.length > 0) {
+            try {
+              const response = await sendViaPort<{
+                success: boolean;
+                data?: { results: Array<{ stepId: string; found: boolean; matchCount: number }> };
+              }>(portRef.current, {
+                type: 'VALIDATE_SELECTORS',
+                payload: {
+                  selectors: mapping.steps
+                    .filter(s => s.action !== 'wait')  // Wait steps have no selector
+                    .map(s => ({
+                      stepId: s.id,
+                      selector: s.selector,
+                      selectorFallbacks: s.selectorFallbacks,
+                    })),
+                },
+              } as any);
+
+              if (response.success && response.data) {
+                const validationMap = new Map<string, boolean>();
+                for (const result of response.data.results) {
+                  validationMap.set(result.stepId, result.found);
+                }
+                // Wait steps are always "valid" (no selector to check)
+                for (const step of mapping.steps) {
+                  if (step.action === 'wait') {
+                    validationMap.set(step.id, true);
+                  }
+                }
+                setStepValidation(validationMap);
+              }
+            } catch (err) {
+              console.error('[App] Failed to validate selectors:', err);
+            }
+          }
+        })
         .catch((err) => console.error('[App] Failed to fetch mapping steps:', err));
     } else {
       setMappingSteps([]);
+      setStepValidation(new Map());
     }
   }, [state?.projectId, state?.mappingId]);
 
@@ -235,8 +275,23 @@ export default function App() {
   async function handleFill() {
     if (!portRef.current) return;
     setFillError(null);
+    setFillResultsMap(new Map()); // Clear previous fill results
     try {
-      await sendViaPort<VoidResponse>(portRef.current, { type: 'FILL_START' });
+      const response = await sendViaPort<{
+        success: boolean;
+        data?: { stepResults?: Array<{ stepId: string; success: boolean; skipped?: boolean }> };
+      }>(portRef.current, { type: 'FILL_START' });
+
+      // Parse step results and build fillResultsMap
+      if (response.success && response.data?.stepResults) {
+        const resultsMap = new Map<string, 'success' | 'failed'>();
+        for (const stepResult of response.data.stepResults) {
+          if (!stepResult.skipped) {
+            resultsMap.set(stepResult.stepId, stepResult.success ? 'success' : 'failed');
+          }
+        }
+        setFillResultsMap(resultsMap);
+      }
     } catch (err) {
       setFillError(err instanceof Error ? err.message : 'Fill failed');
     }
@@ -245,6 +300,7 @@ export default function App() {
   async function handleNext() {
     if (!portRef.current) return;
     setFillError(null);
+    setFillResultsMap(new Map()); // Clear fill results on row navigation
     try {
       await sendViaPort<VoidResponse>(portRef.current, { type: 'ROW_NEXT' });
       // State update comes via STATE_UPDATED port message
@@ -256,6 +312,7 @@ export default function App() {
   async function handlePrev() {
     if (!portRef.current) return;
     setFillError(null);
+    setFillResultsMap(new Map()); // Clear fill results on row navigation
     try {
       await sendViaPort<VoidResponse>(portRef.current, { type: 'ROW_PREV' });
       // State update comes via STATE_UPDATED port message
@@ -421,9 +478,36 @@ export default function App() {
     setMappingSteps(reorderedSteps);
   }
 
-  function handleStepHighlight(step: MappingStep) {
-    // TODO: Wire in Plan 02 - highlight element on page
-    console.log('[App] Step highlight requested:', step.id, step.selector);
+  async function handleStepHighlight(step: MappingStep) {
+    if (!portRef.current) return;
+    try {
+      const response = await sendViaPort<{ success: boolean; data?: { found: boolean; matchCount: number } }>(
+        portRef.current,
+        {
+          type: 'HIGHLIGHT_STEP',
+          payload: {
+            selector: step.selector,
+            selectorFallbacks: step.selectorFallbacks,
+          },
+        } as any  // Cast needed until union type is updated
+      );
+
+      if (response.success && response.data && !response.data.found) {
+        // Show toast: "Elemento nao encontrado na pagina"
+        setFillError('Elemento nao encontrado na pagina');
+        // Auto-clear toast after 3 seconds
+        setTimeout(() => setFillError(null), 3000);
+      }
+
+      // Re-validate this specific step after clicking
+      setStepValidation(prev => {
+        const next = new Map(prev);
+        next.set(step.id, response.success && response.data?.found === true);
+        return next;
+      });
+    } catch (err) {
+      console.error('[App] Failed to highlight step:', err);
+    }
   }
 
   // ============================================================================
