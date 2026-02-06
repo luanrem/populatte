@@ -555,6 +555,21 @@ export default function App() {
               {/* Tab content */}
               {activeTab === 'preencher' ? (
                 <div className="flex-1 flex flex-col overflow-hidden pt-4">
+                  {/* Selectors - always visible */}
+                  <div className="space-y-2 pb-2">
+                    <ProjectSelector
+                      selectedId={state.projectId}
+                      onSelect={handleProjectSelect}
+                      port={portRef.current!}
+                    />
+                    <BatchSelector
+                      projectId={state.projectId}
+                      selectedId={state.batchId}
+                      onSelect={handleBatchSelect}
+                      port={portRef.current!}
+                    />
+                  </div>
+
                   {/* Empty state when no batch selected */}
                   {!state.batchId ? (
                     <div className="flex flex-col items-center justify-center flex-1 text-center px-4">
@@ -565,18 +580,6 @@ export default function App() {
                     <>
                       {/* Scrollable content area */}
                       <div className="flex-1 overflow-y-auto space-y-2 pb-4">
-                        {/* Selectors */}
-                        <ProjectSelector
-                          selectedId={state.projectId}
-                          onSelect={handleProjectSelect}
-                          port={portRef.current!}
-                        />
-                        <BatchSelector
-                          projectId={state.projectId}
-                          selectedId={state.batchId}
-                          onSelect={handleBatchSelect}
-                          port={portRef.current!}
-                        />
                         {state.hasMapping && state.availableMappings.length > 0 && (
                           <MappingSelector
                             mappings={state.availableMappings}
