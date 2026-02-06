@@ -54,10 +54,11 @@ Plans:
   2. Captura tab is grayed out and shows a tooltip when capture mode is not active
   3. Captura tab shows a visual active badge when capture mode is running
   4. Side Panel opens on Preencher tab by default and remembers the last active tab across reopens
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 36-01: TBD
+- [ ] 36-01-PLAN.md — TabBar component and App.tsx layout restructure with per-tab content areas
+- [ ] 36-02-PLAN.md — Tab state persistence, capture-mode-aware initialization, and auto-switch logic
 
 ### Phase 37: Aba Preencher
 **Goal**: Users can perform the complete fill workflow (connect, select project/batch, navigate rows, fill forms) from the Side Panel with visible step details
@@ -142,7 +143,7 @@ Phase 37 (Aba Preencher)
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 35. Side Panel Setup | v5.1 | 5/5 | Complete | 2026-02-06 |
-| 36. Tabs Structure | v5.1 | 0/TBD | Not started | - |
+| 36. Tabs Structure | v5.1 | 0/2 | Not started | - |
 | 37. Aba Preencher | v5.1 | 0/TBD | Not started | - |
 | 38. Secao Recentes | v5.1 | 0/TBD | Not started | - |
 | 39. Aba Captura | v5.1 | 0/TBD | Not started | - |
