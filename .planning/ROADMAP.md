@@ -71,11 +71,11 @@ Plans:
   3. Clicking a step in the list highlights the corresponding element on the web page and scrolls it into view
   4. Steps whose CSS/XPath selector is not found on the current page display a warning badge
   5. All content fits within the ~320px Side Panel width without horizontal scrolling
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 37-01: TBD
-- [ ] 37-02: TBD
+- [ ] 37-01-PLAN.md — Restructure Preencher tab layout (compact header, sticky fill, empty state) and create PreencherStepList with drag-and-drop
+- [ ] 37-02-PLAN.md — Content script element highlighting, selector validation, step click wiring, and fill result indicators
 
 ### Phase 38: Secao Recentes
 **Goal**: Users can see and navigate to recently filled rows directly from the Preencher tab
@@ -145,11 +145,11 @@ Phase 37 (Aba Preencher)
 |-------|-----------|----------------|--------|-----------|
 | 35. Side Panel Setup | v5.1 | 5/5 | Complete | 2026-02-06 |
 | 36. Tabs Structure | v5.1 | 3/3 | Complete | 2026-02-06 |
-| 37. Aba Preencher | v5.1 | 0/TBD | Not started | - |
+| 37. Aba Preencher | v5.1 | 0/2 | Not started | - |
 | 38. Secao Recentes | v5.1 | 0/TBD | Not started | - |
 | 39. Aba Captura | v5.1 | 0/TBD | Not started | - |
 | 40. Modo Colapsado | v5.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-06 — Phase 36 complete (gap closure executed)*
+*Last updated: 2026-02-06 — Phase 37 planned (2 plans in 2 waves)*
