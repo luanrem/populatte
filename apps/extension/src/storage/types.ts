@@ -48,6 +48,8 @@ export interface PreferencesState {
   lastProjectId: string | null;
   /** Last selected mapping ID per project (maps projectId to mappingId) */
   lastMappingIdByProject: Record<string, string>;
+  /** Last active tab in Side Panel (global across all browser tabs) */
+  lastActiveTab: 'preencher' | 'captura';
 }
 
 /**
@@ -70,4 +72,5 @@ export const DEFAULT_SELECTION: SelectionState = {
 export const DEFAULT_PREFERENCES: PreferencesState = {
   lastProjectId: null,
   lastMappingIdByProject: {},
+  lastActiveTab: 'preencher',
 };

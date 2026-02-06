@@ -80,4 +80,23 @@ export const preferencesStorage = {
       lastMappingIdByProject: updated,
     });
   },
+
+  /**
+   * Get last active tab in Side Panel
+   */
+  async getLastActiveTab(): Promise<'preencher' | 'captura'> {
+    const prefs = await this.getPreferences();
+    return prefs.lastActiveTab;
+  },
+
+  /**
+   * Set last active tab in Side Panel
+   */
+  async setLastActiveTab(tab: 'preencher' | 'captura'): Promise<void> {
+    const current = await this.getPreferences();
+    await this.setPreferences({
+      ...current,
+      lastActiveTab: tab,
+    });
+  },
 };
