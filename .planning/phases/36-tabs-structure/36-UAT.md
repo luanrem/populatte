@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 36-tabs-structure
 source: 36-01-SUMMARY.md, 36-02-SUMMARY.md
 started: 2026-02-06T18:10:00Z
@@ -55,9 +55,12 @@ skipped: 0
   reason: "User reported: Está aparecendo a tooltip depois de muito tempo, demora um pouquinho para aparecer e só aparece quando eu dou hover, quando eu clico não aparece nada."
   severity: minor
   test: 3
-  root_cause: ""
-  artifacts: []
-  missing: []
+  root_cause: "Native HTML title attribute has browser-controlled 1-2s hover delay and never shows on click. Need custom tooltip component."
+  artifacts:
+    - path: "apps/extension/entrypoints/sidepanel/components/TabBar.tsx"
+      issue: "Line 46 uses native title attribute instead of custom tooltip"
+  missing:
+    - "Replace native title with custom CSS tooltip that shows instantly on hover and on click"
   debug_session: ""
 
 - truth: "Side Panel switches to Captura tab immediately when capture mode starts"
@@ -65,7 +68,10 @@ skipped: 0
   reason: "User reported: Tá tendo um delay pra mover pra tela de captura depois que eu clico, mas ele vai. sim aparece o círculo azul pulsando"
   severity: minor
   test: 4
-  root_cause: ""
-  artifacts: []
-  missing: []
+  root_cause: "setActiveTab('captura') is called AFTER sequential async operations (fetchBatchDetail, sendViaPort, chrome.storage.session.set) in handleEnterCaptureMode(), causing 100-500ms+ cumulative delay"
+  artifacts:
+    - path: "apps/extension/entrypoints/sidepanel/App.tsx"
+      issue: "Lines 281-310: setActiveTab on line 307 only runs after all async operations complete"
+  missing:
+    - "Move setActiveTab('captura') to before async operations for optimistic UI update"
   debug_session: ""
