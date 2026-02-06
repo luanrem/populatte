@@ -15,6 +15,7 @@ import {
   FillControls,
   CapturePanel,
   TabBar,
+  PreencherStepList,
   type CaptureStep,
 } from './components';
 
@@ -512,7 +513,16 @@ export default function App() {
                           </button>
                         )}
 
-                        {/* Steps list placeholder - will be added in Task 2 */}
+                        {/* Steps list */}
+                        {mappingSteps.length > 0 && (
+                          <PreencherStepList
+                            steps={mappingSteps}
+                            validation={stepValidation}
+                            fillResults={fillResultsMap}
+                            onStepClick={handleStepHighlight}
+                            onReorder={handleStepReorder}
+                          />
+                        )}
                       </div>
 
                       {/* Sticky footer with row indicator and fill controls */}

@@ -15,3 +15,4 @@ export { ErrorInput } from './ErrorInput';
 export { FillControls } from './FillControls';
 export { TabBar } from './TabBar';
 export * from './capture';
+export * from './preencher';
