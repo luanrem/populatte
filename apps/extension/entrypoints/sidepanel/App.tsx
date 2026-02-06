@@ -284,6 +284,10 @@ export default function App() {
       return;
     }
 
+    // Optimistic UI update: switch tab and mode immediately
+    setActiveTab('captura');
+    setCaptureMode(true);
+
     try {
       // Fetch batch columns
       const batch = await fetchBatchDetail(state.projectId, state.batchId);
@@ -301,11 +305,10 @@ export default function App() {
         capturedSteps: [],
         captureMappingName: '',
       });
-
-      setCaptureMode(true);
-      // Auto-switch to Captura tab when capture mode starts
-      setActiveTab('captura');
     } catch (err) {
+      // Rollback on failure
+      setCaptureMode(false);
+      setActiveTab('preencher');
       setError(err instanceof Error ? err.message : 'Failed to start capture mode');
     }
   }
