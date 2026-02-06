@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 36 of 40 (Tabs Structure) — second phase of v5.1
-Plan: 2 of 2 in phase
-Status: Phase complete (tab state management wired)
-Last activity: 2026-02-06 — Completed 36-02-PLAN.md (Tab State Management)
+Plan: 3 of 3 in phase
+Status: Phase complete (tab UX polish with instant tooltip and optimistic switching)
+Last activity: 2026-02-06 — Completed 36-03-PLAN.md (Gap Closure - Tooltip and Tab Switch)
 
 Progress: [███░░░░░░░] 33%
 
@@ -58,6 +58,8 @@ Recent decisions from Phase 36:
 - TAB-04 (36-02): Default tab is always 'preencher' on open (not remembered from last session)
 - TAB-05 (36-02): Capture mode active on open overrides to 'captura', stays on current tab when ending
 - TAB-06 (36-02): Tab state stored in chrome.storage.local preferences (global across browser tabs)
+- TAB-07 (36-03): Custom CSS tooltip replaces native title (instant hover, click-triggered display)
+- TAB-08 (36-03): Optimistic tab switch before async ops (instant feedback, rollback on error)
 
 ### Roadmap Evolution
 
@@ -93,7 +95,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Phase 36 complete (36-02-PLAN.md - Tab State Management)
+Stopped at: Phase 36 complete (36-03-PLAN.md - Gap Closure)
 Resume file: None
 Next step: `/gsd:plan-phase 37` (Preencher Content)
 
