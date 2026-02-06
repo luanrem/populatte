@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { FileText, Target } from 'lucide-react';
 
 interface TabBarProps {
@@ -13,9 +14,20 @@ interface TabBarProps {
  * Shows a blue pulsing dot badge on Captura tab when capture mode is active.
  */
 export function TabBar({ activeTab, onTabChange, captureActive }: TabBarProps) {
+  const [showClickTooltip, setShowClickTooltip] = useState(false);
+
+  // Cleanup tooltip timeout on unmount or when captureActive changes
+  useEffect(() => {
+    if (captureActive) {
+      setShowClickTooltip(false);
+    }
+  }, [captureActive]);
+
   const handleTabClick = (tab: 'preencher' | 'captura') => {
-    // If clicking Captura tab when it's disabled, do nothing (tooltip will show)
+    // If clicking Captura tab when it's disabled, show tooltip and do nothing
     if (tab === 'captura' && !captureActive) {
+      setShowClickTooltip(true);
+      setTimeout(() => setShowClickTooltip(false), 1500);
       return;
     }
     onTabChange(tab);
@@ -43,9 +55,9 @@ export function TabBar({ activeTab, onTabChange, captureActive }: TabBarProps) {
       <button
         type="button"
         onClick={() => handleTabClick('captura')}
-        title={!captureActive ? 'Inicie a captura primeiro' : undefined}
         className={`
           w-1/2 flex items-center justify-center gap-1.5 py-2 text-sm font-medium
+          ${!captureActive ? 'relative group' : ''}
           ${activeTab === 'captura'
             ? 'text-gray-900 border-b-2 border-amber-600'
             : captureActive
@@ -59,6 +71,17 @@ export function TabBar({ activeTab, onTabChange, captureActive }: TabBarProps) {
         {/* Pulsing dot badge when capture is active */}
         {captureActive && (
           <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+        )}
+        {/* Custom tooltip - shown on hover and click when disabled */}
+        {!captureActive && (
+          <>
+            {/* Arrow/caret pointing up */}
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10" style={{ visibility: showClickTooltip ? 'visible' : undefined, opacity: showClickTooltip ? 1 : undefined }} />
+            {/* Tooltip text */}
+            <span className={`absolute left-1/2 -translate-x-1/2 top-full mt-1 bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 ${showClickTooltip ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity duration-150`}>
+              Inicie a captura primeiro
+            </span>
+          </>
         )}
       </button>
     </div>
