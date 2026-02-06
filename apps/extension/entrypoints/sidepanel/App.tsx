@@ -283,7 +283,7 @@ export default function App() {
       }>(portRef.current, { type: 'FILL_START' });
 
       // Parse step results and build fillResultsMap
-      if (response.success && response.data?.stepResults) {
+      if (response.data?.stepResults) {
         const resultsMap = new Map<string, 'success' | 'failed'>();
         for (const stepResult of response.data.stepResults) {
           if (!stepResult.skipped) {
