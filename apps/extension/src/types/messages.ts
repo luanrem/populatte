@@ -317,6 +317,14 @@ export interface GetStateMessage {
   type: 'GET_STATE';
 }
 
+export interface PortResponseMessage {
+  type: 'RESPONSE';
+  requestType: string;
+  success: boolean;
+  data?: unknown;
+  error?: string;
+}
+
 // ============================================================================
 // Union Types
 // ============================================================================
@@ -371,13 +379,14 @@ export type ContentToBackgroundMessage =
   | PingMessage;
 
 /**
- * Messages broadcast from Background to Popup
+ * Messages broadcast from Background to Popup/Sidepanel
  */
 export type BackgroundToPopupMessage =
   | StateUpdatedMessage
   | FillProgressMessage
   | ElementCapturedMessage
-  | ElementAlreadyCapturedMessage;
+  | ElementAlreadyCapturedMessage
+  | PortResponseMessage;
 
 /**
  * All extension messages (for handler type)
