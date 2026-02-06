@@ -271,10 +271,11 @@ export default defineBackground(() => {
         // No auth cleanup here. State remains in tabStates Map for instant resume.
       });
 
-      // Push current tab state to newly connected sidepanel
-      if (activeTabId !== null) {
-        sendStateToSidepanel(activeTabId);
-      }
+      // Do NOT push state immediately on connect.
+      // Sidepanel will request state via GET_STATE, which is the canonical
+      // way to get initial state. The immediate push caused race conditions
+      // where async work from sendStateToSidepanel interfered with the
+      // GET_STATE handler running concurrently.
     }
   });
 
@@ -288,12 +289,19 @@ export default defineBackground(() => {
 
       switch (message.type) {
         case 'GET_STATE': {
-          console.log('[Background] GET_STATE: Refreshing mapping detection...');
-          if (activeTabId !== null) {
-            console.log('[Background] GET_STATE: Checking mapping for tab:', activeTabId);
-            await checkMappingForTab(activeTabId);
+          // Ensure activeTabId is known (may be null on fresh extension load)
+          if (activeTabId === null) {
+            const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+            if (activeTab?.id) {
+              activeTabId = activeTab.id;
+            }
           }
-          const state = await buildState(currentTabId);
+          const resolvedTabId = activeTabId ?? 0;
+          console.log('[Background] GET_STATE: Refreshing mapping detection for tab:', resolvedTabId);
+          if (resolvedTabId > 0) {
+            await checkMappingForTab(resolvedTabId);
+          }
+          const state = await buildState(resolvedTabId);
           console.log('[Background] GET_STATE: Returning state, hasMapping:', state.hasMapping, 'mappingId:', state.mappingId, 'availableMappings:', state.availableMappings.length);
           port.postMessage({ type: 'RESPONSE', requestType: 'GET_STATE', success: true, data: state });
           break;
