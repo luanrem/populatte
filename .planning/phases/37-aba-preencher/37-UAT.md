@@ -1,9 +1,9 @@
 ---
 status: diagnosed
 phase: 37-aba-preencher
-source: 37-01-SUMMARY.md, 37-02-SUMMARY.md
-started: 2026-02-06T22:00:00Z
-updated: 2026-02-06T22:10:00Z
+source: [37-01-SUMMARY.md, 37-02-SUMMARY.md]
+started: 2026-02-06T22:18:27Z
+updated: 2026-02-06T22:30:00Z
 ---
 
 ## Current Test
@@ -13,78 +13,70 @@ updated: 2026-02-06T22:10:00Z
 ## Tests
 
 ### 1. Preencher Tab Layout
-expected: Open the Side Panel. The Preencher tab shows a compact layout that fits within ~320px width. Content area scrolls if needed. No horizontal scrollbar appears.
+expected: Open the Side Panel. The Preencher tab shows: compact connection status (dot + text) in the header, project/batch selectors, and a sticky footer with row navigator and fill controls always visible at the bottom.
 result: pass
 
-### 2. Connection Status Indicator
-expected: In the Preencher tab header, a compact connection indicator shows as a dot + text (e.g., green dot + "Conectado" when connected). It's inline in the header, not a separate block.
+### 2. Empty State
+expected: With no batch selected, the Preencher tab shows a Coffee icon with the message "Selecione um projeto e batch para comecar". The project and batch selectors remain visible and usable above the empty state message.
 result: pass
 
-### 3. Empty State (No Batch Selected)
-expected: When no project/batch is selected, the Preencher tab shows a Coffee icon with the message "Selecione um projeto e batch para comecar".
+### 3. Steps List Collapsed by Default
+expected: After selecting a project, batch, and mapping, a steps section appears below the mapping name. It is collapsed by default showing just a summary count (e.g., "5 passos"). A chevron toggle expands it to reveal the full list.
+result: pass
+
+### 4. Steps List Content
+expected: Expand the steps list. Each step shows its action icon, CSS/XPath selector text, and source field name.
+result: pass
+
+### 5. Drag-and-Drop Step Reordering
+expected: In the expanded steps list, drag a step to a different position. The step moves to the new position smoothly.
+result: pass
+
+### 6. Invalid Selector Badge
+expected: If any step has a CSS/XPath selector that does not match an element on the current page, it shows a red dot badge. Hovering the badge shows a tooltip with the selector value.
+result: pass
+
+### 7. Click Step to Highlight Element
+expected: Click a step in the list. The corresponding element on the web page gets highlighted with an amber/gold outline and scrolls into view. The highlight auto-dismisses after ~3 seconds.
+result: pass
+
+### 8. Element Not Found Toast
+expected: Click a step whose selector does not match any element on the page. A toast notification appears: "Elemento nao encontrado na pagina" and auto-clears after ~3 seconds.
+result: pass
+
+### 9. Selector Validation on Mapping Load
+expected: When a mapping is selected/loaded, all step selectors are validated against the current page. Steps with invalid selectors immediately show red dot badges without needing to click them.
+result: pass
+
+### 10. Fill Result Indicators
+expected: After running fill on a row, each step shows a green check (success) or red cross (failed) indicator based on whether that step's fill succeeded.
 result: issue
-reported: "Apareceu, so que nao era pra deselecionar. Ele cobriu todo lugar, nao consegui selecionar o outro dai. A label ali com o cafezinho fica na frente e eu nao consigo ver outro."
-severity: blocker
+reported: "não aparece o green check depois de fill"
+severity: major
 
-### 4. Steps List - Collapsed by Default
-expected: After selecting a mapping with steps, the steps list section appears collapsed by default showing a summary (e.g., step count). A chevron toggle allows expanding to see all steps.
-result: skipped
-reason: Blocked by test 3 - empty state covers UI, cannot select project/batch
-
-### 5. Steps List - Expanded View
-expected: Expanding the steps list shows each step with its action icon, selector text, and source field. The list is readable and doesn't require horizontal scrolling.
-result: skipped
-reason: Blocked by test 3 - empty state covers UI, cannot select project/batch
-
-### 6. Steps List - Drag and Drop Reorder
-expected: You can drag a step to a different position in the list. The step moves to the new position and the list reorders accordingly.
-result: skipped
-reason: Blocked by test 3 - empty state covers UI, cannot select project/batch
-
-### 7. Sticky Footer with Fill Controls
-expected: The bottom of the Preencher tab always shows the row navigator (row number, prev/next arrows) and fill controls (fill button). These stay visible even when scrolling the content above.
-result: skipped
-reason: Blocked by test 3 - empty state covers UI, cannot select project/batch
-
-### 8. Click Step to Highlight Element
-expected: Click a step in the expanded steps list. The corresponding element on the web page gets an amber/gold outline and the page scrolls to bring it into view. The highlight auto-dismisses after ~3 seconds.
-result: skipped
-reason: Blocked by test 3 - empty state covers UI, cannot select project/batch
-
-### 9. Invalid Selector Badges
-expected: If a step's CSS/XPath selector doesn't match any element on the current page, a red dot badge appears on that step. Hovering the badge shows a tooltip with the selector value.
-result: skipped
-reason: Blocked by test 3 - empty state covers UI, cannot select project/batch
-
-### 10. Element Not Found Toast
-expected: When you click a step whose selector doesn't match anything on the page, a toast notification appears saying "Elemento nao encontrado na pagina" and auto-clears after ~3 seconds.
-result: skipped
-reason: Blocked by test 3 - empty state covers UI, cannot select project/batch
-
-### 11. Fill Result Indicators
-expected: After running a fill operation, each step shows a green check (success) or red cross (failed) indicator based on whether its fill action succeeded.
-result: skipped
-reason: Blocked by test 3 - empty state covers UI, cannot select project/batch
+### 11. No Horizontal Scrolling
+expected: All content in the Preencher tab fits within the ~320px Side Panel width without horizontal scrolling. Check the header, selectors, steps list, and footer.
+result: pass
 
 ## Summary
 
 total: 11
-passed: 2
+passed: 10
 issues: 1
 pending: 0
-skipped: 8
+skipped: 0
 
 ## Gaps
 
-- truth: "Empty state shows Coffee icon when no batch selected, without blocking project/batch selection UI"
+- truth: "After running fill, each step shows a green check (success) or red cross (failed) indicator"
   status: failed
-  reason: "User reported: Empty state with coffee icon covers entire UI including selectors. Once it appears, user cannot select any project/batch because the label is in front of the controls."
-  severity: blocker
-  test: 3
-  root_cause: "In App.tsx, the ternary `!state.batchId ? (empty state) : (selectors + content)` places ProjectSelector and BatchSelector INSIDE the else branch. When no batch is selected, the empty state replaces the entire content including selectors, creating a deadlock."
+  reason: "User reported: não aparece o green check depois de fill"
+  severity: major
+  test: 10
+  root_cause: "App.tsx handleFill only populates fillResultsMap when response.success is true (line 286). But response.success is false when ANY required step fails, so indicators never show for partial/failed fills. The stepResults array is always available regardless of overall success."
   artifacts:
     - path: "apps/extension/entrypoints/sidepanel/App.tsx"
-      issue: "ProjectSelector and BatchSelector inside conditional branch that hides them when no batch selected"
+      issue: "Overly restrictive conditional: if (response.success && response.data?.stepResults) — should be if (response.data?.stepResults)"
   missing:
-    - "Move ProjectSelector and BatchSelector outside the ternary so they always render"
-  debug_session: ".planning/debug/empty-state-covers-ui.md"
+    - "Remove response.success from conditional so fillResultsMap gets populated for all fill executions"
+  debug_session: ".planning/debug/fill-result-indicators.md"
