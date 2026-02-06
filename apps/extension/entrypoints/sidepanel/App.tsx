@@ -3,6 +3,7 @@ import { Coffee, RefreshCw, Target } from 'lucide-react';
 import { sendViaPort, PortDisconnectedError } from '../../src/messaging';
 import { fetchBatchDetail } from '../../src/api/batches';
 import { createMappingWithSteps } from '../../src/api/mappings';
+import { preferencesStorage } from '../../src/storage/preferences';
 import type { StateResponse, ExtensionState, VoidResponse } from '../../src/types';
 import {
   ConnectView,
@@ -35,6 +36,11 @@ export default function App() {
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'preencher' | 'captura'>('preencher');
+
+  // Persist tab changes to storage
+  useEffect(() => {
+    preferencesStorage.setLastActiveTab(activeTab);
+  }, [activeTab]);
 
   // Load initial state
   useEffect(() => {
