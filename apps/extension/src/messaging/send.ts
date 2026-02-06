@@ -13,6 +13,16 @@ const DEFAULT_TIMEOUT_MS = 10000; // 10 seconds
 const isDev = import.meta.env.DEV;
 
 /**
+ * Error thrown when attempting to send a message via a disconnected port
+ */
+export class PortDisconnectedError extends Error {
+  public constructor(messageType: string) {
+    super(`Port disconnected while sending: ${messageType}`);
+    this.name = 'PortDisconnectedError';
+  }
+}
+
+/**
  * Send message from Popup to Background
  *
  * @param message - Typed message to send
@@ -119,7 +129,17 @@ export function sendViaPort<T>(
     };
 
     port.onMessage.addListener(listener);
-    port.postMessage(message);
+    try {
+      port.postMessage(message);
+    } catch (err) {
+      clearTimeout(timeout);
+      port.onMessage.removeListener(listener);
+      reject(
+        err instanceof Error && err.message.includes('disconnected')
+          ? new PortDisconnectedError(message.type)
+          : err
+      );
+    }
   });
 }
 

@@ -40,6 +40,24 @@ export default defineBackground(() => {
   let activeTabId: number | null = null;
 
   /**
+   * Safely send a message to a port, catching disconnection errors
+   * @returns true if message was sent successfully, false if port is disconnected
+   */
+  function safeSendToPort(port: chrome.runtime.Port | null, message: Record<string, unknown>): boolean {
+    if (!port) return false;
+    try {
+      port.postMessage(message);
+      return true;
+    } catch (err) {
+      console.warn('[Background] Port send failed (disconnected), nulling port:', err);
+      if (port === sidepanelPort) {
+        sidepanelPort = null;
+      }
+      return false;
+    }
+  }
+
+  /**
    * Get or create tab state for a given tab ID
    */
   function getTabState(tabId: number): TabState {
@@ -249,7 +267,7 @@ export default defineBackground(() => {
   async function sendStateToSidepanel(tabId: number): Promise<void> {
     if (!sidepanelPort) return; // Panel not open
     const state = await buildState(tabId);
-    sidepanelPort.postMessage({ type: 'STATE_UPDATED', payload: state });
+    safeSendToPort(sidepanelPort, { type: 'STATE_UPDATED', payload: state });
   }
 
   // ============================================================================
@@ -466,7 +484,7 @@ export default defineBackground(() => {
             }
             const row = await fetchRowByIndex(selection.projectId, selection.batchId, selection.rowIndex);
             tabState.currentRowData = row.data;
-            sidepanelPort?.postMessage({ type: 'FILL_PROGRESS', payload: { currentStep: 0, totalSteps: mapping.steps.length, status: 'Starting...' } });
+            safeSendToPort(sidepanelPort, { type: 'FILL_PROGRESS', payload: { currentStep: 0, totalSteps: mapping.steps.length, status: 'Starting...' } });
             const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
             if (!activeTab?.id) {
               tabState.fillStatus = 'failed';
@@ -486,18 +504,18 @@ export default defineBackground(() => {
             if (!result) {
               console.error('[Background] FILL_EXECUTE: No response from content script');
               tabState.fillStatus = 'failed';
-              sidepanelPort?.postMessage({ type: 'FILL_PROGRESS', payload: { currentStep: 0, totalSteps: mapping.steps.length, status: 'Content script not responding' } });
+              safeSendToPort(sidepanelPort, { type: 'FILL_PROGRESS', payload: { currentStep: 0, totalSteps: mapping.steps.length, status: 'Content script not responding' } });
               await sendStateToSidepanel(currentTabId);
               port.postMessage({ type: 'RESPONSE', requestType: 'FILL_START', success: false, error: 'Content script not responding' });
               break;
             }
             if (result.success) {
               tabState.fillStatus = 'success';
-              sidepanelPort?.postMessage({ type: 'FILL_PROGRESS', payload: { currentStep: mapping.steps.length, totalSteps: mapping.steps.length, status: 'Complete' } });
+              safeSendToPort(sidepanelPort, { type: 'FILL_PROGRESS', payload: { currentStep: mapping.steps.length, totalSteps: mapping.steps.length, status: 'Complete' } });
             } else {
               const successCount = result.data?.stepResults?.filter((r) => r.success).length ?? 0;
               tabState.fillStatus = successCount > 0 ? 'partial' : 'failed';
-              sidepanelPort?.postMessage({ type: 'FILL_PROGRESS', payload: { currentStep: successCount, totalSteps: mapping.steps.length, status: result.error ?? 'Fill failed' } });
+              safeSendToPort(sidepanelPort, { type: 'FILL_PROGRESS', payload: { currentStep: successCount, totalSteps: mapping.steps.length, status: result.error ?? 'Fill failed' } });
             }
             if (result.success && mapping.successTrigger) {
               console.log('[Background] Starting success monitor:', mapping.successTrigger);
@@ -638,7 +656,11 @@ export default defineBackground(() => {
       }
     } catch (err) {
       console.error('[Background] Sidepanel handler error:', err);
-      port.postMessage({ type: 'RESPONSE', requestType: message.type, success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+      try {
+        port.postMessage({ type: 'RESPONSE', requestType: message.type, success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+      } catch {
+        console.warn('[Background] Cannot send error response, port disconnected');
+      }
     }
   }
 
@@ -662,9 +684,9 @@ export default defineBackground(() => {
                 tabState.fillStatus = 'idle';
                 await storage.selection.nextRow();
                 await sendStateToSidepanel(currentTabId);
-                sidepanelPort?.postMessage({ type: 'FILL_PROGRESS', payload: { currentStep: 0, totalSteps: 0, status: `Auto-advanced: ${reason}` } });
+                safeSendToPort(sidepanelPort, { type: 'FILL_PROGRESS', payload: { currentStep: 0, totalSteps: 0, status: `Auto-advanced: ${reason}` } });
               } else {
-                sidepanelPort?.postMessage({ type: 'FILL_PROGRESS', payload: { currentStep: 0, totalSteps: 0, status: `Monitor timeout: ${reason}` } });
+                safeSendToPort(sidepanelPort, { type: 'FILL_PROGRESS', payload: { currentStep: 0, totalSteps: 0, status: `Monitor timeout: ${reason}` } });
               }
               sendResponse({ success: true });
               break;
@@ -691,7 +713,7 @@ export default defineBackground(() => {
               const updatedSteps = [...currentSteps, newStep];
               await chrome.storage.session.set({ capturedSteps: updatedSteps });
               console.log('[Background] Steps saved to storage, total:', updatedSteps.length);
-              sidepanelPort?.postMessage({ type: 'ELEMENT_CAPTURED', payload: newStep });
+              safeSendToPort(sidepanelPort, { type: 'ELEMENT_CAPTURED', payload: newStep });
               console.log('[Background] Port message sent for ELEMENT_CAPTURED');
               sendResponse({ success: true, stepNumber: newStep.stepNumber });
               break;
@@ -699,7 +721,7 @@ export default defineBackground(() => {
 
             case 'ELEMENT_ALREADY_CAPTURED': {
               console.log('[Background] Relay element already captured to sidepanel:', message.payload);
-              sidepanelPort?.postMessage({ type: 'ELEMENT_ALREADY_CAPTURED', payload: message.payload });
+              safeSendToPort(sidepanelPort, { type: 'ELEMENT_ALREADY_CAPTURED', payload: message.payload });
               console.log('[Background] Port message sent for ELEMENT_ALREADY_CAPTURED');
               sendResponse({ success: true });
               break;
