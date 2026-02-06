@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 35: Side Panel Setup** - WXT sidepanel entrypoint, lifecycle detection, popup removal, icon-click behavior
 - [x] **Phase 36: Tabs Structure** - Two-tab architecture (Captura / Preencher) with state-aware enable/disable
-- [ ] **Phase 37: Aba Preencher** - Fill workflow UI migrated to Side Panel with steps list and element highlighting
+- [x] **Phase 37: Aba Preencher** - Fill workflow UI migrated to Side Panel with steps list and element highlighting
 - [ ] **Phase 38: Secao Recentes** - Recent rows history section with click navigation and persistent storage
 - [ ] **Phase 39: Aba Captura** - Capture mode fully operational inside persistent Side Panel
 - [ ] **Phase 40: Modo Colapsado** - Internal compact layout with step icon strip, tooltips, and keyboard shortcut
@@ -74,8 +74,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 37-01-PLAN.md — Restructure Preencher tab layout (compact header, sticky fill, empty state) and create PreencherStepList with drag-and-drop
-- [ ] 37-02-PLAN.md — Content script element highlighting, selector validation, step click wiring, and fill result indicators
+- [x] 37-01-PLAN.md — Restructure Preencher tab layout (compact header, sticky fill, empty state) and create PreencherStepList with drag-and-drop
+- [x] 37-02-PLAN.md — Content script element highlighting, selector validation, step click wiring, and fill result indicators
 
 ### Phase 38: Secao Recentes
 **Goal**: Users can see and navigate to recently filled rows directly from the Preencher tab
@@ -145,11 +145,11 @@ Phase 37 (Aba Preencher)
 |-------|-----------|----------------|--------|-----------|
 | 35. Side Panel Setup | v5.1 | 5/5 | Complete | 2026-02-06 |
 | 36. Tabs Structure | v5.1 | 3/3 | Complete | 2026-02-06 |
-| 37. Aba Preencher | v5.1 | 0/2 | Not started | - |
+| 37. Aba Preencher | v5.1 | 2/2 | Complete | 2026-02-06 |
 | 38. Secao Recentes | v5.1 | 0/TBD | Not started | - |
 | 39. Aba Captura | v5.1 | 0/TBD | Not started | - |
 | 40. Modo Colapsado | v5.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-06 — Phase 37 planned (2 plans in 2 waves)*
+*Last updated: 2026-02-06 — Phase 37 complete (2 plans executed)*

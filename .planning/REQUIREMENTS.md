@@ -26,11 +26,11 @@ Requirements for Side Panel & UX Improvements milestone. Each maps to roadmap ph
 
 ### Preencher
 
-- [ ] **FILL-01**: Connection status, project/batch selectors, mapping info, row navigator, fill controls (migrated from popup)
-- [ ] **FILL-02**: Steps list below mapping name with count, action icons, selector, source field
-- [ ] **FILL-03**: Click step highlights element on page and scrolls into view
-- [ ] **FILL-04**: Warning badge on steps where selector not found on current page
-- [ ] **FILL-05**: Layout fits ~320px Side Panel width without horizontal scroll
+- [x] **FILL-01**: Connection status, project/batch selectors, mapping info, row navigator, fill controls (migrated from popup)
+- [x] **FILL-02**: Steps list below mapping name with count, action icons, selector, source field
+- [x] **FILL-03**: Click step highlights element on page and scrolls into view
+- [x] **FILL-04**: Warning badge on steps where selector not found on current page
+- [x] **FILL-05**: Layout fits ~320px Side Panel width without horizontal scroll
 
 ### Recentes
 
@@ -105,11 +105,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TAB-03 | Phase 36 | Complete |
 | TAB-04 | Phase 36 | Complete |
 | TAB-05 | Phase 36 | Complete |
-| FILL-01 | Phase 37 | Pending |
-| FILL-02 | Phase 37 | Pending |
-| FILL-03 | Phase 37 | Pending |
-| FILL-04 | Phase 37 | Pending |
-| FILL-05 | Phase 37 | Pending |
+| FILL-01 | Phase 37 | Complete |
+| FILL-02 | Phase 37 | Complete |
+| FILL-03 | Phase 37 | Complete |
+| FILL-04 | Phase 37 | Complete |
+| FILL-05 | Phase 37 | Complete |
 | REC-01 | Phase 38 | Pending |
 | REC-02 | Phase 38 | Pending |
 | REC-03 | Phase 38 | Pending |
