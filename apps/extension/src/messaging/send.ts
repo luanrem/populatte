@@ -89,6 +89,41 @@ export async function sendToContent<T>(
 }
 
 /**
+ * Send message via port and await response
+ *
+ * Used by sidepanel for persistent connection to background.
+ * Returns a Promise that resolves when the background sends a RESPONSE
+ * message matching the request type.
+ */
+export function sendViaPort<T>(
+  port: chrome.runtime.Port,
+  message: PopupToBackgroundMessage,
+  timeoutMs: number = DEFAULT_TIMEOUT_MS
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      port.onMessage.removeListener(listener);
+      reject(new Error(`Port message timeout: ${message.type} (${timeoutMs}ms)`));
+    }, timeoutMs);
+
+    const listener = (response: { type: string; requestType?: string; success?: boolean; data?: unknown; error?: string }) => {
+      if (response.type === 'RESPONSE' && response.requestType === message.type) {
+        clearTimeout(timeout);
+        port.onMessage.removeListener(listener);
+        if (response.success) {
+          resolve({ success: true, data: response.data } as T);
+        } else {
+          resolve({ success: false, error: response.error } as T);
+        }
+      }
+    };
+
+    port.onMessage.addListener(listener);
+    port.postMessage(message);
+  });
+}
+
+/**
  * Broadcast message to all extension contexts (popup)
  *
  * Used by background to push state updates.

@@ -16,6 +16,6 @@
  *   browser.runtime.onMessage.addListener(router);
  */
 
-export { sendToBackground, sendToContent, broadcast } from './send';
+export { sendToBackground, sendToContent, broadcast, sendViaPort } from './send';
 export { createMessageRouter, success, ok, error } from './handlers';
 export type { MessageHandler, HandlerRegistry } from './handlers';

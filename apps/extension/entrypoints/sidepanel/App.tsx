@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Coffee, RefreshCw, Target } from 'lucide-react';
-import { sendToBackground } from '../../src/messaging';
+import { sendViaPort } from '../../src/messaging';
 import { fetchBatchDetail } from '../../src/api/batches';
 import { createMappingWithSteps } from '../../src/api/mappings';
 import type { StateResponse, ExtensionState, VoidResponse } from '../../src/types';
@@ -22,6 +22,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [fillProgress, setFillProgress] = useState<{ current: number; total: number } | null>(null);
   const [fillError, setFillError] = useState<string | null>(null);
+  const [port, setPort] = useState<chrome.runtime.Port | null>(null);
 
   // Capture mode state
   const [captureMode, setCaptureMode] = useState(false);
@@ -30,7 +31,49 @@ export default function App() {
 
   // Load initial state
   useEffect(() => {
-    loadState();
+    // Connect to background via long-lived port
+    const p = chrome.runtime.connect({ name: 'sidepanel' });
+    setPort(p);
+
+    // Listen for pushed messages from background
+    const messageListener = (message: { type: string; payload?: unknown }) => {
+      if (message.type === 'STATE_UPDATED') {
+        const newState = message.payload as ExtensionState;
+        setState(newState);
+        // Only clear fill progress/error when fillStatus returns to idle
+        if (newState.fillStatus === 'idle') {
+          setFillProgress(null);
+          setFillError(null);
+        }
+      }
+      if (message.type === 'FILL_PROGRESS') {
+        const progress = message.payload as { currentStep: number; totalSteps: number; status: string };
+        setFillProgress({ current: progress.currentStep, total: progress.totalSteps });
+        // Check for error in status
+        if (progress.status.toLowerCase().includes('error')) {
+          setFillError(progress.status);
+        }
+      }
+      if (message.type === 'ELEMENT_CAPTURED') {
+        // Handled by CapturePanel via storage listener, but we could forward here too
+      }
+      // RESPONSE messages are handled inside sendViaPort
+    };
+
+    p.onMessage.addListener(messageListener);
+
+    // Request initial state
+    sendViaPort<StateResponse>(p, { type: 'GET_STATE' }).then((response) => {
+      if (response.success) {
+        setState(response.data);
+      } else {
+        setError(response.error);
+      }
+      setLoading(false);
+    }).catch((err) => {
+      setError(err instanceof Error ? err.message : 'Failed to load state');
+      setLoading(false);
+    });
 
     // Get current tab URL
     browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
@@ -57,41 +100,18 @@ export default function App() {
       console.error('[App] Failed to restore from storage:', err);
     });
 
-    // Listen for state updates and fill progress from background
-    const listener = (message: { type: string; payload: unknown }): undefined | false => {
-      if (message.type === 'STATE_UPDATED') {
-        const newState = message.payload as ExtensionState;
-        setState(newState);
-        // Only clear fill progress/error when fillStatus returns to idle
-        // (e.g., after row navigation resets the state)
-        if (newState.fillStatus === 'idle') {
-          setFillProgress(null);
-          setFillError(null);
-        }
-        return undefined; // Handled, no response needed
-      }
-      if (message.type === 'FILL_PROGRESS') {
-        const progress = message.payload as { currentStep: number; totalSteps: number; status: string };
-        setFillProgress({ current: progress.currentStep, total: progress.totalSteps });
-        // Check for error in status
-        if (progress.status.toLowerCase().includes('error')) {
-          setFillError(progress.status);
-        }
-        return undefined;
-      }
-      return false; // Not handling this message, let other listeners respond
+    return () => {
+      p.disconnect();
     };
-
-    browser.runtime.onMessage.addListener(listener);
-    return () => browser.runtime.onMessage.removeListener(listener);
   }, []);
 
   async function loadState() {
+    if (!port) return;
     setLoading(true);
     setError(null);
 
     try {
-      const response = await sendToBackground<StateResponse>({ type: 'GET_STATE' });
+      const response = await sendViaPort<StateResponse>(port, { type: 'GET_STATE' });
 
       if (response.success) {
         setState(response.data);
@@ -106,86 +126,92 @@ export default function App() {
   }
 
   async function handleProjectSelect(projectId: string) {
+    if (!port) return;
     try {
-      await sendToBackground<VoidResponse>({
+      await sendViaPort<VoidResponse>(port, {
         type: 'PROJECT_SELECT',
         payload: { projectId },
       });
-      // State update comes via STATE_UPDATED broadcast
+      // State update comes via STATE_UPDATED port message
     } catch (err) {
-      console.error('[Popup] Failed to select project:', err);
+      console.error('[Sidepanel] Failed to select project:', err);
     }
   }
 
   async function handleBatchSelect(batchId: string, rowTotal: number) {
+    if (!port) return;
     try {
       // Update local state immediately for rowTotal
       if (state) {
         setState({ ...state, rowTotal });
       }
-      await sendToBackground<VoidResponse>({
+      await sendViaPort<VoidResponse>(port, {
         type: 'BATCH_SELECT',
         payload: { batchId, rowTotal },
       });
-      // State update comes via STATE_UPDATED broadcast
+      // State update comes via STATE_UPDATED port message
     } catch (err) {
-      console.error('[Popup] Failed to select batch:', err);
+      console.error('[Sidepanel] Failed to select batch:', err);
     }
   }
 
   // Fill cycle handlers
   async function handleFill() {
-    // Stub for Phase 29: Will send FILL_START message
+    if (!port) return;
     setFillError(null);
     try {
-      await sendToBackground<VoidResponse>({ type: 'FILL_START' });
+      await sendViaPort<VoidResponse>(port, { type: 'FILL_START' });
     } catch (err) {
       setFillError(err instanceof Error ? err.message : 'Fill failed');
     }
   }
 
   async function handleNext() {
+    if (!port) return;
     setFillError(null);
     try {
-      await sendToBackground<VoidResponse>({ type: 'ROW_NEXT' });
-      // State update comes via STATE_UPDATED broadcast
+      await sendViaPort<VoidResponse>(port, { type: 'ROW_NEXT' });
+      // State update comes via STATE_UPDATED port message
     } catch (err) {
-      console.error('[Popup] Failed to advance row:', err);
+      console.error('[Sidepanel] Failed to advance row:', err);
     }
   }
 
   async function handlePrev() {
+    if (!port) return;
     setFillError(null);
     try {
-      await sendToBackground<VoidResponse>({ type: 'ROW_PREV' });
-      // State update comes via STATE_UPDATED broadcast
+      await sendViaPort<VoidResponse>(port, { type: 'ROW_PREV' });
+      // State update comes via STATE_UPDATED port message
     } catch (err) {
-      console.error('[Popup] Failed to go to previous row:', err);
+      console.error('[Sidepanel] Failed to go to previous row:', err);
     }
   }
 
   async function handleMarkError(reason?: string) {
+    if (!port) return;
     setFillError(null);
     try {
-      await sendToBackground<VoidResponse>({
+      await sendViaPort<VoidResponse>(port, {
         type: 'MARK_ERROR',
         payload: { reason },
       });
-      // State update comes via STATE_UPDATED broadcast
+      // State update comes via STATE_UPDATED port message
     } catch (err) {
-      console.error('[Popup] Failed to mark error:', err);
+      console.error('[Sidepanel] Failed to mark error:', err);
     }
   }
 
   async function handleMappingSelect(mappingId: string) {
+    if (!port) return;
     try {
-      await sendToBackground<VoidResponse>({
+      await sendViaPort<VoidResponse>(port, {
         type: 'MAPPING_SELECT',
         payload: { mappingId },
       });
-      // State update comes via STATE_UPDATED broadcast
+      // State update comes via STATE_UPDATED port message
     } catch (err) {
-      console.error('[Popup] Failed to select mapping:', err);
+      console.error('[Sidepanel] Failed to select mapping:', err);
     }
   }
 
@@ -194,7 +220,7 @@ export default function App() {
   // ============================================================================
 
   async function handleEnterCaptureMode() {
-    if (!state?.batchId || !state?.projectId) {
+    if (!port || !state?.batchId || !state?.projectId) {
       setError('Select a batch first');
       return;
     }
@@ -207,7 +233,7 @@ export default function App() {
       setBatchColumns(columns);
 
       // Start capture mode in content script
-      await sendToBackground({ type: 'CAPTURE_START', payload: { batchColumns: columns } });
+      await sendViaPort(port, { type: 'CAPTURE_START', payload: { batchColumns: columns } });
 
       // Persist capture mode state to session storage
       await chrome.storage.session.set({
@@ -224,17 +250,19 @@ export default function App() {
   }
 
   async function handleExitCaptureMode() {
+    if (!port) return;
     // Clear persisted capture mode state
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
-    await sendToBackground({ type: 'CAPTURE_STOP' });
+    await sendViaPort(port, { type: 'CAPTURE_STOP' });
     setCaptureMode(false);
   }
 
   async function handleStartFilling() {
+    if (!port) return;
     console.log('[App] handleStartFilling called');
     // Clear persisted capture mode state
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
-    await sendToBackground({ type: 'CAPTURE_STOP' });
+    await sendViaPort(port, { type: 'CAPTURE_STOP' });
     setCaptureMode(false);
     // Refresh state to load the newly created mapping
     console.log('[App] Refreshing state to detect new mapping...');
@@ -243,6 +271,7 @@ export default function App() {
   }
 
   async function handleSaveMapping(name: string, steps: CaptureStep[]): Promise<{ id: string }> {
+    if (!port) throw new Error('Not connected');
     console.log('[App] handleSaveMapping called');
     console.log('[App] name:', name);
     console.log('[App] steps count:', steps.length);
@@ -277,7 +306,7 @@ export default function App() {
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
 
     // Stop capture mode in content script (cleanup)
-    await sendToBackground({ type: 'CAPTURE_STOP' });
+    await sendViaPort(port, { type: 'CAPTURE_STOP' });
 
     // Refresh state to show new mapping
     console.log('[App] Refreshing state after mapping save...');
@@ -288,14 +317,16 @@ export default function App() {
   }
 
   async function handleRemoveStep(stepNumber: number) {
-    await sendToBackground({
+    if (!port) return;
+    await sendViaPort(port, {
       type: 'CAPTURE_REMOVE_STEP',
       payload: { stepNumber },
     });
   }
 
   async function handleHighlightStep(stepNumber: number) {
-    await sendToBackground({
+    if (!port) return;
+    await sendViaPort(port, {
       type: 'CAPTURE_HIGHLIGHT',
       payload: { stepNumber },
     });
