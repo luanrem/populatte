@@ -274,6 +274,29 @@ export interface CaptureRemoveStepMessage {
   };
 }
 
+// ============================================================================
+// Preencher: Highlight & Validation Messages
+// ============================================================================
+
+export interface HighlightStepMessage {
+  type: 'HIGHLIGHT_STEP';
+  payload: {
+    selector: { type: 'css' | 'xpath'; value: string };
+    selectorFallbacks?: Array<{ type: 'css' | 'xpath'; value: string }>;
+  };
+}
+
+export interface ValidateSelectorsMessage {
+  type: 'VALIDATE_SELECTORS';
+  payload: {
+    selectors: Array<{
+      stepId: string;
+      selector: { type: 'css' | 'xpath'; value: string };
+      selectorFallbacks?: Array<{ type: 'css' | 'xpath'; value: string }>;
+    }>;
+  };
+}
+
 export interface ElementCapturedMessage {
   type: 'ELEMENT_CAPTURED';
   payload: CapturedElementPayload;
@@ -352,6 +375,8 @@ export type PopupToBackgroundMessage =
   | CaptureStopMessage
   | CaptureHighlightMessage
   | CaptureRemoveStepMessage
+  | HighlightStepMessage
+  | ValidateSelectorsMessage
   | GetStateMessage
   | PingMessage;
 
@@ -366,6 +391,8 @@ export type BackgroundToContentMessage =
   | CaptureStopMessage
   | CaptureHighlightMessage
   | CaptureRemoveStepMessage
+  | HighlightStepMessage
+  | ValidateSelectorsMessage
   | PingMessage;
 
 /**

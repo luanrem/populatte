@@ -4,11 +4,15 @@ import type {
   PingResponse,
   CaptureHighlightMessage,
   CaptureRemoveStepMessage,
+  HighlightStepMessage,
+  ValidateSelectorsMessage,
 } from '../src/types';
 
 import { executeSteps } from '../src/content';
 import { startSuccessMonitor, stopSuccessMonitor } from '../src/content/success-monitor';
 import { CaptureMode } from '../src/content/capture';
+import { highlightStepElement } from '../src/content/highlight-step';
+import { validateSelectors } from '../src/content/validate-selectors';
 
 // Capture mode instance (persists across messages)
 let captureMode: CaptureMode | null = null;
@@ -133,6 +137,26 @@ export default defineContentScript({
         }
 
         return Promise.resolve({ success: true });
+      }
+
+      // Highlight step element (Preencher tab)
+      if (message.type === 'HIGHLIGHT_STEP') {
+        const msg = message as HighlightStepMessage;
+        console.log('[Populatte] Highlight step:', msg.payload.selector);
+
+        const result = highlightStepElement(msg.payload.selector, msg.payload.selectorFallbacks);
+
+        return Promise.resolve({ success: true, data: result });
+      }
+
+      // Validate selectors (Preencher tab)
+      if (message.type === 'VALIDATE_SELECTORS') {
+        const msg = message as ValidateSelectorsMessage;
+        console.log('[Populatte] Validate selectors:', msg.payload.selectors.length);
+
+        const results = validateSelectors(msg.payload.selectors);
+
+        return Promise.resolve({ success: true, data: { results } });
       }
 
       return false;

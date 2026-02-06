@@ -555,18 +555,20 @@ export default defineBackground(() => {
         case 'CAPTURE_START':
         case 'CAPTURE_STOP':
         case 'CAPTURE_HIGHLIGHT':
-        case 'CAPTURE_REMOVE_STEP': {
-          console.log('[Background] Relay capture message to content script:', message.type);
+        case 'CAPTURE_REMOVE_STEP':
+        case 'HIGHLIGHT_STEP':
+        case 'VALIDATE_SELECTORS': {
+          console.log('[Background] Relay message to content script:', message.type);
           try {
             const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
             if (tab?.id) {
               const response = await browser.tabs.sendMessage(tab.id, message);
-              port.postMessage({ type: 'RESPONSE', requestType: message.type, success: true, data: response });
+              port.postMessage({ type: 'RESPONSE', requestType: message.type, success: true, data: response?.data ?? response });
             } else {
               port.postMessage({ type: 'RESPONSE', requestType: message.type, success: false, error: 'No active tab' });
             }
           } catch (error) {
-            console.error('[Background] Failed to relay capture message:', error);
+            console.error('[Background] Failed to relay message:', error);
             port.postMessage({ type: 'RESPONSE', requestType: message.type, success: false, error: error instanceof Error ? error.message : 'Failed to communicate with page' });
           }
           break;
