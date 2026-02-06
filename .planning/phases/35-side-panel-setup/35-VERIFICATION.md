@@ -1,262 +1,284 @@
 ---
 phase: 35-side-panel-setup
-verified: 2026-02-06T13:45:00Z
-status: passed
-score: 5/5 success criteria verified
+verified: 2026-02-06T17:37:53Z
+status: gaps_found
+score: 3/4 Plan 35-05 must-haves verified (1 critical bug found)
 re_verification:
-  previous_status: gaps_found
-  previous_score: 3/3 plan-35-03 must-haves verified, 2 new gaps discovered
-  previous_date: 2026-02-06T12:30:00Z
-  gaps_closed:
-    - "ProjectSelector uses sendViaPort for GET_PROJECTS (not sendToBackground)"
-    - "BatchSelector uses sendViaPort for GET_BATCHES (not sendToBackground)"
+  previous_status: passed
+  previous_score: 5/5 success criteria verified
+  previous_date: 2026-02-06T13:45:00Z
+  gaps_closed: []
   gaps_remaining: []
-  regressions: []
+  regressions:
+    - "App.tsx uses undefined 'port' variable (should be 'portRef.current') - critical TypeScript error"
+  new_gaps:
+    - "Port reconnection logic incomplete: App.tsx JSX references non-existent 'port' variable in 3 locations"
+gaps:
+  - truth: "Side Panel stays open and functional without periodic GET_STATE timeout errors after idle"
+    status: failed
+    reason: "Plan 35-05 Task 2 commit (d914a56) converted port from useState to useRef but failed to update JSX prop references. App.tsx lines 440, 446, 491 use 'port={port!}' but 'port' variable doesn't exist (only portRef). TypeScript reports 'Cannot find name port' errors. Code would fail at runtime with ReferenceError."
+    artifacts:
+      - path: "apps/extension/entrypoints/sidepanel/App.tsx"
+        issue: "Line 440: ProjectSelector port={port!} - 'port' is undefined"
+      - path: "apps/extension/entrypoints/sidepanel/App.tsx"
+        issue: "Line 446: BatchSelector port={port!} - 'port' is undefined"
+      - path: "apps/extension/entrypoints/sidepanel/App.tsx"
+        issue: "Line 491: ConnectView port={port!} - 'port' is undefined"
+    missing:
+      - "Change line 440 from 'port={port!}' to 'port={portRef.current!}'"
+      - "Change line 446 from 'port={port!}' to 'port={portRef.current!}'"
+      - "Change line 491 from 'port={port!}' to 'port={portRef.current!}'"
 ---
 
-# Phase 35: Side Panel Setup Final Verification Report
+# Phase 35: Side Panel Setup Re-Verification Report
 
 **Phase Goal:** Side Panel opens as the sole extension UI with per-tab persistence and clean lifecycle management
 
-**Verified:** 2026-02-06T13:45:00Z
+**Verified:** 2026-02-06T17:37:53Z
 
-**Status:** PASSED
+**Status:** GAPS_FOUND (regression introduced by Plan 35-05)
 
-**Re-verification:** Yes — after Plan 35-04 gap closure (selector port messaging)
+**Re-verification:** Yes — after Plan 35-05 gap closure (port disconnection fixes)
 
 ## Re-Verification Context
 
-**Previous verification:** 2026-02-06T12:30:00Z (GAPS_FOUND, 3/3 Plan 35-03 must-haves verified, 2 new gaps)
+**Previous verification:** 2026-02-06T13:45:00Z (PASSED, 5/5 success criteria verified)
 
-**Plan 35-04 executed:** Selector port messaging gap closure
-- Converted ProjectSelector from sendToBackground to sendViaPort
-- Converted BatchSelector from sendToBackground to sendViaPort
-- Threaded port prop from App.tsx to both selectors
+**Plan 35-05 executed:** Port disconnection gap closure
+- Task 1: Defensive port.postMessage handling (commit e58d03e) ✓
+- Task 2: Port reconnection logic and keepalive alarm (commit d914a56) ⚠️ INCOMPLETE
 
-**Purpose:** Verify Plan 35-04 fixes landed correctly and check Phase 35 goal achievement
+**Purpose:** Verify Plan 35-05 fixes landed correctly and no regressions introduced
 
-## Phase 35 Goal Achievement
+## Critical Regression Discovered
 
-### Success Criteria Verification
+**Regression introduced by commit d914a56 (Plan 35-05 Task 2):**
 
-Phase goal requires 5 observable truths (from ROADMAP.md Success Criteria):
+Plan 35-05 Task 2 action item stated:
+> "Update ALL references to `port` (the old state variable) throughout the component:
+> - Remove the old `const [port, setPort] = useState<chrome.runtime.Port | null>(null);` line
+> - Change all `if (!port) return;` guards to `if (!portRef.current) return;`
+> - Change all `sendViaPort<...>(port, ...)` calls to `sendViaPort<...>(portRef.current, ...)`
+> - **Change `port={port!}` JSX props to `port={portRef.current!}`**"
+
+**What was actually done:**
+- ✅ Removed useState port declaration
+- ✅ Changed function body references (loadState, handleProjectSelect, etc.)
+- ❌ **MISSED: Did not update JSX prop references** (lines 440, 446, 491)
+
+**TypeScript errors:**
+```
+entrypoints/sidepanel/App.tsx(440,25): error TS2304: Cannot find name 'port'.
+entrypoints/sidepanel/App.tsx(446,25): error TS2304: Cannot find name 'port'.
+entrypoints/sidepanel/App.tsx(491,32): error TS2304: Cannot find name 'port'.
+```
+
+**Impact:**
+- **CRITICAL BLOCKER** - Code would fail at runtime with `ReferenceError: port is not defined`
+- Extension builds due to Vite/WXT not enforcing TypeScript errors
+- Type-check fails (`npm run type-check` exits with code 2)
+- All three child components (ProjectSelector, BatchSelector, ConnectView) receive undefined port
+- User cannot authenticate, select projects, or load batches (100% non-functional)
+
+## Plan 35-05 Must-Haves Verification
+
+### Observable Truths
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | Clicking the extension icon opens the Side Panel (not a popup) | ✓ VERIFIED | background.ts line 31: `browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true })`. Manifest line 12: `"side_panel":{"default_path":"sidepanel.html"}`. No popup entrypoint exists (`ls entrypoints/popup` returns "No popup directory"). |
-| 2 | Side Panel stays open while the user clicks and interacts with the web page | ✓ VERIFIED | Architectural verification: Side Panel is a persistent Chrome API surface (not window.close on blur like popup). UAT 35-UAT.md Test 2: pass. Side Panel does not close on page interaction. |
-| 3 | Side Panel content persists across page navigations within the same tab | ✓ VERIFIED | App.tsx line 35: port established via `chrome.runtime.connect({ name: 'sidepanel' })`. Background.ts lines 258-280: port connection persists across navigations. Tab state stored in Map (line 38: `tabStates`), not reset on navigation. UAT Test 3: pass. |
-| 4 | Each tab has independent Side Panel state (switching tabs shows correct context) | ✓ VERIFIED | Background.ts line 38: `tabStates = new Map<number, TabState>()`. Line 45-60: `getTabState(tabId)` isolates state per tab. Lines 148-159: `tabs.onActivated` updates `activeTabId` and sends correct state to sidepanel. Per-tab state includes `mappingMatches`, `fillStatus`, `currentRowData`. |
-| 5 | Closing the Side Panel triggers cleanup in the background script (port disconnect detected) | ✓ VERIFIED | Background.ts lines 267-272: `port.onDisconnect.addListener` logs "Sidepanel disconnected" and sets `sidepanelPort = null`. Cleanup is intentionally minimal (API connection persists per locked decision). Port disconnection is detected and handled. |
+| 1 | Side Panel stays open and functional without periodic GET_STATE timeout errors after idle | ✗ FAILED | Port reconnection logic implemented BUT App.tsx uses undefined 'port' variable. TypeScript errors at lines 440, 446, 491. Extension would fail at runtime. |
+| 2 | Port disconnection is detected and auto-reconnected within seconds, not after a 10s timeout | ⚠️ PARTIAL | App.tsx lines 74-88: onDisconnect listener with exponential backoff (500ms to 8s) exists. Logic is correct BUT cannot execute due to undefined 'port' variable in JSX. |
+| 3 | Background never throws 'Attempting to use a disconnected port object' unhandled | ✓ VERIFIED | background.ts safeSendToPort (lines 54-66) wraps all sidepanelPort.postMessage calls with try-catch. Line 62: nulls sidepanelPort on error. 10 usages verified (line 278, 495, 515, 522, 526, 695, 697, 724, 732). Outer catch (line 661) has additional try-catch. |
+| 4 | Service worker stays alive longer via keepalive alarm, reducing disconnection frequency | ✓ VERIFIED | background.ts lines 36-41: keepalive alarm created with 4-minute interval. wxt.config.ts line 14: 'alarms' permission present. Alarm listener logs when fired. |
 
-**Score:** 5/5 success criteria verified
-
-### Plan 35-04 Must-Haves Verification
-
-| # | Truth | Status | Evidence |
-|---|-------|--------|----------|
-| 1 | User can load projects dropdown after authentication | ✓ VERIFIED | ProjectSelector.tsx line 3: imports `sendViaPort`. Line 9: `port: chrome.runtime.Port` prop. Line 32: `sendViaPort<ProjectsResponse>(port, { type: 'GET_PROJECTS' })`. App.tsx line 393: `port={port!}` passed to ProjectSelector. Background.ts lines 549-562: GET_PROJECTS handler in port listener. |
-| 2 | User can load batches dropdown after selecting a project | ✓ VERIFIED | BatchSelector.tsx line 3: imports `sendViaPort`. Line 10: `port: chrome.runtime.Port` prop. Line 47: `sendViaPort<BatchesResponse>(port, { type: 'GET_BATCHES', payload: { projectId: projId } })`. App.tsx line 399: `port={port!}` passed to BatchSelector. Background.ts lines 565-583: GET_BATCHES handler in port listener. |
-
-**Score:** 2/2 truths verified
+**Score:** 2/4 truths verified (Truths 1 and 2 blocked by JSX bug)
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `apps/extension/entrypoints/sidepanel/` | Sidepanel entrypoint directory | ✓ VERIFIED | Exists. Contains index.html, main.tsx, App.tsx, components/ |
-| `sidepanel/main.tsx` | React mount point | ✓ VERIFIED | Lines 6-12: ReactDOM.createRoot mounts App component. Substantive (14 lines). |
-| `sidepanel/App.tsx` | Main sidepanel application | ✓ VERIFIED | Lines 19-460: Full application logic. Port connection (line 35), state management (line 20), selectors (lines 390-399). Substantive (460 lines). |
-| `sidepanel/components/ProjectSelector.tsx` | Port-based GET_PROJECTS | ✓ VERIFIED | Line 3: `sendViaPort` import. Line 9: `port` prop. Line 32: `sendViaPort<ProjectsResponse>(port, { type: 'GET_PROJECTS' })`. Substantive (113 lines). No sendToBackground usage. |
-| `sidepanel/components/BatchSelector.tsx` | Port-based GET_BATCHES | ✓ VERIFIED | Line 3: `sendViaPort` import. Line 10: `port` prop. Line 47: `sendViaPort<BatchesResponse>(port, { ... })`. Substantive (174 lines). No sendToBackground usage. |
-| `background.ts` | Per-tab state Map + port listener | ✓ VERIFIED | Line 38: `tabStates = new Map<number, TabState>()`. Lines 258-280: port connection listener. Lines 549-562: GET_PROJECTS handler. Lines 565-583: GET_BATCHES handler. Substantive (33KB built). |
-| `wxt.config.ts` | sidePanel permission | ✓ VERIFIED | Line 14: `permissions: ['storage', 'activeTab', 'scripting', 'sidePanel']`. |
-| `.output/chrome-mv3/manifest.json` | side_panel configured | ✓ VERIFIED | Line 12: `"side_panel":{"default_path":"sidepanel.html"}`. No popup field. |
+| `apps/extension/src/messaging/send.ts` | PortDisconnectedError class, defensive postMessage | ✓ VERIFIED | Lines 18-23: PortDisconnectedError class. Lines 132-142: try-catch around port.postMessage, immediate rejection on disconnect. |
+| `apps/extension/src/messaging/index.ts` | Export PortDisconnectedError | ✓ VERIFIED | Line 19: exports PortDisconnectedError. |
+| `apps/extension/entrypoints/background.ts` | safeSendToPort helper, keepalive alarm | ✓ VERIFIED | Lines 54-66: safeSendToPort function. Lines 36-41: keepalive alarm setup. 10 safeSendToPort usages. |
+| `apps/extension/entrypoints/sidepanel/App.tsx` | useRef for port, onDisconnect with reconnection | ✗ FAILED | Lines 25-28: portRef, portVersion, retriesRef exist. Lines 74-88: onDisconnect listener with exponential backoff exists. BUT lines 440, 446, 491 use undefined 'port' variable. Critical bug prevents all reconnection logic from working. |
+| `apps/extension/wxt.config.ts` | alarms permission | ✓ VERIFIED | Line 14: 'alarms' in permissions array. |
 
-**Score:** 8/8 artifacts verified
+**Score:** 4/5 artifacts verified (App.tsx has critical bug)
 
-### Key Link Verification
+### Key Links
 
 | From | To | Via | Status | Details |
 |------|----|----|--------|---------|
-| App.tsx | background.ts GET_STATE | sendViaPort over port | ✓ WIRED | App.tsx line 35: port established. Line 66: `sendViaPort<StateResponse>(p, { type: 'GET_STATE' })`. Background.ts lines 291-307: GET_STATE handler returns state via port.postMessage. Response filtered by sendViaPort (send.ts line 18: `requestType === message.requestType`). |
-| ProjectSelector.tsx | background.ts GET_PROJECTS | sendViaPort over port | ✓ WIRED | ProjectSelector line 32: sends GET_PROJECTS. Background line 549: handler in port listener. Port passed from App (line 393) → ProjectSelector (line 18 destructure). |
-| BatchSelector.tsx | background.ts GET_BATCHES | sendViaPort over port | ✓ WIRED | BatchSelector line 47: sends GET_BATCHES. Background line 565: handler in port listener. Port passed from App (line 399) → BatchSelector (line 28 destructure). |
-| background.ts | sidepanel state updates | port.postMessage | ✓ WIRED | Background lines 267-272: onDisconnect listener. Lines 148-159: tabs.onActivated sends state update. Line 252: `sidepanelPort.postMessage({ type: 'STATE_UPDATED', payload: state })`. App.tsx lines 39-61: message listener handles STATE_UPDATED. |
-| wxt.config.ts | manifest side_panel | WXT build | ✓ WIRED | wxt.config.ts line 14: sidePanel permission. WXT generates manifest side_panel field (verified in .output/chrome-mv3/manifest.json line 12). |
+| send.ts sendViaPort | catch PortDisconnectedError | try-catch around postMessage | ✓ WIRED | send.ts line 132: try block wraps port.postMessage. Line 138: catches error, checks for 'disconnected' string, rejects with PortDisconnectedError. |
+| background.ts | chrome.alarms API | keepalive alarm | ✓ WIRED | background.ts line 36: `browser.alarms.create('keepalive', { periodInMinutes: 4 })`. Line 37-40: listener logs when fired. |
+| App.tsx onDisconnect | reconnection logic | port.onDisconnect.addListener | ✗ BROKEN | App.tsx line 74: onDisconnect listener defined. Line 86: setTimeout with exponential backoff calls connectPort. BUT lines 440, 446, 491 pass undefined 'port' to child components, making the reconnection moot (children can't use port). |
 
-**Score:** 5/5 links wired
-
-### Requirements Coverage
-
-Requirements from REQUIREMENTS.md mapped to Phase 35:
-
-| Requirement | Truth | Status | Evidence |
-|-------------|-------|--------|----------|
-| SP-01 | Side Panel renders with React entry via WXT | ✓ SATISFIED | sidepanel/main.tsx exists, ReactDOM mounts App.tsx |
-| SP-02 | Extension icon opens Side Panel directly | ✓ SATISFIED | background.ts line 31: openPanelOnActionClick: true |
-| SP-03 | Side Panel persists across navigations | ✓ SATISFIED | Port connection persists, state in Map not reset on navigation |
-| SP-04 | Per-tab independent state | ✓ SATISFIED | tabStates Map isolates state per tabId |
-| SP-05 | Popup removed | ✓ SATISFIED | No entrypoints/popup directory, no popup in manifest |
-| SP-06 | Port-based lifecycle detection | ✓ SATISFIED | onDisconnect listener (line 267) detects panel close |
-
-**Score:** 6/6 requirements satisfied
+**Score:** 2/3 links verified (App.tsx reconnection link broken by JSX bug)
 
 ## Build Verification
 
-Extension builds successfully:
-
+**Vite/WXT Build:** ✓ PASSES (but shouldn't)
 ```bash
 npm run build --workspace=apps/extension
-✔ Built extension in 1.022 s
+✔ Built extension in 1.061 s
 ```
 
-No TypeScript errors. Total bundle size: 387.15 kB.
-
-Sidepanel output:
-- sidepanel.html: 398 B
-- chunks/sidepanel-D9JkJk7c.js: 295.61 kB
-- assets/sidepanel-C_WSLoPR.css: 21.12 kB
-
-## Anti-Patterns Scan
-
-Scanned modified files for stub patterns:
-
+**TypeScript Type Check:** ✗ FAILS (correctly identifies bug)
 ```bash
-grep -n "TODO\|FIXME\|placeholder\|console.log.*only\|return null\|return {}" \
-  apps/extension/entrypoints/sidepanel/App.tsx \
-  apps/extension/entrypoints/sidepanel/components/ProjectSelector.tsx \
-  apps/extension/entrypoints/sidepanel/components/BatchSelector.tsx
+npm run type-check --workspace=apps/extension
+entrypoints/sidepanel/App.tsx(440,25): error TS2304: Cannot find name 'port'.
+entrypoints/sidepanel/App.tsx(446,25): error TS2304: Cannot find name 'port'.
+entrypoints/sidepanel/App.tsx(491,32): error TS2304: Cannot find name 'port'.
+npm error code 2
 ```
 
-**Result:** No anti-patterns found. No TODOs, no placeholder implementations, no empty returns.
+**Note:** Vite/WXT does not enforce TypeScript errors during build. The extension compiles but would crash at runtime.
 
-Verified no sendToBackground remains in sidepanel:
+## Anti-Patterns Found
 
-```bash
-grep -r "sendToBackground" apps/extension/entrypoints/sidepanel/
-```
+| File | Line | Pattern | Severity | Impact |
+|------|------|---------|----------|--------|
+| App.tsx | 440 | `port={port!}` where port is undefined | 🛑 Blocker | ReferenceError at runtime, ProjectSelector cannot load projects |
+| App.tsx | 446 | `port={port!}` where port is undefined | 🛑 Blocker | ReferenceError at runtime, BatchSelector cannot load batches |
+| App.tsx | 491 | `port={port!}` where port is undefined | 🛑 Blocker | ReferenceError at runtime, ConnectView cannot authenticate |
 
-**Result:** Empty. All sidepanel components use port-based messaging exclusively.
+All three are **CRITICAL BLOCKERS** - extension is 100% non-functional.
 
-## Plan 35-04 Gap Closure Summary
+## Root Cause Analysis
 
-**Previous gaps (from 35-VERIFICATION.md):**
+**How did this happen?**
 
-1. ProjectSelector used sendToBackground for GET_PROJECTS → background port handler couldn't receive
-2. BatchSelector used sendToBackground for GET_BATCHES → background port handler couldn't receive
+1. Plan 35-05 Task 2 had explicit instructions to update JSX props
+2. Commit message (d914a56) claimed: "Update all port references (if (!port) -> if (!portRef.current), sendViaPort(port) -> sendViaPort(portRef.current))"
+3. Task verification step in PLAN.md required: "Verify all `port` references changed to `portRef.current`"
+4. **But:** The implementer updated function body references but missed JSX prop references
+5. **Result:** TypeScript errors introduced, previous PASSED verification invalidated
 
-**Fixes applied (35-04-SUMMARY.md commit f6c7321):**
+**Why wasn't this caught earlier?**
 
-1. ProjectSelector.tsx:
-   - Replaced `sendToBackground` import with `sendViaPort` (line 3)
-   - Added `port: chrome.runtime.Port` to props interface (line 9)
-   - Changed GET_PROJECTS call to `sendViaPort(port, { type: 'GET_PROJECTS' })` (line 32)
+1. Previous verification (35-VERIFICATION.md at 13:45:00Z) marked phase as PASSED
+2. That verification was done BEFORE Plan 35-05 execution
+3. No re-verification was performed AFTER Plan 35-05 commits
+4. Build succeeds silently despite TypeScript errors (Vite/WXT limitation)
+5. Human UAT not performed after 35-05 (would have caught runtime error immediately)
 
-2. BatchSelector.tsx:
-   - Replaced `sendToBackground` import with `sendViaPort` (line 3)
-   - Added `port: chrome.runtime.Port` to props interface (line 10)
-   - Changed GET_BATCHES call to `sendViaPort(port, { ... })` (line 47)
+## Phase 35 Success Criteria Re-Assessment
 
-3. App.tsx:
-   - Passed `port={port!}` to ProjectSelector (line 393)
-   - Passed `port={port!}` to BatchSelector (line 399)
+Phase goal requires 5 observable truths (from ROADMAP.md):
 
-**Verification:**
-- ✅ All 3 files modified as claimed
-- ✅ No sendToBackground usage remains in sidepanel
-- ✅ Extension builds with zero errors
-- ✅ GET_PROJECTS and GET_BATCHES route to correct port handlers
+| # | Truth | Status | Evidence |
+|---|-------|--------|----------|
+| 1 | Clicking the extension icon opens the Side Panel (not a popup) | ✓ VERIFIED | background.ts line 31: openPanelOnActionClick: true. Manifest has side_panel field. No popup entrypoint. |
+| 2 | Side Panel stays open while the user clicks and interacts with the web page | ⚠️ DEGRADED | Architectural: Side Panel persists. BUT runtime error from undefined 'port' makes panel non-functional. |
+| 3 | Side Panel content persists across page navigations within the same tab | ⚠️ DEGRADED | Port connection architecture exists. BUT runtime error prevents any functionality. |
+| 4 | Each tab has independent Side Panel state (switching tabs shows correct context) | ✓ VERIFIED | background.ts tabStates Map isolates state per tab. This works independently of the App.tsx bug. |
+| 5 | Closing the Side Panel triggers cleanup in the background script (port disconnect detected) | ✓ VERIFIED | background.ts lines 267-272: onDisconnect listener. This works independently of the App.tsx bug. |
 
-**Gaps closed:** 2/2
+**Score:** 3/5 success criteria verified (Criteria 2 and 3 technically correct but non-functional due to runtime error)
 
-**Regressions:** None (all previous must-haves from 35-01, 35-02, 35-03 still passing)
+**Overall Phase 35 Status:** FAILED (regression introduced)
 
 ## Human Verification Required
 
-**Automated checks: PASSED**
+**Cannot perform human UAT until JSX bug is fixed.**
 
-**Human UAT status:** Partially completed (35-UAT.md)
-- Tests 1-3 completed before gap closure (1 issue found → led to Plans 35-03 and 35-04)
-- Tests 4-5 were skipped due to blocker issue (now resolved)
+The extension would fail immediately on load with:
+```
+ReferenceError: port is not defined
+  at App.tsx:440 (ProjectSelector render)
+```
 
-**Recommended human verification after gap closure:**
+After fix is applied, the following tests need human verification:
 
-### 1. Complete Authentication Flow
-**Test:** Load extension, click icon, enter login code, submit
-**Expected:** No timeout error, no "Unknown message type" error, connection succeeds, UI shows project/batch selectors with green "Connected" status
-**Why human:** Requires actual API authentication token and browser interaction
+### 1. Side Panel Opens After Idle
+**Test:** Load extension, wait 6+ minutes (SW termination), interact with panel
+**Expected:** Panel reconnects automatically (no "Connection lost" error), exponential backoff in logs
+**Why human:** Requires timing observation and console log inspection
 
-### 2. Project Selection
-**Test:** After login, click project dropdown
-**Expected:** Dropdown loads and displays user's projects (no console errors)
-**Why human:** Requires API data and visual verification of dropdown rendering
+### 2. Reconnection Exponential Backoff
+**Test:** Force SW termination multiple times in quick succession
+**Expected:** Logs show: "Port disconnected, will reconnect..." with delays of 500ms, 1s, 2s, 4s, 8s
+**Why human:** Requires manual SW termination and timing observation
 
-### 3. Batch Selection
-**Test:** After selecting project, click batch dropdown
-**Expected:** Dropdown loads and displays project's batches with progress format "filename - X/Y done" (no console errors)
-**Why human:** Requires API data and visual verification of dropdown rendering
+### 3. Keepalive Alarm Firing
+**Test:** Leave extension open for 4+ minutes, check background console
+**Expected:** "[Background] Keepalive alarm fired" log every 4 minutes
+**Why human:** Requires timing observation
 
-### 4. Per-Tab State Independence
-**Test:** Open Side Panel in Tab A (example.com), select project/batch. Switch to Tab B (different site). Switch back to Tab A.
-**Expected:** Tab A shows previously selected project/batch (state persists per tab)
-**Why human:** Requires multi-tab browser interaction and state observation
+### 4. Complete Authentication Flow After Reconnection
+**Test:** Log in, idle for 6+ minutes, try to select project
+**Expected:** ProjectSelector loads projects successfully (reconnection transparent to user)
+**Why human:** Requires API authentication and real idle period
 
-### 5. Side Panel Persistence
-**Test:** Open Side Panel, select project/batch, close panel, wait 5 seconds, reopen panel
-**Expected:** Connection still active (green status), selected project/batch still shown (no re-authentication needed)
-**Why human:** Requires timing observation and state persistence verification across panel close/open
+## Gaps Summary for Planner
 
-### 6. End-to-End Fill Workflow
-**Test:** Login → select project → select batch → navigate to URL with mapping → click "Preencher" → verify form fills
-**Expected:** Form fills successfully with data from selected batch row
-**Why human:** Requires full extension runtime with real websites, mappings, and batch data
+**1 critical gap blocking Phase 35 completion:**
 
-**Note:** Automated checks confirm all infrastructure is correct (port-based messaging, per-tab state Map, lifecycle detection). Human verification ensures the user-facing behavior matches expectations.
+**Gap 1: App.tsx JSX uses undefined 'port' variable**
+- **Missing:** Replace 3 occurrences of `port={port!}` with `port={portRef.current!}`
+- **Locations:** Lines 440 (ProjectSelector), 446 (BatchSelector), 491 (ConnectView)
+- **Pattern:** Simple find-replace, same as function body references
+- **Estimated effort:** 2 minutes (trivial mechanical fix)
+- **Complexity:** Simple (no logic changes, just variable name)
 
-## Overall Phase 35 Status
+## Requirements Coverage
 
-**Status:** PASSED ✓
+Requirements from REQUIREMENTS.md mapped to Phase 35:
 
-**Phase goal achieved:** Side Panel opens as the sole extension UI with per-tab persistence and clean lifecycle management
+| Requirement | Status | Blocking Issue |
+|-------------|--------|----------------|
+| SP-01 | ✓ SATISFIED | None |
+| SP-02 | ✓ SATISFIED | None |
+| SP-03 | ⚠️ DEGRADED | Runtime error from App.tsx JSX bug |
+| SP-04 | ✓ SATISFIED | None (background state isolation works independently) |
+| SP-05 | ✓ SATISFIED | None |
+| SP-06 | ✓ SATISFIED | None (background disconnect detection works independently) |
 
-**Evidence:**
-- ✅ Side Panel opens on icon click (not popup)
-- ✅ Side Panel persists during page interaction and navigation
-- ✅ Per-tab state isolation via Map<tabId, TabState>
-- ✅ Port-based lifecycle detection (disconnect handler)
-- ✅ All messaging uses port (no sendToBackground in sidepanel)
-- ✅ Popup completely removed
-- ✅ All requirements (SP-01 through SP-06) satisfied
-- ✅ Extension builds successfully
-- ✅ No anti-patterns, no stubs, no TODOs
+**Score:** 5/6 requirements satisfied (SP-03 technically correct but non-functional)
 
-**All Plans Complete:**
-- ✅ Plan 35-01: Sidepanel entrypoint, popup removal, manifest config
-- ✅ Plan 35-02: Per-tab state Map, port communication, tab lifecycle
-- ✅ Plan 35-03: Port messaging bug fixes (AUTH_LOGIN, GET_STATE race)
-- ✅ Plan 35-04: Selector port messaging gap closure
+## Deviation from Plan 35-05
 
-**Next Phase Readiness:**
+**Plan 35-05 Task 2 deviation:**
 
-Phase 35 is COMPLETE. All foundation infrastructure for persistent Side Panel is stable.
+**Action item said:**
+> "Update ALL references to `port` (the old state variable) throughout the component... Change `port={port!}` JSX props to `port={portRef.current!}`"
 
-**Phase 36 (Tabs Structure) is ready to proceed.**
+**What was done:**
+- Updated function body references ✓
+- Updated if guards ✓
+- Updated sendViaPort calls in functions ✓
+- **DID NOT update JSX props** ✗
 
-Phase 36 will add:
-- Two-tab architecture (Captura / Preencher)
-- Tab state-aware enable/disable logic
-- Visual active badge for capture mode
+**Verification step said:**
+> "Verify all `port` references changed to `portRef.current`"
 
-Foundation is solid. No blocking issues for Phase 36.
+**What was verified (in 35-05-SUMMARY.md):**
+- "Updated all references: `if (!port)` → `if (!portRef.current)`, `sendViaPort(port)` → `sendViaPort(portRef.current)`"
+- BUT: JSX props were NOT mentioned in the verification
+- TypeScript type-check was NOT run (only Vite build was verified)
 
-## Gaps Summary
+**Result:** Task marked complete, but critical bug introduced.
 
-**No gaps remaining.** Phase 35 goal fully achieved.
+## Overall Status
+
+**Phase 35 Status:** GAPS_FOUND (regression)
+
+**Phase 35 Goal:** NOT ACHIEVED (extension non-functional due to runtime error)
+
+**Plans Status:**
+- ✅ Plan 35-01: Sidepanel entrypoint (complete, stable)
+- ✅ Plan 35-02: Per-tab state Map (complete, stable)
+- ✅ Plan 35-03: Port messaging bugs (complete, stable)
+- ✅ Plan 35-04: Selector port messaging (complete, stable)
+- ⚠️ Plan 35-05: Port disconnection fixes (incomplete, JSX bug introduced)
+
+**Next Step:** Create Plan 35-06 to fix App.tsx JSX references
+
+**Blocking Phase 36:** YES (cannot proceed with non-functional extension)
 
 ---
 
-_Verified: 2026-02-06T13:45:00Z_
+_Verified: 2026-02-06T17:37:53Z_
 _Verifier: Claude (gsd-verifier)_
-_Re-verification after: Plan 35-04 (Selector port messaging gap closure)_
-_Mode: Re-verification (previous status: gaps_found)_
+_Re-verification after: Plan 35-05 (Port disconnection gap closure)_
+_Mode: Re-verification (previous status: passed, current status: gaps_found - regression)_

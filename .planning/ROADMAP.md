@@ -17,7 +17,7 @@ Migrate the extension UI from a popup to Chrome's persistent Side Panel, solving
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 35: Side Panel Setup** - WXT sidepanel entrypoint, lifecycle detection, popup removal, icon-click behavior
+- [x] **Phase 35: Side Panel Setup** - WXT sidepanel entrypoint, lifecycle detection, popup removal, icon-click behavior
 - [ ] **Phase 36: Tabs Structure** - Two-tab architecture (Captura / Preencher) with state-aware enable/disable
 - [ ] **Phase 37: Aba Preencher** - Fill workflow UI migrated to Side Panel with steps list and element highlighting
 - [ ] **Phase 38: Secao Recentes** - Recent rows history section with click navigation and persistent storage
@@ -43,7 +43,7 @@ Plans:
 - [x] 35-02-PLAN.md — Per-tab state Map, port-based communication, tab lifecycle management
 - [x] 35-03-PLAN.md — Fix port messaging bugs (AUTH_LOGIN routing, GET_STATE race condition)
 - [x] 35-04-PLAN.md — Fix ProjectSelector/BatchSelector sendToBackground to sendViaPort (gap closure)
-- [ ] 35-05-PLAN.md — Fix port disconnection on SW termination: auto-reconnect, defensive sends, keepalive (gap closure)
+- [x] 35-05-PLAN.md — Fix port disconnection on SW termination: auto-reconnect, defensive sends, keepalive (gap closure)
 
 ### Phase 36: Tabs Structure
 **Goal**: Users see two tabs (Captura / Preencher) with context-aware activation reflecting the current extension mode
@@ -141,7 +141,7 @@ Phase 37 (Aba Preencher)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 35. Side Panel Setup | v5.1 | 4/5 | Gap closure | - |
+| 35. Side Panel Setup | v5.1 | 5/5 | Complete | 2026-02-06 |
 | 36. Tabs Structure | v5.1 | 0/TBD | Not started | - |
 | 37. Aba Preencher | v5.1 | 0/TBD | Not started | - |
 | 38. Secao Recentes | v5.1 | 0/TBD | Not started | - |
