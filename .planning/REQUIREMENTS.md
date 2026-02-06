@@ -18,11 +18,11 @@ Requirements for Side Panel & UX Improvements milestone. Each maps to roadmap ph
 
 ### Tabs
 
-- [ ] **TAB-01**: Tab bar with two tabs: "Captura" and "Preencher"
-- [ ] **TAB-02**: Captura tab disabled when not in capture mode (grayed out, tooltip)
-- [ ] **TAB-03**: Captura tab shows active badge when capturing
-- [ ] **TAB-04**: Opens on Preencher tab by default, remembers last active tab
-- [ ] **TAB-05**: Tab state syncs with capture mode events from background script
+- [x] **TAB-01**: Tab bar with two tabs: "Captura" and "Preencher"
+- [x] **TAB-02**: Captura tab disabled when not in capture mode (grayed out, tooltip)
+- [x] **TAB-03**: Captura tab shows active badge when capturing
+- [x] **TAB-04**: Opens on Preencher tab by default, remembers last active tab
+- [x] **TAB-05**: Tab state syncs with capture mode events from background script
 
 ### Preencher
 
@@ -100,11 +100,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SP-04 | Phase 35 | Complete |
 | SP-05 | Phase 35 | Complete |
 | SP-06 | Phase 35 | Complete |
-| TAB-01 | Phase 36 | Pending |
-| TAB-02 | Phase 36 | Pending |
-| TAB-03 | Phase 36 | Pending |
-| TAB-04 | Phase 36 | Pending |
-| TAB-05 | Phase 36 | Pending |
+| TAB-01 | Phase 36 | Complete |
+| TAB-02 | Phase 36 | Complete |
+| TAB-03 | Phase 36 | Complete |
+| TAB-04 | Phase 36 | Complete |
+| TAB-05 | Phase 36 | Complete |
 | FILL-01 | Phase 37 | Pending |
 | FILL-02 | Phase 37 | Pending |
 | FILL-03 | Phase 37 | Pending |
@@ -137,4 +137,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-06 — Phase 35 requirements (SP-01 through SP-06) marked Complete*
+*Last updated: 2026-02-06 — Phase 36 requirements (TAB-01 through TAB-05) marked Complete*
