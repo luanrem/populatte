@@ -32,6 +32,14 @@ export default defineBackground(() => {
     console.error('[Populatte] Failed to set panel behavior:', err);
   });
 
+  // Keepalive alarm to prevent service worker termination (MV3 has ~5 min hard limit)
+  browser.alarms.create('keepalive', { periodInMinutes: 4 });
+  browser.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === 'keepalive') {
+      console.log('[Background] Keepalive alarm fired');
+    }
+  });
+
   // ============================================================================
   // Per-tab state management
   // ============================================================================

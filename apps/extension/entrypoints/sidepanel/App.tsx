@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Coffee, RefreshCw, Target } from 'lucide-react';
-import { sendViaPort } from '../../src/messaging';
+import { sendViaPort, PortDisconnectedError } from '../../src/messaging';
 import { fetchBatchDetail } from '../../src/api/batches';
 import { createMappingWithSteps } from '../../src/api/mappings';
 import type { StateResponse, ExtensionState, VoidResponse } from '../../src/types';
@@ -22,7 +22,10 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [fillProgress, setFillProgress] = useState<{ current: number; total: number } | null>(null);
   const [fillError, setFillError] = useState<string | null>(null);
-  const [port, setPort] = useState<chrome.runtime.Port | null>(null);
+  const portRef = useRef<chrome.runtime.Port | null>(null);
+  const [portVersion, setPortVersion] = useState(0);
+  const retriesRef = useRef(0);
+  const maxRetries = 5;
 
   // Capture mode state
   const [captureMode, setCaptureMode] = useState(false);
@@ -31,11 +34,9 @@ export default function App() {
 
   // Load initial state
   useEffect(() => {
-    // Connect to background via long-lived port
-    const p = chrome.runtime.connect({ name: 'sidepanel' });
-    setPort(p);
+    let disposed = false;
 
-    // Listen for pushed messages from background
+    // Define messageListener before connectPort call
     const messageListener = (message: { type: string; payload?: unknown }) => {
       if (message.type === 'STATE_UPDATED') {
         const newState = message.payload as ExtensionState;
@@ -60,20 +61,65 @@ export default function App() {
       // RESPONSE messages are handled inside sendViaPort
     };
 
-    p.onMessage.addListener(messageListener);
+    function connectPort() {
+      if (disposed) return;
 
-    // Request initial state
-    sendViaPort<StateResponse>(p, { type: 'GET_STATE' }).then((response) => {
-      if (response.success) {
-        setState(response.data);
-      } else {
-        setError(response.error);
+      try {
+        const p = chrome.runtime.connect({ name: 'sidepanel' });
+        portRef.current = p;
+        setPortVersion((v) => v + 1);
+
+        p.onMessage.addListener(messageListener);
+
+        p.onDisconnect.addListener(() => {
+          console.log('[Sidepanel] Port disconnected, will reconnect...');
+          portRef.current = null;
+
+          if (disposed) return;
+
+          retriesRef.current += 1;
+          if (retriesRef.current > maxRetries) {
+            setError('Connection lost. Please reopen the Side Panel.');
+            return;
+          }
+
+          const delay = Math.min(500 * Math.pow(2, retriesRef.current - 1), 8000);
+          setTimeout(connectPort, delay);
+        });
+
+        // Request initial state
+        sendViaPort<StateResponse>(p, { type: 'GET_STATE' })
+          .then((response) => {
+            retriesRef.current = 0; // Reset retries on successful communication
+            if (response.success) {
+              setState(response.data);
+            } else {
+              setError(response.error);
+            }
+            setLoading(false);
+          })
+          .catch((err) => {
+            // If port disconnected during GET_STATE, onDisconnect will handle reconnection
+            if (err instanceof PortDisconnectedError) {
+              console.log('[Sidepanel] Port disconnected during GET_STATE, awaiting reconnect...');
+              return;
+            }
+            setError(err instanceof Error ? err.message : 'Failed to load state');
+            setLoading(false);
+          });
+      } catch (err) {
+        console.error('[Sidepanel] Failed to connect port:', err);
+        if (!disposed && retriesRef.current < maxRetries) {
+          retriesRef.current += 1;
+          const delay = Math.min(500 * Math.pow(2, retriesRef.current - 1), 8000);
+          setTimeout(connectPort, delay);
+        } else {
+          setError('Connection lost. Please reopen the Side Panel.');
+        }
       }
-      setLoading(false);
-    }).catch((err) => {
-      setError(err instanceof Error ? err.message : 'Failed to load state');
-      setLoading(false);
-    });
+    }
+
+    connectPort();
 
     // Get current tab URL
     browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
@@ -101,17 +147,18 @@ export default function App() {
     });
 
     return () => {
-      p.disconnect();
+      disposed = true;
+      portRef.current?.disconnect();
     };
   }, []);
 
   async function loadState() {
-    if (!port) return;
+    if (!portRef.current) return;
     setLoading(true);
     setError(null);
 
     try {
-      const response = await sendViaPort<StateResponse>(port, { type: 'GET_STATE' });
+      const response = await sendViaPort<StateResponse>(portRef.current, { type: 'GET_STATE' });
 
       if (response.success) {
         setState(response.data);
@@ -126,9 +173,9 @@ export default function App() {
   }
 
   async function handleProjectSelect(projectId: string) {
-    if (!port) return;
+    if (!portRef.current) return;
     try {
-      await sendViaPort<VoidResponse>(port, {
+      await sendViaPort<VoidResponse>(portRef.current, {
         type: 'PROJECT_SELECT',
         payload: { projectId },
       });
@@ -139,13 +186,13 @@ export default function App() {
   }
 
   async function handleBatchSelect(batchId: string, rowTotal: number) {
-    if (!port) return;
+    if (!portRef.current) return;
     try {
       // Update local state immediately for rowTotal
       if (state) {
         setState({ ...state, rowTotal });
       }
-      await sendViaPort<VoidResponse>(port, {
+      await sendViaPort<VoidResponse>(portRef.current, {
         type: 'BATCH_SELECT',
         payload: { batchId, rowTotal },
       });
@@ -157,20 +204,20 @@ export default function App() {
 
   // Fill cycle handlers
   async function handleFill() {
-    if (!port) return;
+    if (!portRef.current) return;
     setFillError(null);
     try {
-      await sendViaPort<VoidResponse>(port, { type: 'FILL_START' });
+      await sendViaPort<VoidResponse>(portRef.current, { type: 'FILL_START' });
     } catch (err) {
       setFillError(err instanceof Error ? err.message : 'Fill failed');
     }
   }
 
   async function handleNext() {
-    if (!port) return;
+    if (!portRef.current) return;
     setFillError(null);
     try {
-      await sendViaPort<VoidResponse>(port, { type: 'ROW_NEXT' });
+      await sendViaPort<VoidResponse>(portRef.current, { type: 'ROW_NEXT' });
       // State update comes via STATE_UPDATED port message
     } catch (err) {
       console.error('[Sidepanel] Failed to advance row:', err);
@@ -178,10 +225,10 @@ export default function App() {
   }
 
   async function handlePrev() {
-    if (!port) return;
+    if (!portRef.current) return;
     setFillError(null);
     try {
-      await sendViaPort<VoidResponse>(port, { type: 'ROW_PREV' });
+      await sendViaPort<VoidResponse>(portRef.current, { type: 'ROW_PREV' });
       // State update comes via STATE_UPDATED port message
     } catch (err) {
       console.error('[Sidepanel] Failed to go to previous row:', err);
@@ -189,10 +236,10 @@ export default function App() {
   }
 
   async function handleMarkError(reason?: string) {
-    if (!port) return;
+    if (!portRef.current) return;
     setFillError(null);
     try {
-      await sendViaPort<VoidResponse>(port, {
+      await sendViaPort<VoidResponse>(portRef.current, {
         type: 'MARK_ERROR',
         payload: { reason },
       });
@@ -203,9 +250,9 @@ export default function App() {
   }
 
   async function handleMappingSelect(mappingId: string) {
-    if (!port) return;
+    if (!portRef.current) return;
     try {
-      await sendViaPort<VoidResponse>(port, {
+      await sendViaPort<VoidResponse>(portRef.current, {
         type: 'MAPPING_SELECT',
         payload: { mappingId },
       });
@@ -233,7 +280,7 @@ export default function App() {
       setBatchColumns(columns);
 
       // Start capture mode in content script
-      await sendViaPort(port, { type: 'CAPTURE_START', payload: { batchColumns: columns } });
+      await sendViaPort(portRef.current, { type: 'CAPTURE_START', payload: { batchColumns: columns } });
 
       // Persist capture mode state to session storage
       await chrome.storage.session.set({
@@ -250,19 +297,19 @@ export default function App() {
   }
 
   async function handleExitCaptureMode() {
-    if (!port) return;
+    if (!portRef.current) return;
     // Clear persisted capture mode state
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
-    await sendViaPort(port, { type: 'CAPTURE_STOP' });
+    await sendViaPort(portRef.current, { type: 'CAPTURE_STOP' });
     setCaptureMode(false);
   }
 
   async function handleStartFilling() {
-    if (!port) return;
+    if (!portRef.current) return;
     console.log('[App] handleStartFilling called');
     // Clear persisted capture mode state
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
-    await sendViaPort(port, { type: 'CAPTURE_STOP' });
+    await sendViaPort(portRef.current, { type: 'CAPTURE_STOP' });
     setCaptureMode(false);
     // Refresh state to load the newly created mapping
     console.log('[App] Refreshing state to detect new mapping...');
@@ -306,7 +353,7 @@ export default function App() {
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
 
     // Stop capture mode in content script (cleanup)
-    await sendViaPort(port, { type: 'CAPTURE_STOP' });
+    await sendViaPort(portRef.current, { type: 'CAPTURE_STOP' });
 
     // Refresh state to show new mapping
     console.log('[App] Refreshing state after mapping save...');
@@ -317,16 +364,16 @@ export default function App() {
   }
 
   async function handleRemoveStep(stepNumber: number) {
-    if (!port) return;
-    await sendViaPort(port, {
+    if (!portRef.current) return;
+    await sendViaPort(portRef.current, {
       type: 'CAPTURE_REMOVE_STEP',
       payload: { stepNumber },
     });
   }
 
   async function handleHighlightStep(stepNumber: number) {
-    if (!port) return;
-    await sendViaPort(port, {
+    if (!portRef.current) return;
+    await sendViaPort(portRef.current, {
       type: 'CAPTURE_HIGHLIGHT',
       payload: { stepNumber },
     });
