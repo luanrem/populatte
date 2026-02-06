@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 ## Current Position
 
 Phase: 36 of 40 (Tabs Structure) — second phase of v5.1
-Plan: 1 of 1 in phase
-Status: Phase complete (tab structure established)
-Last activity: 2026-02-06 — Completed 36-01-PLAN.md (Tab Bar and Layout)
+Plan: 2 of 2 in phase
+Status: Phase complete (tab state management wired)
+Last activity: 2026-02-06 — Completed 36-02-PLAN.md (Tab State Management)
 
-Progress: [██░░░░░░░░] 18%
+Progress: [██░░░░░░░░] 19%
 
 ## Performance Metrics
 
@@ -55,6 +55,9 @@ Recent decisions from Phase 36:
 - Blue pulsing dot on Captura tab when capture is active
 - Auto-switch to Captura tab on capture mode entry and storage restoration
 - Fixed pre-existing port reference bugs (lines 270 and 321 from popup→sidepanel migration)
+- TAB-04 (36-02): Default tab is always 'preencher' on open (not remembered from last session)
+- TAB-05 (36-02): Capture mode active on open overrides to 'captura', stays on current tab when ending
+- TAB-06 (36-02): Tab state stored in chrome.storage.local preferences (global across browser tabs)
 
 ### Roadmap Evolution
 
@@ -90,7 +93,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Phase 36 complete (36-01-PLAN.md - Tab Bar and Layout)
+Stopped at: Phase 36 complete (36-02-PLAN.md - Tab State Management)
 Resume file: None
 Next step: `/gsd:plan-phase 37` (Preencher Content)
 
