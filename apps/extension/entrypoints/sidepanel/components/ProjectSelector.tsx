@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { sendToBackground } from '../../../src/messaging';
+import { sendViaPort } from '../../../src/messaging';
 import type { ProjectsResponse, ProjectSummary } from '../../../src/types';
 
 interface ProjectSelectorProps {
   selectedId: string | null;
   onSelect: (projectId: string) => void;
+  port: chrome.runtime.Port;
 }
 
 /**
@@ -14,7 +15,7 @@ interface ProjectSelectorProps {
  * Fetches user's projects from background and displays in dropdown.
  * Per CONTEXT.md: Empty dropdown on first open, user must choose project.
  */
-export function ProjectSelector({ selectedId, onSelect }: ProjectSelectorProps) {
+export function ProjectSelector({ selectedId, onSelect, port }: ProjectSelectorProps) {
   const [projects, setProjects] = useState<ProjectSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +29,7 @@ export function ProjectSelector({ selectedId, onSelect }: ProjectSelectorProps) 
     setError(null);
 
     try {
-      const response = await sendToBackground<ProjectsResponse>({ type: 'GET_PROJECTS' });
+      const response = await sendViaPort<ProjectsResponse>(port, { type: 'GET_PROJECTS' });
 
       if (response.success) {
         setProjects(response.data.projects);

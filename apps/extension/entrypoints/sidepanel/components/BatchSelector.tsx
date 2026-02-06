@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { sendToBackground } from '../../../src/messaging';
+import { sendViaPort } from '../../../src/messaging';
 import type { BatchWithProgress } from '../../../src/types';
 
 interface BatchSelectorProps {
   projectId: string | null;
   selectedId: string | null;
   onSelect: (batchId: string, rowTotal: number) => void;
+  port: chrome.runtime.Port;
 }
 
 interface BatchesResponseData {
@@ -24,7 +25,7 @@ type BatchesResponse =
  * Per CONTEXT.md: Shows "filename - X/Y done" format for progress visibility.
  * Auto-selects if only one batch exists.
  */
-export function BatchSelector({ projectId, selectedId, onSelect }: BatchSelectorProps) {
+export function BatchSelector({ projectId, selectedId, onSelect, port }: BatchSelectorProps) {
   const [batches, setBatches] = useState<BatchWithProgress[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export function BatchSelector({ projectId, selectedId, onSelect }: BatchSelector
     setError(null);
 
     try {
-      const response = await sendToBackground<BatchesResponse>({
+      const response = await sendViaPort<BatchesResponse>(port, {
         type: 'GET_BATCHES',
         payload: { projectId: projId },
       });

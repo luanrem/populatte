@@ -390,11 +390,13 @@ export default function App() {
                 <ProjectSelector
                   selectedId={state.projectId}
                   onSelect={handleProjectSelect}
+                  port={port!}
                 />
                 <BatchSelector
                   projectId={state.projectId}
                   selectedId={state.batchId}
                   onSelect={handleBatchSelect}
+                  port={port!}
                 />
                 {state.hasMapping && state.availableMappings.length > 0 && (
                   <MappingSelector
