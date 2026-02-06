@@ -13,6 +13,7 @@ import {
   RowIndicator,
   FillControls,
   CapturePanel,
+  TabBar,
   type CaptureStep,
 } from './components';
 
@@ -31,6 +32,9 @@ export default function App() {
   const [captureMode, setCaptureMode] = useState(false);
   const [batchColumns, setBatchColumns] = useState<string[]>([]);
   const [currentUrl, setCurrentUrl] = useState('');
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'preencher' | 'captura'>('preencher');
 
   // Load initial state
   useEffect(() => {
@@ -141,6 +145,8 @@ export default function App() {
         console.log('[App] Setting captureMode=true, columns:', cols.length, cols);
         setCaptureMode(true);
         setBatchColumns(cols);
+        // Auto-switch to Captura tab when restoring active capture mode
+        setActiveTab('captura');
       }
     }).catch((err) => {
       console.error('[App] Failed to restore from storage:', err);
@@ -267,7 +273,7 @@ export default function App() {
   // ============================================================================
 
   async function handleEnterCaptureMode() {
-    if (!port || !state?.batchId || !state?.projectId) {
+    if (!portRef.current || !state?.batchId || !state?.projectId) {
       setError('Select a batch first');
       return;
     }
@@ -291,6 +297,8 @@ export default function App() {
       });
 
       setCaptureMode(true);
+      // Auto-switch to Captura tab when capture mode starts
+      setActiveTab('captura');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start capture mode');
     }
@@ -318,7 +326,7 @@ export default function App() {
   }
 
   async function handleSaveMapping(name: string, steps: CaptureStep[]): Promise<{ id: string }> {
-    if (!port) throw new Error('Not connected');
+    if (!portRef.current) throw new Error('Not connected');
     console.log('[App] handleSaveMapping called');
     console.log('[App] name:', name);
     console.log('[App] steps count:', steps.length);
@@ -383,24 +391,6 @@ export default function App() {
   // Render
   // ============================================================================
 
-  // Show capture mode UI if active
-  if (captureMode) {
-    return (
-      <div className="w-full min-h-screen bg-white p-4 flex flex-col overflow-hidden">
-        <CapturePanel
-          targetUrl={currentUrl}
-          columns={batchColumns}
-          projectId={state?.projectId}
-          onSave={handleSaveMapping}
-          onCancel={handleExitCaptureMode}
-          onRemoveStep={handleRemoveStep}
-          onHighlight={handleHighlightStep}
-          onStartFilling={handleStartFilling}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="w-full min-h-screen bg-white p-4 flex flex-col">
       <header className="flex items-center gap-2 mb-4 pb-3 border-b">
@@ -415,7 +405,7 @@ export default function App() {
         </button>
       </header>
 
-      <main className="flex-1 space-y-4 overflow-y-auto">
+      <main className="flex-1 flex flex-col overflow-hidden">
         {loading && (
           <div className="p-3 bg-gray-50 rounded-lg border">
             <p className="text-sm text-gray-600">Loading...</p>
@@ -431,61 +421,93 @@ export default function App() {
         {state && !loading && (
           state.isAuthenticated ? (
             <>
-              <ConnectedIndicator />
-
-              <div className="space-y-3">
-                <ProjectSelector
-                  selectedId={state.projectId}
-                  onSelect={handleProjectSelect}
-                  port={portRef.current!}
-                />
-                <BatchSelector
-                  projectId={state.projectId}
-                  selectedId={state.batchId}
-                  onSelect={handleBatchSelect}
-                  port={portRef.current!}
-                />
-                {state.hasMapping && state.availableMappings.length > 0 && (
-                  <MappingSelector
-                    mappings={state.availableMappings}
-                    selectedId={state.mappingId}
-                    onSelect={handleMappingSelect}
-                  />
-                )}
+              {/* Global connection status */}
+              <div className="mb-4">
+                <ConnectedIndicator />
               </div>
 
-              {/* Create Mapping button - shown when batch selected but no mapping for current URL */}
-              {state.batchId && !state.hasMapping && (
-                <button
-                  type="button"
-                  onClick={handleEnterCaptureMode}
-                  className="w-full p-3 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300 text-amber-800 font-medium flex items-center justify-center gap-2"
-                >
-                  <Target className="w-4 h-4" />
-                  Criar Mapping
-                </button>
-              )}
-
-              <RowIndicator
-                rowIndex={state.rowIndex}
-                rowTotal={state.rowTotal}
-                identifierPrimary={state.identifierPrimary}
-                identifierSecondary={state.identifierSecondary}
-                identifierFieldKey={state.identifierFieldKey}
-                secondaryFieldKey={state.secondaryFieldKey}
-                onPrev={handlePrev}
-                onNext={handleNext}
+              {/* Tab bar */}
+              <TabBar
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                captureActive={captureMode}
               />
 
-              <FillControls
-                batchId={state.batchId}
-                fillStatus={state.fillStatus}
-                fillProgress={fillProgress}
-                fillError={fillError}
-                onFill={handleFill}
-                onNext={handleNext}
-                onMarkError={handleMarkError}
-              />
+              {/* Tab content */}
+              <div className="flex-1 overflow-y-auto space-y-4 pt-4">
+                {activeTab === 'preencher' ? (
+                  <>
+                    {/* Preencher tab content - Fill workflow */}
+                    <div className="space-y-3">
+                      <ProjectSelector
+                        selectedId={state.projectId}
+                        onSelect={handleProjectSelect}
+                        port={portRef.current!}
+                      />
+                      <BatchSelector
+                        projectId={state.projectId}
+                        selectedId={state.batchId}
+                        onSelect={handleBatchSelect}
+                        port={portRef.current!}
+                      />
+                      {state.hasMapping && state.availableMappings.length > 0 && (
+                        <MappingSelector
+                          mappings={state.availableMappings}
+                          selectedId={state.mappingId}
+                          onSelect={handleMappingSelect}
+                        />
+                      )}
+                    </div>
+
+                    {/* Create Mapping button - shown when batch selected but no mapping for current URL */}
+                    {state.batchId && !state.hasMapping && (
+                      <button
+                        type="button"
+                        onClick={handleEnterCaptureMode}
+                        className="w-full p-3 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300 text-amber-800 font-medium flex items-center justify-center gap-2"
+                      >
+                        <Target className="w-4 h-4" />
+                        Criar Mapping
+                      </button>
+                    )}
+
+                    <RowIndicator
+                      rowIndex={state.rowIndex}
+                      rowTotal={state.rowTotal}
+                      identifierPrimary={state.identifierPrimary}
+                      identifierSecondary={state.identifierSecondary}
+                      identifierFieldKey={state.identifierFieldKey}
+                      secondaryFieldKey={state.secondaryFieldKey}
+                      onPrev={handlePrev}
+                      onNext={handleNext}
+                    />
+
+                    <FillControls
+                      batchId={state.batchId}
+                      fillStatus={state.fillStatus}
+                      fillProgress={fillProgress}
+                      fillError={fillError}
+                      onFill={handleFill}
+                      onNext={handleNext}
+                      onMarkError={handleMarkError}
+                    />
+                  </>
+                ) : (
+                  <>
+                    {/* Captura tab content */}
+                    <CapturePanel
+                      targetUrl={currentUrl}
+                      columns={batchColumns}
+                      projectId={state?.projectId}
+                      onSave={handleSaveMapping}
+                      onCancel={handleExitCaptureMode}
+                      onRemoveStep={handleRemoveStep}
+                      onHighlight={handleHighlightStep}
+                      onStartFilling={handleStartFilling}
+                    />
+                  </>
+                )}
+              </div>
             </>
           ) : (
             <ConnectView port={portRef.current!} onConnected={loadState} />
