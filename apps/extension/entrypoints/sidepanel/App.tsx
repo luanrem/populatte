@@ -437,13 +437,13 @@ export default function App() {
                 <ProjectSelector
                   selectedId={state.projectId}
                   onSelect={handleProjectSelect}
-                  port={port!}
+                  port={portRef.current!}
                 />
                 <BatchSelector
                   projectId={state.projectId}
                   selectedId={state.batchId}
                   onSelect={handleBatchSelect}
-                  port={port!}
+                  port={portRef.current!}
                 />
                 {state.hasMapping && state.availableMappings.length > 0 && (
                   <MappingSelector
@@ -488,7 +488,7 @@ export default function App() {
               />
             </>
           ) : (
-            <ConnectView port={port!} onConnected={loadState} />
+            <ConnectView port={portRef.current!} onConnected={loadState} />
           )
         )}
       </main>
