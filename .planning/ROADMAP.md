@@ -88,10 +88,11 @@ Plans:
   3. Clicking a recent row navigates to it (updates row navigator and fetches that row's data)
   4. Recent rows persist per batch in chrome.storage.local and survive Side Panel close/reopen
   5. Each recent row displays the primary identifier value from batch settings, truncated with ellipsis if needed
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 38-01: TBD
+- [ ] 38-01-PLAN.md — Recent rows storage module, ROW_SELECT handler, and history tracking on navigation/fill
+- [ ] 38-02-PLAN.md — RecentesList UI component with expand/collapse and click-to-navigate wiring
 
 ### Phase 39: Aba Captura
 **Goal**: Users can create mappings via click-to-capture without the UI closing, leveraging Side Panel persistence
@@ -147,10 +148,10 @@ Phase 37 (Aba Preencher)
 | 35. Side Panel Setup | v5.1 | 5/5 | Complete | 2026-02-06 |
 | 36. Tabs Structure | v5.1 | 3/3 | Complete | 2026-02-06 |
 | 37. Aba Preencher | v5.1 | 3/3 | Complete | 2026-02-06 |
-| 38. Secao Recentes | v5.1 | 0/TBD | Not started | - |
+| 38. Secao Recentes | v5.1 | 0/2 | Not started | - |
 | 39. Aba Captura | v5.1 | 0/TBD | Not started | - |
 | 40. Modo Colapsado | v5.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-06 — Phase 37 complete (gap closure executed, verified)*
+*Last updated: 2026-02-08 — Phase 38 planned (2 plans in 2 waves)*
