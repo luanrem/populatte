@@ -4,6 +4,7 @@ import { sendViaPort, PortDisconnectedError } from '../../src/messaging';
 import { fetchBatchDetail } from '../../src/api/batches';
 import { createMappingWithSteps, fetchMappingWithSteps, type MappingStep } from '../../src/api/mappings';
 import { preferencesStorage } from '../../src/storage/preferences';
+import { recentRowsStorage, type RecentRowEntry } from '../../src/storage/recentes';
 import type { StateResponse, ExtensionState, VoidResponse } from '../../src/types';
 import {
   ConnectView,
@@ -42,6 +43,10 @@ export default function App() {
   const [mappingSteps, setMappingSteps] = useState<MappingStep[]>([]);
   const [stepValidation, setStepValidation] = useState<Map<string, boolean>>(new Map());
   const [fillResultsMap, setFillResultsMap] = useState<Map<string, 'success' | 'failed'>>(new Map());
+
+  // Recent rows state
+  const [recentRows, setRecentRows] = useState<RecentRowEntry[]>([]);
+  const prevRowIndexRef = useRef<number | null>(null);
 
   // Persist tab changes to storage
   useEffect(() => {
@@ -99,6 +104,24 @@ export default function App() {
     }
   }, [state?.projectId, state?.mappingId]);
 
+  // Load recent rows when batch changes
+  useEffect(() => {
+    if (state?.batchId) {
+      recentRowsStorage
+        .getEntries(state.batchId)
+        .then(setRecentRows)
+        .catch((err) => console.error('[App] Failed to load recent rows:', err));
+
+      // Initialize prevRowIndexRef when batch first loads
+      if (prevRowIndexRef.current === null) {
+        prevRowIndexRef.current = state.rowIndex;
+      }
+    } else {
+      setRecentRows([]);
+      prevRowIndexRef.current = null;
+    }
+  }, [state?.batchId]);
+
   // Load initial state
   useEffect(() => {
     let disposed = false;
@@ -112,6 +135,22 @@ export default function App() {
         if (newState.fillStatus === 'idle') {
           setFillProgress(null);
           setFillError(null);
+        }
+
+        // Track row navigation in recent history (if batch is selected and row changed)
+        if (newState.batchId && newState.rowIndex !== prevRowIndexRef.current) {
+          recentRowsStorage
+            .addEntry(newState.batchId, {
+              rowIndex: newState.rowIndex,
+              identifierValue: newState.identifierPrimary ?? null,
+              identifierFieldKey: newState.identifierFieldKey ?? null,
+              status: 'navigated',
+            })
+            .then(() => recentRowsStorage.getEntries(newState.batchId!))
+            .then(setRecentRows)
+            .catch((err) => console.error('[App] Failed to track recent row:', err));
+
+          prevRowIndexRef.current = newState.rowIndex;
         }
       }
       if (message.type === 'FILL_PROGRESS') {
@@ -291,6 +330,18 @@ export default function App() {
           }
         }
         setFillResultsMap(resultsMap);
+
+        // Update recent row status based on fill results
+        if (state?.batchId) {
+          const allSuccess = response.data.stepResults.every(
+            (step) => step.skipped || step.success
+          );
+          const fillStatus = allSuccess ? 'success' : 'failed';
+
+          await recentRowsStorage.updateStatus(state.batchId, state.rowIndex, fillStatus);
+          const entries = await recentRowsStorage.getEntries(state.batchId);
+          setRecentRows(entries);
+        }
       }
     } catch (err) {
       setFillError(err instanceof Error ? err.message : 'Fill failed');

@@ -411,6 +411,25 @@ export default defineBackground(() => {
           break;
         }
 
+        case 'ROW_SELECT': {
+          const { rowIndex } = message.payload;
+          tabState.fillStatus = 'idle';
+          await storage.selection.setRowIndex(rowIndex);
+          try {
+            const selection = await storage.selection.getSelection();
+            if (selection.projectId && selection.batchId && rowIndex >= 0) {
+              const row = await fetchRowByIndex(selection.projectId, selection.batchId, rowIndex);
+              tabState.currentRowData = row.data;
+            }
+          } catch (err) {
+            console.error('[Background] Failed to fetch row data:', err);
+            tabState.currentRowData = null;
+          }
+          await sendStateToSidepanel(currentTabId);
+          port.postMessage({ type: 'RESPONSE', requestType: 'ROW_SELECT', success: true, data: { rowIndex } });
+          break;
+        }
+
         case 'MARK_ERROR': {
           const { reason } = message.payload;
           try {
