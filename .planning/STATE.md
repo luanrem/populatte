@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 
 ## Current Position
 
-Phase: 39 of 40 (Aba Captura) — fifth phase of v5.1
+Phase: 40 of 40 (Modo Colapsado) — sixth and final phase of v5.1
 Plan: 1 of 1 in phase
 Status: Phase complete
-Last activity: 2026-02-08 — Completed 39-01-PLAN.md
+Last activity: 2026-02-08 — Completed 40-01-PLAN.md
 
-Progress: [████████░░] 83%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -90,6 +90,16 @@ Recent decisions from Phase 39:
 - CAP-02 (39-01): setActiveTab('preencher') added to handleStartFilling (Comecar a Preencher flow)
 - CAP-03 (39-01): Debug console.logs removed from handleStartFilling and handleSaveMapping
 
+Recent decisions from Phase 40:
+- CMP-GRID: 3-column grid layout for compact icon display (~85px per cell)
+- CMP-TRANSITION: CSS transitions (max-height + opacity) for 200ms collapse/expand animation
+- CMP-SCROLL: JS-based scroll position preservation using useRef + requestAnimationFrame
+- CMP-KEYBOARD: Ctrl+B / Cmd+B keyboard shortcut to toggle compact mode
+- CMP-AUTO-EXIT: Auto-exit compact mode when entering capture or losing steps
+- CMP-BADGE: Step number badge (top-right), warning triangle (top-left), click result (bottom-right)
+- CMP-TOOLTIP: Phase 37 group-hover pattern for instant tooltip display
+- CMP-PERSIST: Persist compact mode state in PreferencesState via chrome.storage.local
+
 ### Roadmap Evolution
 
 - v1.0: 3 phases, 5 plans -- End-to-End Auth & User Sync (shipped 2026-01-28)
@@ -124,9 +134,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Phase 39 executed and verified (1 plan, 2 commits)
+Stopped at: Phase 40 executed and verified (1 plan, 2 commits) — v5.1 complete
 Resume file: None
-Next step: `/gsd:plan-phase 40` (Modo Colapsado) — final phase of v5.1
+Next step: `/gsd:uat 40` — UAT for Phase 40, then v5.1 retrospective
 
 Config:
 {
