@@ -103,10 +103,10 @@ Plans:
   2. Clicking "Criar Mapping" starts capture and automatically switches to the Captura tab with active badge
   3. Capture state (steps, URL, name) persists while the user clicks on page elements to capture selectors
   4. "Finalizar" saves the mapping and returns to Preencher; "Cancelar" shows a confirmation if steps exist
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 39-01: TBD
+- [ ] 39-01-PLAN.md — Fix capture mode exit handlers to return to Preencher tab and clean up debug logs
 
 ### Phase 40: Modo Colapsado
 **Goal**: Power users can collapse the Side Panel to a minimal icon strip for rapid fill-and-advance workflows without losing context
@@ -149,9 +149,9 @@ Phase 37 (Aba Preencher)
 | 36. Tabs Structure | v5.1 | 3/3 | Complete | 2026-02-06 |
 | 37. Aba Preencher | v5.1 | 3/3 | Complete | 2026-02-06 |
 | 38. Secao Recentes | v5.1 | 2/2 | Complete | 2026-02-08 |
-| 39. Aba Captura | v5.1 | 0/TBD | Not started | - |
+| 39. Aba Captura | v5.1 | 0/1 | Not started | - |
 | 40. Modo Colapsado | v5.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-08 — Phase 38 complete (2 plans, 2 waves, verified)*
+*Last updated: 2026-02-08 — Phase 39 planned (1 plan, 1 wave)*
