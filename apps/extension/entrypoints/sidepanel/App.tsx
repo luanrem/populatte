@@ -17,6 +17,7 @@ import {
   CapturePanel,
   TabBar,
   PreencherStepList,
+  RecentesList,
   type CaptureStep,
 } from './components';
 
@@ -372,6 +373,35 @@ export default function App() {
     }
   }
 
+  async function handleRecentRowSelect(rowIndex: number) {
+    if (!portRef.current || !state?.batchId) return;
+
+    // Guard: if same row, no-op
+    if (rowIndex === state.rowIndex) return;
+
+    // Optimistic update: update row navigator number instantly
+    if (state) {
+      setState({ ...state, rowIndex });
+    }
+
+    // Clear fill results for new row
+    setFillResultsMap(new Map());
+    setFillError(null);
+
+    try {
+      // Send ROW_SELECT to background (created in Plan 01)
+      await sendViaPort<VoidResponse>(portRef.current, {
+        type: 'ROW_SELECT',
+        payload: { rowIndex },
+      });
+      // State update with real data comes via STATE_UPDATED port message
+    } catch (err) {
+      console.error('[Sidepanel] Failed to navigate to recent row:', err);
+      // Rollback optimistic update by reloading state
+      await loadState();
+    }
+  }
+
   async function handleMarkError(reason?: string) {
     if (!portRef.current) return;
     setFillError(null);
@@ -659,6 +689,15 @@ export default function App() {
                             fillResults={fillResultsMap}
                             onStepClick={handleStepHighlight}
                             onReorder={handleStepReorder}
+                          />
+                        )}
+
+                        {/* Recent rows section */}
+                        {recentRows.length > 0 && (
+                          <RecentesList
+                            entries={recentRows}
+                            currentRowIndex={state.rowIndex}
+                            onRowSelect={handleRecentRowSelect}
                           />
                         )}
                       </div>
