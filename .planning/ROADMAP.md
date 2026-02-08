@@ -118,11 +118,10 @@ Plans:
   3. Hovering an icon shows a tooltip with action type, selector, and source column; clicking highlights the element on the page
   4. Expanding returns to the full layout with the previously active tab state preserved
   5. Ctrl+B (Win/Linux) / Cmd+B (Mac) toggles compact mode with a smooth ~200ms CSS transition
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 40-01: TBD
-- [ ] 40-02: TBD
+- [ ] 40-01-PLAN.md — Compact mode toggle, CompactIconGrid component, keyboard shortcut, CSS transitions, storage persistence
 
 ## Progress
 
@@ -150,8 +149,8 @@ Phase 37 (Aba Preencher)
 | 37. Aba Preencher | v5.1 | 3/3 | Complete | 2026-02-06 |
 | 38. Secao Recentes | v5.1 | 2/2 | Complete | 2026-02-08 |
 | 39. Aba Captura | v5.1 | 1/1 | Complete | 2026-02-08 |
-| 40. Modo Colapsado | v5.1 | 0/TBD | Not started | - |
+| 40. Modo Colapsado | v5.1 | 0/1 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-08 — Phase 39 complete (1 plan, 2 commits)*
+*Last updated: 2026-02-08 — Phase 40 planned (1 plan, 1 wave)*
