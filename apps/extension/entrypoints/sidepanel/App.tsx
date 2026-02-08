@@ -474,27 +474,22 @@ export default function App() {
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
     await sendViaPort(portRef.current, { type: 'CAPTURE_STOP' });
     setCaptureMode(false);
+    setActiveTab('preencher');
   }
 
   async function handleStartFilling() {
     if (!portRef.current) return;
-    console.log('[App] handleStartFilling called');
     // Clear persisted capture mode state
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
     await sendViaPort(portRef.current, { type: 'CAPTURE_STOP' });
     setCaptureMode(false);
+    setActiveTab('preencher');
     // Refresh state to load the newly created mapping
-    console.log('[App] Refreshing state to detect new mapping...');
     await loadState();
-    console.log('[App] State loaded, state.hasMapping:', state?.hasMapping);
   }
 
   async function handleSaveMapping(name: string, steps: CaptureStep[]): Promise<{ id: string }> {
     if (!portRef.current) throw new Error('Not connected');
-    console.log('[App] handleSaveMapping called');
-    console.log('[App] name:', name);
-    console.log('[App] steps count:', steps.length);
-    console.log('[App] steps raw:', JSON.stringify(steps, null, 2));
 
     if (!state?.projectId) throw new Error('No project selected');
 
@@ -515,11 +510,7 @@ export default function App() {
       })),
     };
 
-    console.log('[App] Creating mapping with payload:', JSON.stringify(payload, null, 2));
-    console.log('[App] Payload steps count:', payload.steps.length);
     const result = await createMappingWithSteps(state.projectId, payload);
-    console.log('[App] Mapping created successfully:', result.id);
-    console.log('[App] API response full:', JSON.stringify(result, null, 2));
 
     // Clear persisted capture mode state on successful save
     await chrome.storage.session.remove(['captureMode', 'batchColumns', 'capturedSteps', 'captureMappingName']);
@@ -528,9 +519,7 @@ export default function App() {
     await sendViaPort(portRef.current, { type: 'CAPTURE_STOP' });
 
     // Refresh state to show new mapping
-    console.log('[App] Refreshing state after mapping save...');
     await loadState();
-    console.log('[App] State refreshed');
 
     return { id: result.id };
   }
