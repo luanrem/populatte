@@ -14,10 +14,12 @@ export * from './types';
 export { authStorage } from './auth';
 export { selectionStorage } from './selection';
 export { preferencesStorage } from './preferences';
+export { recentRowsStorage } from './recentes';
 
 import { authStorage } from './auth';
 import { selectionStorage } from './selection';
 import { preferencesStorage } from './preferences';
+import { recentRowsStorage } from './recentes';
 
 /**
  * Unified storage accessor
@@ -27,6 +29,7 @@ export const storage = {
   auth: authStorage,
   selection: selectionStorage,
   preferences: preferencesStorage,
+  recentes: recentRowsStorage,
 };
 
 /**
@@ -39,15 +42,17 @@ export async function initializeStorage(): Promise<void> {
   console.log('[Storage] Initializing...');
 
   // Pre-load all storage values to verify they're accessible
-  const [auth, selection, preferences] = await Promise.all([
+  const [auth, selection, preferences, recentRows] = await Promise.all([
     authStorage.getAuth(),
     selectionStorage.getSelection(),
     preferencesStorage.getPreferences(),
+    recentRowsStorage.getState(),
   ]);
 
   console.log('[Storage] Initialized:', {
     authenticated: auth.token !== null,
     hasProject: selection.projectId !== null,
     lastProject: preferences.lastProjectId,
+    recentBatches: Object.keys(recentRows.byBatch).length,
   });
 }

@@ -74,3 +74,33 @@ export const DEFAULT_PREFERENCES: PreferencesState = {
   lastMappingIdByProject: {},
   lastActiveTab: 'preencher',
 };
+
+/**
+ * Recent row entry
+ * Tracks user navigation history per batch for quick access
+ */
+export interface RecentRowEntry {
+  /** 0-based row index within the batch */
+  rowIndex: number;
+  /** Display identifier value (primary from batch settings, or first column fallback) */
+  identifierValue: string | null;
+  /** Column name of the identifier (for tooltip display) */
+  identifierFieldKey: string | null;
+  /** Fill result status: 'success' | 'failed' | 'navigated' (default) */
+  status: 'success' | 'failed' | 'navigated';
+  /** Timestamp when row was last visited (for ordering) */
+  visitedAt: number;
+}
+
+/**
+ * Recent rows state
+ * Persisted to provide navigation history
+ */
+export interface RecentRowsState {
+  /** Map of batchId to array of recent row entries (max 10 per batch) */
+  byBatch: Record<string, RecentRowEntry[]>;
+}
+
+export const DEFAULT_RECENT_ROWS: RecentRowsState = {
+  byBatch: {},
+};
