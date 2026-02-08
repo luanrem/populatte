@@ -34,12 +34,12 @@ Requirements for Side Panel & UX Improvements milestone. Each maps to roadmap ph
 
 ### Recentes
 
-- [ ] **REC-01**: Section at bottom of Preencher tab with "Recentes" header and expand link
-- [ ] **REC-02**: Shows last 3 rows with status icon + row number + identifier value
-- [ ] **REC-03**: Expandable to show up to 10 rows with smooth animation
-- [ ] **REC-04**: Click on row navigates to that row (updates navigator and fetches data)
-- [ ] **REC-05**: Recent rows stored per batch in chrome.storage.local (FIFO, max 50)
-- [ ] **REC-06**: Shows primary identifier value from batch settings, truncated with ellipsis
+- [x] **REC-01**: Section at bottom of Preencher tab with "Recentes" header and expand link
+- [x] **REC-02**: Shows last 3 rows with status icon + row number + identifier value
+- [x] **REC-03**: Expandable to show up to 10 rows with smooth animation
+- [x] **REC-04**: Click on row navigates to that row (updates navigator and fetches data)
+- [x] **REC-05**: Recent rows stored per batch in chrome.storage.local (FIFO, max 10)
+- [x] **REC-06**: Shows primary identifier value from batch settings, truncated with ellipsis
 
 ### Captura
 
@@ -110,12 +110,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FILL-03 | Phase 37 | Complete |
 | FILL-04 | Phase 37 | Complete |
 | FILL-05 | Phase 37 | Complete |
-| REC-01 | Phase 38 | Pending |
-| REC-02 | Phase 38 | Pending |
-| REC-03 | Phase 38 | Pending |
-| REC-04 | Phase 38 | Pending |
-| REC-05 | Phase 38 | Pending |
-| REC-06 | Phase 38 | Pending |
+| REC-01 | Phase 38 | Complete |
+| REC-02 | Phase 38 | Complete |
+| REC-03 | Phase 38 | Complete |
+| REC-04 | Phase 38 | Complete |
+| REC-05 | Phase 38 | Complete |
+| REC-06 | Phase 38 | Complete |
 | CAP-01 | Phase 39 | Pending |
 | CAP-02 | Phase 39 | Pending |
 | CAP-03 | Phase 39 | Pending |
@@ -137,4 +137,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-06 — Phase 37 requirements (FILL-01 through FILL-05) verified Complete*
+*Last updated: 2026-02-08 — Phase 38 requirements (REC-01 through REC-06) verified Complete*

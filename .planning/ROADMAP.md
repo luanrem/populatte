@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 35: Side Panel Setup** - WXT sidepanel entrypoint, lifecycle detection, popup removal, icon-click behavior
 - [x] **Phase 36: Tabs Structure** - Two-tab architecture (Captura / Preencher) with state-aware enable/disable
 - [x] **Phase 37: Aba Preencher** - Fill workflow UI migrated to Side Panel with steps list and element highlighting
-- [ ] **Phase 38: Secao Recentes** - Recent rows history section with click navigation and persistent storage
+- [x] **Phase 38: Secao Recentes** - Recent rows history section with click navigation and persistent storage
 - [ ] **Phase 39: Aba Captura** - Capture mode fully operational inside persistent Side Panel
 - [ ] **Phase 40: Modo Colapsado** - Internal compact layout with step icon strip, tooltips, and keyboard shortcut
 
@@ -91,8 +91,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 38-01-PLAN.md — Recent rows storage module, ROW_SELECT handler, and history tracking on navigation/fill
-- [ ] 38-02-PLAN.md — RecentesList UI component with expand/collapse and click-to-navigate wiring
+- [x] 38-01-PLAN.md — Recent rows storage module, ROW_SELECT handler, and history tracking on navigation/fill
+- [x] 38-02-PLAN.md — RecentesList UI component with expand/collapse and click-to-navigate wiring
 
 ### Phase 39: Aba Captura
 **Goal**: Users can create mappings via click-to-capture without the UI closing, leveraging Side Panel persistence
@@ -148,10 +148,10 @@ Phase 37 (Aba Preencher)
 | 35. Side Panel Setup | v5.1 | 5/5 | Complete | 2026-02-06 |
 | 36. Tabs Structure | v5.1 | 3/3 | Complete | 2026-02-06 |
 | 37. Aba Preencher | v5.1 | 3/3 | Complete | 2026-02-06 |
-| 38. Secao Recentes | v5.1 | 0/2 | Not started | - |
+| 38. Secao Recentes | v5.1 | 2/2 | Complete | 2026-02-08 |
 | 39. Aba Captura | v5.1 | 0/TBD | Not started | - |
 | 40. Modo Colapsado | v5.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-08 — Phase 38 planned (2 plans in 2 waves)*
+*Last updated: 2026-02-08 — Phase 38 complete (2 plans, 2 waves, verified)*
