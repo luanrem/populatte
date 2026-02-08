@@ -51,14 +51,14 @@ Requirements for Side Panel & UX Improvements milestone. Each maps to roadmap ph
 
 ### Compact Mode
 
-- [ ] **CMP-01**: Toggle button in Side Panel header collapses to compact internal layout
-- [ ] **CMP-02**: Compact layout shows vertical strip of step action icons within full panel width
-- [ ] **CMP-03**: Step icons show number badge (bottom-left) and warning indicator if selector invalid
-- [ ] **CMP-04**: Hover on icon shows tooltip with action type, selector, and source column
-- [ ] **CMP-05**: Click on icon highlights element on page and scrolls into view
-- [ ] **CMP-06**: Expand button at top returns to full layout with previous tab state
-- [ ] **CMP-07**: Ctrl+B (Win/Linux) / Cmd+B (Mac) keyboard shortcut toggles compact mode
-- [ ] **CMP-08**: Smooth CSS transition (~200ms) for collapse/expand animation
+- [x] **CMP-01**: Toggle button in Side Panel header collapses to compact internal layout
+- [x] **CMP-02**: Compact layout shows vertical strip of step action icons within full panel width
+- [x] **CMP-03**: Step icons show number badge (bottom-left) and warning indicator if selector invalid
+- [x] **CMP-04**: Hover on icon shows tooltip with action type, selector, and source column
+- [x] **CMP-05**: Click on icon highlights element on page and scrolls into view
+- [x] **CMP-06**: Expand button at top returns to full layout with previous tab state
+- [x] **CMP-07**: Ctrl+B (Win/Linux) / Cmd+B (Mac) keyboard shortcut toggles compact mode
+- [x] **CMP-08**: Smooth CSS transition (~200ms) for collapse/expand animation
 
 ## Future Requirements
 
@@ -121,14 +121,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CAP-03 | Phase 39 | Complete |
 | CAP-04 | Phase 39 | Complete |
 | CAP-05 | Phase 39 | Complete |
-| CMP-01 | Phase 40 | Pending |
-| CMP-02 | Phase 40 | Pending |
-| CMP-03 | Phase 40 | Pending |
-| CMP-04 | Phase 40 | Pending |
-| CMP-05 | Phase 40 | Pending |
-| CMP-06 | Phase 40 | Pending |
-| CMP-07 | Phase 40 | Pending |
-| CMP-08 | Phase 40 | Pending |
+| CMP-01 | Phase 40 | Complete |
+| CMP-02 | Phase 40 | Complete |
+| CMP-03 | Phase 40 | Complete |
+| CMP-04 | Phase 40 | Complete |
+| CMP-05 | Phase 40 | Complete |
+| CMP-06 | Phase 40 | Complete |
+| CMP-07 | Phase 40 | Complete |
+| CMP-08 | Phase 40 | Complete |
 
 **Coverage:**
 - v5.1 requirements: 35 total

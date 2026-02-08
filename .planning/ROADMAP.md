@@ -7,7 +7,7 @@ Migrate the extension UI from a popup to Chrome's persistent Side Panel, solving
 ## Milestones
 
 - v1.0 through v5.0: See MILESTONES.md (Phases 1-34, shipped)
-- v5.1 Side Panel & UX Improvements: Phases 35-40 (in progress)
+- v5.1 Side Panel & UX Improvements: Phases 35-40 (complete)
 
 ## Phases
 
@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 37: Aba Preencher** - Fill workflow UI migrated to Side Panel with steps list and element highlighting
 - [x] **Phase 38: Secao Recentes** - Recent rows history section with click navigation and persistent storage
 - [x] **Phase 39: Aba Captura** - Capture mode fully operational inside persistent Side Panel
-- [ ] **Phase 40: Modo Colapsado** - Internal compact layout with step icon strip, tooltips, and keyboard shortcut
+- [x] **Phase 40: Modo Colapsado** - Internal compact layout with step icon strip, tooltips, and keyboard shortcut
 
 ## Phase Details
 
@@ -121,7 +121,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 40-01-PLAN.md — Compact mode toggle, CompactIconGrid component, keyboard shortcut, CSS transitions, storage persistence
+- [x] 40-01-PLAN.md — Compact mode toggle, CompactIconGrid component, keyboard shortcut, CSS transitions, storage persistence
 
 ## Progress
 
@@ -149,8 +149,8 @@ Phase 37 (Aba Preencher)
 | 37. Aba Preencher | v5.1 | 3/3 | Complete | 2026-02-06 |
 | 38. Secao Recentes | v5.1 | 2/2 | Complete | 2026-02-08 |
 | 39. Aba Captura | v5.1 | 1/1 | Complete | 2026-02-08 |
-| 40. Modo Colapsado | v5.1 | 0/1 | Not started | - |
+| 40. Modo Colapsado | v5.1 | 1/1 | Complete | 2026-02-08 |
 
 ---
 *Roadmap created: 2026-02-05*
-*Last updated: 2026-02-08 — Phase 40 planned (1 plan, 1 wave)*
+*Last updated: 2026-02-08 — Phase 40 complete, v5.1 milestone finished*
