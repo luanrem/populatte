@@ -5,3 +5,4 @@
  */
 
 export { PreencherStepList } from './PreencherStepList';
+export { RecentesList } from './RecentesList';

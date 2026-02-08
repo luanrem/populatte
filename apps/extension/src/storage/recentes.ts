@@ -2,6 +2,9 @@ import { storage } from 'wxt/utils/storage';
 import type { RecentRowsState, RecentRowEntry } from './types';
 import { DEFAULT_RECENT_ROWS } from './types';
 
+// Re-export type for external consumers
+export type { RecentRowEntry };
+
 const RECENT_ROWS_KEY = 'local:populatte:recentes';
 
 const recentRowsItem = storage.defineItem<RecentRowsState>(RECENT_ROWS_KEY, {
