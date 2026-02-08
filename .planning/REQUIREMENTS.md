@@ -43,11 +43,11 @@ Requirements for Side Panel & UX Improvements milestone. Each maps to roadmap ph
 
 ### Captura
 
-- [ ] **CAP-01**: All capture mode UI from v5.0 works in Side Panel (URL, name, steps, config)
-- [ ] **CAP-02**: "Criar Mapping" button starts capture and switches to Captura tab with active badge
-- [ ] **CAP-03**: Capture state persists while clicking on page (main benefit of Side Panel)
-- [ ] **CAP-04**: Finalizar saves mapping and returns to Preencher; Cancelar confirms if steps exist
-- [ ] **CAP-05**: Content script capture integration (element highlight, badges, step sync via storage)
+- [x] **CAP-01**: All capture mode UI from v5.0 works in Side Panel (URL, name, steps, config)
+- [x] **CAP-02**: "Criar Mapping" button starts capture and switches to Captura tab with active badge
+- [x] **CAP-03**: Capture state persists while clicking on page (main benefit of Side Panel)
+- [x] **CAP-04**: Finalizar saves mapping and returns to Preencher; Cancelar confirms if steps exist
+- [x] **CAP-05**: Content script capture integration (element highlight, badges, step sync via storage)
 
 ### Compact Mode
 
@@ -116,11 +116,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REC-04 | Phase 38 | Complete |
 | REC-05 | Phase 38 | Complete |
 | REC-06 | Phase 38 | Complete |
-| CAP-01 | Phase 39 | Pending |
-| CAP-02 | Phase 39 | Pending |
-| CAP-03 | Phase 39 | Pending |
-| CAP-04 | Phase 39 | Pending |
-| CAP-05 | Phase 39 | Pending |
+| CAP-01 | Phase 39 | Complete |
+| CAP-02 | Phase 39 | Complete |
+| CAP-03 | Phase 39 | Complete |
+| CAP-04 | Phase 39 | Complete |
+| CAP-05 | Phase 39 | Complete |
 | CMP-01 | Phase 40 | Pending |
 | CMP-02 | Phase 40 | Pending |
 | CMP-03 | Phase 40 | Pending |
@@ -137,4 +137,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-08 — Phase 38 requirements (REC-01 through REC-06) verified Complete*
+*Last updated: 2026-02-08 — Phase 39 requirements (CAP-01 through CAP-05) verified Complete*

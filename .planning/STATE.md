@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-05)
 
 **Core value:** Transform tedious manual data entry into automated form population
-**Current focus:** v5.1 Side Panel & UX Improvements — Phase 37 verified complete, Phases 38-40 parallel-eligible
+**Current focus:** v5.1 Side Panel & UX Improvements — Phases 35-39 complete, Phase 40 remaining
 
 ## Current Position
 
@@ -14,7 +14,7 @@ Plan: 1 of 1 in phase
 Status: Phase complete
 Last activity: 2026-02-08 — Completed 39-01-PLAN.md
 
-Progress: [████████░░] 70%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
@@ -86,8 +86,9 @@ Recent decisions from Phase 38:
 - REC-05 (38-02): Identifier truncation at ~20 chars with ellipsis and native title tooltip
 
 Recent decisions from Phase 39:
-- All capture mode exit paths must switch activeTab back to 'preencher'
-- Debug console.logs removed from production save flow
+- CAP-01 (39-01): setActiveTab('preencher') added to handleExitCaptureMode (Cancelar flow)
+- CAP-02 (39-01): setActiveTab('preencher') added to handleStartFilling (Comecar a Preencher flow)
+- CAP-03 (39-01): Debug console.logs removed from handleStartFilling and handleSaveMapping
 
 ### Roadmap Evolution
 
@@ -123,7 +124,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Phase 39 executed (1 plan, 1 commit)
+Stopped at: Phase 39 executed and verified (1 plan, 2 commits)
 Resume file: None
 Next step: `/gsd:plan-phase 40` (Modo Colapsado) — final phase of v5.1
 
