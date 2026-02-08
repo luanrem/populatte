@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 
 ## Current Position
 
-Phase: 38 of 40 (Seção Recentes) — fourth phase of v5.1
-Plan: 2 of 2 in phase
+Phase: 39 of 40 (Aba Captura) — fifth phase of v5.1
+Plan: 1 of 1 in phase
 Status: Phase complete
-Last activity: 2026-02-08 — Completed 38-02-PLAN.md
+Last activity: 2026-02-08 — Completed 39-01-PLAN.md
 
-Progress: [███████░░░] 67%
+Progress: [████████░░] 70%
 
 ## Performance Metrics
 
@@ -85,6 +85,10 @@ Recent decisions from Phase 38:
 - REC-04 (38-02): Active row highlighted with subtle blue background (bg-blue-50)
 - REC-05 (38-02): Identifier truncation at ~20 chars with ellipsis and native title tooltip
 
+Recent decisions from Phase 39:
+- All capture mode exit paths must switch activeTab back to 'preencher'
+- Debug console.logs removed from production save flow
+
 ### Roadmap Evolution
 
 - v1.0: 3 phases, 5 plans -- End-to-End Auth & User Sync (shipped 2026-01-28)
@@ -119,9 +123,9 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Phase 38 executed and verified (2 plans, 6 commits)
+Stopped at: Phase 39 executed (1 plan, 1 commit)
 Resume file: None
-Next step: `/gsd:plan-phase 39` (Aba Captura) or `/gsd:plan-phase 40` (Modo Colapsado) — both parallel-eligible
+Next step: `/gsd:plan-phase 40` (Modo Colapsado) — final phase of v5.1
 
 Config:
 {
