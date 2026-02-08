@@ -99,4 +99,23 @@ export const preferencesStorage = {
       lastActiveTab: tab,
     });
   },
+
+  /**
+   * Get compact mode state
+   */
+  async getCompactMode(): Promise<boolean> {
+    const prefs = await this.getPreferences();
+    return prefs.compactMode;
+  },
+
+  /**
+   * Set compact mode state
+   */
+  async setCompactMode(compact: boolean): Promise<void> {
+    const current = await this.getPreferences();
+    await this.setPreferences({
+      ...current,
+      compactMode: compact,
+    });
+  },
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Coffee, RefreshCw, Target } from 'lucide-react';
+import { Coffee, RefreshCw, Target, Minimize2, Maximize2 } from 'lucide-react';
 import { sendViaPort, PortDisconnectedError } from '../../src/messaging';
 import { fetchBatchDetail } from '../../src/api/batches';
 import { createMappingWithSteps, fetchMappingWithSteps, type MappingStep } from '../../src/api/mappings';
@@ -18,6 +18,7 @@ import {
   TabBar,
   PreencherStepList,
   RecentesList,
+  CompactIconGrid,
   type CaptureStep,
 } from './components';
 
@@ -40,6 +41,11 @@ export default function App() {
   // Tab state
   const [activeTab, setActiveTab] = useState<'preencher' | 'captura'>('preencher');
 
+  // Compact mode state
+  const [compactMode, setCompactMode] = useState(false);
+  const scrollPositionRef = useRef<number>(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   // Mapping steps state
   const [mappingSteps, setMappingSteps] = useState<MappingStep[]>([]);
   const [stepValidation, setStepValidation] = useState<Map<string, boolean>>(new Map());
@@ -53,6 +59,29 @@ export default function App() {
   useEffect(() => {
     preferencesStorage.setLastActiveTab(activeTab);
   }, [activeTab]);
+
+  // Persist compact mode changes to storage
+  useEffect(() => {
+    preferencesStorage.setCompactMode(compactMode);
+  }, [compactMode]);
+
+  // Restore scroll position after expanding
+  useEffect(() => {
+    if (!compactMode && scrollContainerRef.current) {
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = scrollPositionRef.current;
+        }
+      });
+    }
+  }, [compactMode]);
+
+  // Auto-exit compact mode when conditions invalidate it
+  useEffect(() => {
+    if (compactMode && (captureMode || mappingSteps.length === 0)) {
+      setCompactMode(false);
+    }
+  }, [compactMode, captureMode, mappingSteps.length]);
 
   // Fetch mapping steps when mapping is selected
   useEffect(() => {
@@ -235,6 +264,9 @@ export default function App() {
       }
     });
 
+    // Restore compact mode from storage
+    preferencesStorage.getCompactMode().then(setCompactMode);
+
     // Restore capture mode state from session storage
     chrome.storage.session.get(['captureMode', 'batchColumns']).then((data) => {
       console.log('[App] Storage data received:', JSON.stringify(data, null, 2));
@@ -260,6 +292,22 @@ export default function App() {
       portRef.current?.disconnect();
     };
   }, []);
+
+  // Keyboard shortcut for compact mode toggle (Ctrl+B / Cmd+B)
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Only allow toggle when authenticated, not in capture mode, and has steps
+      if (!state?.isAuthenticated || captureMode || mappingSteps.length === 0) {
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        handleToggleCompact();
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [state?.isAuthenticated, captureMode, mappingSteps.length, compactMode]);
 
   async function loadState() {
     if (!portRef.current) return;
@@ -580,6 +628,14 @@ export default function App() {
     }
   }
 
+  function handleToggleCompact() {
+    if (!compactMode && scrollContainerRef.current) {
+      // Save scroll position before collapsing
+      scrollPositionRef.current = scrollContainerRef.current.scrollTop;
+    }
+    setCompactMode(prev => !prev);
+  }
+
   // ============================================================================
   // Render
   // ============================================================================
@@ -590,6 +646,19 @@ export default function App() {
         <Coffee className="w-6 h-6 text-amber-700" />
         <h1 className="text-lg font-semibold text-gray-900">Populatte</h1>
         {state?.isAuthenticated && <ConnectedIndicator />}
+        {state?.isAuthenticated && !captureMode && mappingSteps.length > 0 && (
+          <button
+            onClick={handleToggleCompact}
+            className="p-1 hover:bg-gray-100 rounded"
+            title={compactMode ? 'Expandir painel' : 'Modo compacto (Ctrl+B)'}
+          >
+            {compactMode ? (
+              <Maximize2 className="w-4 h-4 text-gray-500" />
+            ) : (
+              <Minimize2 className="w-4 h-4 text-gray-500" />
+            )}
+          </button>
+        )}
         <button
           onClick={loadState}
           className="ml-auto p-1 hover:bg-gray-100 rounded"
@@ -625,96 +694,110 @@ export default function App() {
               {/* Tab content */}
               {activeTab === 'preencher' ? (
                 <div className="flex-1 flex flex-col overflow-hidden pt-4">
-                  {/* Selectors - always visible */}
-                  <div className="space-y-2 pb-2">
-                    <ProjectSelector
-                      selectedId={state.projectId}
-                      onSelect={handleProjectSelect}
-                      port={portRef.current!}
-                    />
-                    <BatchSelector
-                      projectId={state.projectId}
-                      selectedId={state.batchId}
-                      onSelect={handleBatchSelect}
-                      port={portRef.current!}
-                    />
+                  {/* Expanded content wrapper with CSS transition */}
+                  <div className={`transition-all duration-200 ease-out overflow-hidden ${compactMode ? 'max-h-0 opacity-0' : 'max-h-[2000px] opacity-100'} flex-1 flex flex-col`}>
+                    {/* Selectors - always visible */}
+                    <div className="space-y-2 pb-2">
+                      <ProjectSelector
+                        selectedId={state.projectId}
+                        onSelect={handleProjectSelect}
+                        port={portRef.current!}
+                      />
+                      <BatchSelector
+                        projectId={state.projectId}
+                        selectedId={state.batchId}
+                        onSelect={handleBatchSelect}
+                        port={portRef.current!}
+                      />
+                    </div>
+
+                    {/* Empty state when no batch selected */}
+                    {!state.batchId ? (
+                      <div className="flex flex-col items-center justify-center flex-1 text-center px-4">
+                        <Coffee className="w-12 h-12 text-gray-300 mb-3" />
+                        <p className="text-sm text-gray-400">Selecione um projeto e batch para comecar</p>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Scrollable content area */}
+                        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto space-y-2 pb-4">
+                          {state.hasMapping && state.availableMappings.length > 0 && (
+                            <MappingSelector
+                              mappings={state.availableMappings}
+                              selectedId={state.mappingId}
+                              onSelect={handleMappingSelect}
+                            />
+                          )}
+
+                          {/* Create Mapping button - shown when batch selected but no mapping for current URL */}
+                          {!state.hasMapping && !captureMode && (
+                            <button
+                              type="button"
+                              onClick={handleEnterCaptureMode}
+                              className="w-full p-3 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300 text-amber-800 font-medium flex items-center justify-center gap-2"
+                            >
+                              <Target className="w-4 h-4" />
+                              Criar Mapping
+                            </button>
+                          )}
+
+                          {/* Steps list */}
+                          {mappingSteps.length > 0 && (
+                            <PreencherStepList
+                              steps={mappingSteps}
+                              validation={stepValidation}
+                              fillResults={fillResultsMap}
+                              onStepClick={handleStepHighlight}
+                              onReorder={handleStepReorder}
+                            />
+                          )}
+
+                          {/* Recent rows section */}
+                          {recentRows.length > 0 && (
+                            <RecentesList
+                              entries={recentRows}
+                              currentRowIndex={state.rowIndex}
+                              onRowSelect={handleRecentRowSelect}
+                            />
+                          )}
+                        </div>
+
+                        {/* Sticky footer with row indicator and fill controls */}
+                        <div className="sticky bottom-0 bg-white pt-2 border-t space-y-2">
+                          <RowIndicator
+                            rowIndex={state.rowIndex}
+                            rowTotal={state.rowTotal}
+                            identifierPrimary={state.identifierPrimary}
+                            identifierSecondary={state.identifierSecondary}
+                            identifierFieldKey={state.identifierFieldKey}
+                            secondaryFieldKey={state.secondaryFieldKey}
+                            onPrev={handlePrev}
+                            onNext={handleNext}
+                          />
+                          <FillControls
+                            batchId={state.batchId}
+                            fillStatus={state.fillStatus}
+                            fillProgress={fillProgress}
+                            fillError={fillError}
+                            onFill={handleFill}
+                            onNext={handleNext}
+                            onMarkError={handleMarkError}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  {/* Empty state when no batch selected */}
-                  {!state.batchId ? (
-                    <div className="flex flex-col items-center justify-center flex-1 text-center px-4">
-                      <Coffee className="w-12 h-12 text-gray-300 mb-3" />
-                      <p className="text-sm text-gray-400">Selecione um projeto e batch para comecar</p>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Scrollable content area */}
-                      <div className="flex-1 overflow-y-auto space-y-2 pb-4">
-                        {state.hasMapping && state.availableMappings.length > 0 && (
-                          <MappingSelector
-                            mappings={state.availableMappings}
-                            selectedId={state.mappingId}
-                            onSelect={handleMappingSelect}
-                          />
-                        )}
-
-                        {/* Create Mapping button - shown when batch selected but no mapping for current URL */}
-                        {!state.hasMapping && !captureMode && (
-                          <button
-                            type="button"
-                            onClick={handleEnterCaptureMode}
-                            className="w-full p-3 bg-amber-100 hover:bg-amber-200 rounded-lg border border-amber-300 text-amber-800 font-medium flex items-center justify-center gap-2"
-                          >
-                            <Target className="w-4 h-4" />
-                            Criar Mapping
-                          </button>
-                        )}
-
-                        {/* Steps list */}
-                        {mappingSteps.length > 0 && (
-                          <PreencherStepList
-                            steps={mappingSteps}
-                            validation={stepValidation}
-                            fillResults={fillResultsMap}
-                            onStepClick={handleStepHighlight}
-                            onReorder={handleStepReorder}
-                          />
-                        )}
-
-                        {/* Recent rows section */}
-                        {recentRows.length > 0 && (
-                          <RecentesList
-                            entries={recentRows}
-                            currentRowIndex={state.rowIndex}
-                            onRowSelect={handleRecentRowSelect}
-                          />
-                        )}
-                      </div>
-
-                      {/* Sticky footer with row indicator and fill controls */}
-                      <div className="sticky bottom-0 bg-white pt-2 border-t space-y-2">
-                        <RowIndicator
-                          rowIndex={state.rowIndex}
-                          rowTotal={state.rowTotal}
-                          identifierPrimary={state.identifierPrimary}
-                          identifierSecondary={state.identifierSecondary}
-                          identifierFieldKey={state.identifierFieldKey}
-                          secondaryFieldKey={state.secondaryFieldKey}
-                          onPrev={handlePrev}
-                          onNext={handleNext}
-                        />
-                        <FillControls
-                          batchId={state.batchId}
-                          fillStatus={state.fillStatus}
-                          fillProgress={fillProgress}
-                          fillError={fillError}
-                          onFill={handleFill}
-                          onNext={handleNext}
-                          onMarkError={handleMarkError}
-                        />
-                      </div>
-                    </>
-                  )}
+                  {/* Compact content wrapper with CSS transition */}
+                  <div className={`transition-all duration-200 ease-out overflow-hidden ${compactMode ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'} flex-1 flex flex-col`}>
+                    {state.batchId && mappingSteps.length > 0 && (
+                      <CompactIconGrid
+                        steps={mappingSteps}
+                        validation={stepValidation}
+                        onStepClick={handleStepHighlight}
+                      />
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="flex-1 overflow-y-auto pt-4">

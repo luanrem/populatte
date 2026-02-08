@@ -50,6 +50,8 @@ export interface PreferencesState {
   lastMappingIdByProject: Record<string, string>;
   /** Last active tab in Side Panel (global across all browser tabs) */
   lastActiveTab: 'preencher' | 'captura';
+  /** Compact mode toggle state */
+  compactMode: boolean;
 }
 
 /**
@@ -73,6 +75,7 @@ export const DEFAULT_PREFERENCES: PreferencesState = {
   lastProjectId: null,
   lastMappingIdByProject: {},
   lastActiveTab: 'preencher',
+  compactMode: false,
 };
 
 /**
