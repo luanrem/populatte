@@ -65,8 +65,10 @@ function getStepValue(
   if (step.action === 'fill') {
     if (step.sourceFieldKey !== undefined) {
       const value = rowData[step.sourceFieldKey];
-      // Convert to string if present
-      return value !== undefined && value !== null ? String(value) : undefined;
+      if (value === undefined || value === null) {
+        return undefined;
+      }
+      return formatCellValue(value);
     }
     if (step.fixedValue !== undefined) {
       return step.fixedValue;
@@ -77,6 +79,26 @@ function getStepValue(
 
   // Click and wait actions don't need values
   return undefined;
+}
+
+/**
+ * Convert a row value into the string to fill.
+ *
+ * Numbers use the pt-BR decimal separator (comma) so they land correctly in
+ * pt-BR forms such as RAL (e.g. 1500.5 -> "1500,5"). Strings pass through
+ * unchanged — values already formatted in the source spreadsheet (e.g.
+ * "1.500,50") are respected as-is.
+ *
+ * Grouping (thousands separators) and decimal precision are intentionally NOT
+ * forced here: that would corrupt integers like years/IDs and may conflict with
+ * the target field's culture. The exact target format is validated against the
+ * live form (RAL) before the pilot run.
+ */
+function formatCellValue(value: unknown): string {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value).replace('.', ',');
+  }
+  return String(value);
 }
 
 // ============================================================================

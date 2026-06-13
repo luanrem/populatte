@@ -78,6 +78,52 @@ function isTruthyValue(val: string): boolean {
 }
 
 /**
+ * Set an element's checked state via the native setter (framework reactivity)
+ * and dispatch a change event.
+ */
+function setChecked(el: HTMLInputElement, checked: boolean): void {
+  const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'checked');
+  if (descriptor?.set) {
+    descriptor.set.call(el, checked);
+  } else {
+    el.checked = checked;
+  }
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+/**
+ * Radio-by-value: within the same radio group (same `name`), find the option
+ * whose value matches the data value. Falls back to matching the associated
+ * label text (case-insensitive). Returns null if no option matches.
+ *
+ * This is what lets a data value like "+" select the matching rblSinal radio,
+ * instead of the truthy-check used for checkboxes.
+ */
+function findRadioOptionByValue(radio: HTMLInputElement, value: string): HTMLInputElement | null {
+  const wanted = value.trim();
+  const group = radio.name
+    ? Array.from(document.getElementsByName(radio.name)).filter(
+        (el): el is HTMLInputElement => el instanceof HTMLInputElement && el.type === 'radio',
+      )
+    : [radio];
+
+  // 1) match by value attribute
+  const byValue = group.find((r) => r.value === wanted);
+  if (byValue) {
+    return byValue;
+  }
+
+  // 2) fallback: match by associated label text
+  const lowered = wanted.toLowerCase();
+  const byLabel = group.find((r) =>
+    Array.from(r.labels ?? []).some(
+      (label) => (label.textContent ?? '').trim().toLowerCase() === lowered,
+    ),
+  );
+  return byLabel ?? null;
+}
+
+/**
  * Determine the input type of an element
  */
 function getInputType(el: HTMLElement): InputType {
@@ -260,23 +306,21 @@ export function executeFill(
       return { success: false, error: `No matching option found for value: ${value}` };
     }
 
-    // Handle checkbox and radio
-    if (inputType === 'checkbox' || inputType === 'radio') {
-      const checkEl = element as HTMLInputElement;
-      const shouldCheck = isTruthyValue(value);
-
-      // Use native property setter
-      const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'checked');
-
-      if (descriptor?.set) {
-        descriptor.set.call(checkEl, shouldCheck);
-        checkEl.dispatchEvent(new Event('change', { bubbles: true }));
-        return { success: true };
+    // Handle radio: interpret the value as the desired option within the group
+    if (inputType === 'radio') {
+      const radioEl = element as HTMLInputElement;
+      const target = findRadioOptionByValue(radioEl, value);
+      if (!target) {
+        return { success: false, error: `No radio option matching value: ${value}` };
       }
+      setChecked(target, true);
+      return { success: true };
+    }
 
-      // Fallback
-      checkEl.checked = shouldCheck;
-      checkEl.dispatchEvent(new Event('change', { bubbles: true }));
+    // Handle checkbox: truthy value checks it
+    if (inputType === 'checkbox') {
+      const checkEl = element as HTMLInputElement;
+      setChecked(checkEl, isTruthyValue(value));
       return { success: true };
     }
 
