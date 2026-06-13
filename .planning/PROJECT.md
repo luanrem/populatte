@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, field-level analytics with type inference, mapping/step CRUD for form-filling recipes, and batch identifier configuration. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, field exploration with card-based inventory, and full mapping/step management with drag-and-drop editing. The Chrome extension (WXT + Manifest V3) supports COPILOTO mode (manual fill with row navigation) and capture mode (click-to-capture visual mapping creation), with connection code auth, project/batch selection, mapping detection, DOM-based form filling with CSS/XPath selectors, row status tracking, and meaningful row identifiers.
+A B2B SaaS that automates form-filling from Excel data via a browser extension. The NestJS API handles authentication, project management, data ingestion with strategy-based Excel parsing, field-level analytics with type inference, mapping/step CRUD for form-filling recipes, and batch identifier configuration. The Next.js dashboard manages projects, file uploads, data visualization with paginated batch tables, field exploration with card-based inventory, and full mapping/step management with drag-and-drop editing. The Chrome extension (WXT + Manifest V3) uses a persistent Side Panel UI with two tabs (Captura/Preencher), supporting COPILOTO mode (manual fill with row navigation, clickable steps list with element highlighting, recent rows history, and compact icon-grid mode) and capture mode (click-to-capture visual mapping creation inside the persistent panel), with connection code auth, project/batch selection, mapping detection, DOM-based form filling with CSS/XPath selectors, row status tracking, and meaningful row identifiers.
 
 ## Core Value
 
@@ -127,17 +127,21 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - ✓ Extension capture mode with click-to-capture, element highlighting, and storage-based step sync — v5.0
 - ✓ Extension mapping save flow with success state and dashboard link — v5.0
 - ✓ Extension row identifier display with copy-to-clipboard and prev/next navigation — v5.0
+- ✓ Chrome Side Panel with persistent UI that stays open during page interaction — v5.1
+- ✓ Tabs structure (Captura / Preencher) with state-aware enable/disable — v5.1
+- ✓ Clickable steps list with element highlighting on page — v5.1
+- ✓ Recent rows history section with status indicators and click navigation — v5.1
+- ✓ Capture mode fully functional in Side Panel (persistent capture) — v5.1
+- ✓ Compact mode with step icon strip and hover tooltips — v5.1
+- ✓ Port-based lifecycle detection with auto-reconnect on service worker termination — v5.1
+- ✓ Keyboard shortcut (Ctrl+B / Cmd+B) for compact mode toggle — v5.1
 
 ### Active
 
-- [ ] Chrome Side Panel with persistent UI that stays open during page interaction
-- [ ] Toggle between popup and Side Panel modes
-- [ ] Tabs structure (Captura / Preencher) with state-aware enable/disable
-- [ ] Clickable steps list with element highlighting on page
-- [ ] Recent rows history section with status indicators and click navigation
-- [ ] Capture mode fully functional in Side Panel (persistent capture)
-- [ ] Collapsed mode (~50px) with step icon strip and hover tooltips
-- [ ] Shared component extraction (popup ↔ Side Panel reuse)
+- [ ] AUTOPILOTO mode — auto-advance rows after successful fills
+- [ ] Keyboard shortcuts for fill (Ctrl+Shift+F) and next row (Ctrl+Shift+N)
+- [ ] Field highlighting during fill execution
+- [ ] Batch progress summary in Side Panel header
 
 ### Out of Scope
 
@@ -162,16 +166,17 @@ A B2B SaaS that automates form-filling from Excel data via a browser extension. 
 - Test mapping in dashboard — test via extension only, validates real DOM
 - Smart field detection — unreliable without training data
 - Multi-URL workflows — high complexity, single-form MVP first
-- AUTOPILOTO mode — auto-advance rows after successful fills, deferred
-- Settings page in Side Panel — placeholder only for v5.1
-- Popup layout changes — stays as-is except toggle button
-- Multi-tab capture coordination — single-tab capture only
+- Settings page in Side Panel — placeholder only, full settings deferred
+- Multi-tab capture coordination — single-tab capture only, cross-tab adds race conditions
 - Offline support for recentes — requires sync complexity
+- Programmatic panel resize — Chrome Side Panel API has no width control
+- Toggle between popup and Side Panel — popup fully replaced by Side Panel (simpler single UI surface)
+- Shared component extraction (popup/Side Panel reuse) — unnecessary after popup removal
 
 ## Context
 
-**Shipped v5.0** with visual mapping builder (141 files changed, +21,290 lines, 20 plans across 5 phases).
-Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, react-intersection-observer, shadcn/ui, dnd-kit, **WXT 0.20.13**, Manifest V3, React 19 (extension), jose (JWT).
+**Shipped v5.1** with Side Panel migration and UX improvements (86 files changed, +11,009/-1,145 lines, 15 plans across 6 phases).
+Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Query v5, Zod v4, SheetJS 0.20.3, react-dropzone 14, react-intersection-observer, shadcn/ui, dnd-kit, **WXT 0.20.13**, Manifest V3, React 19 (extension), jose (JWT), Chrome Side Panel API.
 
 **Architecture patterns established:**
 - Compare-first sync: Guard fetches stored user, compares fields, writes only on mismatch
@@ -309,19 +314,27 @@ Tech stack: NestJS 11, Next.js 16, PostgreSQL (Drizzle ORM), Clerk, TanStack Que
 | Store identifier keys at batch selection | Fetch once at BATCH_SELECT, use for all rows | ✓ Good |
 | Navigation arrows hidden for single-row batches | Reduces UI clutter, conditional rendering | ✓ Good |
 | createPortal for DragOverlay | Prevents clipping by overflow containers | ✓ Good |
+| Side Panel replaces popup entirely | Persistent UI solves popup-closes-on-click; simpler single surface | ✓ Good |
+| Port-based communication for Side Panel | Enables disconnect detection, per-tab isolation, lifecycle management | ✓ Good |
+| Per-tab state via Map<tabId, TabState> | URL-dependent state isolated; selection state remains global | ✓ Good |
+| Exponential backoff reconnection (500ms-8s) | Auto-reconnect on SW termination with max 5 retries, reset on success | ✓ Good |
+| Keepalive alarm at 4 minutes | Extends SW lifetime to prevent premature termination | ✓ Good |
+| Tab bar with custom CSS tooltip | Instant hover display (no native title delay); shadcn-style aesthetic | ✓ Good |
+| Optimistic tab switch before async ops | Instant feedback, rollback on error | ✓ Good |
+| Sticky footer pattern for fill controls | Row navigator + fill controls always visible at bottom | ✓ Good |
+| Steps list collapsed by default | Reduces visual clutter; expanded via chevron toggle | ✓ Good |
+| Amber outline for step highlighting | Distinct from blue capture mode; auto-dismiss after 3s | ✓ Good |
+| CSS tooltip via group-hover for badges | Instant display, no delay; reused across steps and compact mode | ✓ Good |
+| Recent rows in chrome.storage.local per batch | FIFO eviction (max 10), survives panel close/reopen | ✓ Good |
+| Compact mode as internal CSS layout | No Chrome panel resize API; transforms within full panel width | ✓ Good |
+| 3-column icon grid for compact mode | ~85px per cell; badges for step number, warning, and fill result | ✓ Good |
+| Ctrl+B / Cmd+B keyboard shortcut | Familiar toggle pattern; CSS transitions for smooth animation | ✓ Good |
 
-## Current Milestone: v5.1 Side Panel & UX Improvements
+## Current Milestone: Planning Next
 
-**Goal:** Replace popup with persistent Side Panel for capture mode and fill workflow, adding tabs, clickable steps, recent rows history, and collapsed mode.
+v5.1 Side Panel & UX Improvements shipped 2026-02-20. See MILESTONES.md for details.
 
-**Target features:**
-- Chrome Side Panel API integration with per-tab behavior
-- Popup ↔ Side Panel toggle
-- Captura / Preencher tabs with capture-state awareness
-- Steps list with click-to-highlight and selector validation
-- Recent rows history with expand/collapse
-- Capture mode in Side Panel (solves popup-closes-on-click problem)
-- Collapsed mode (~50px icon strip) with keyboard shortcut
+Next milestone TBD — run `/gsd:new-milestone` to define scope.
 
 ---
-*Last updated: 2026-02-05 after v5.1 milestone started*
+*Last updated: 2026-02-20 after v5.1 milestone completed*

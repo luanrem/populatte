@@ -1,5 +1,32 @@
 # Project Milestones: Populatte
 
+## v5.1 Side Panel & UX Improvements (Shipped: 2026-02-20)
+
+**Delivered:** Replaced popup with Chrome Side Panel for persistent UI during page interaction, adding two-tab architecture (Captura/Preencher), clickable steps list with element highlighting, recent rows history, and compact mode with icon strip and keyboard shortcut.
+
+**Phases completed:** 35-40 (15 plans total)
+
+**Key accomplishments:**
+
+- Chrome Side Panel as sole extension UI with per-tab persistence, port-based lifecycle, and auto-reconnect on service worker termination
+- Two-tab architecture (Captura / Preencher) with capture-mode-aware enable/disable, tooltip, and pulsing badge
+- Preencher tab with compact layout, collapsible steps list, drag-and-drop reorder, element highlighting, and selector validation badges
+- Recent rows history section with expand/collapse animation, click-to-navigate, and per-batch chrome.storage.local persistence
+- Capture mode fully functional inside Side Panel — solves the fundamental popup-closes-on-click bottleneck
+- Compact mode with 3-column icon grid, hover tooltips, Ctrl+B keyboard shortcut, and smooth CSS transitions
+
+**Stats:**
+
+- 86 files changed (+11,009 / -1,145 lines)
+- 6 phases, 15 plans, 75 commits
+- 4 days (2026-02-05 → 2026-02-08)
+
+**Git range:** `docs(35)` → `docs(40)`
+
+**What's next:** TBD — `/gsd:new-milestone` to define scope
+
+---
+
 ## v5.0 Mapping Builder (Shipped: 2026-02-05)
 
 **Delivered:** Visual mapping creation via extension capture mode, full dashboard mapping/step management with drag-and-drop, batch identifier configuration for meaningful row labels, and project/batch CRUD operations with cascade soft-delete.

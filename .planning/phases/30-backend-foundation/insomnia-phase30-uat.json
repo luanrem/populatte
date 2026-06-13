@@ -1,0 +1,373 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-02-04T19:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_phase30_uat",
+      "parentId": null,
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "name": "Phase 30 - Backend Foundation UAT",
+      "description": "UAT tests for batch/project CRUD and identifier configuration",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_base",
+      "parentId": "wrk_phase30_uat",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "name": "Base Environment",
+      "data": {
+        "baseUrl": "http://localhost:3001",
+        "authToken": "YOUR_CLERK_SESSION_TOKEN",
+        "projectId": "YOUR_PROJECT_ID",
+        "batchId": "YOUR_BATCH_ID",
+        "validColumnKey": "YOUR_VALID_COLUMN_KEY",
+        "invalidColumnKey": "nonexistent_column_xyz"
+      },
+      "dataPropertyOrder": {
+        "&": ["baseUrl", "authToken", "projectId", "batchId", "validColumnKey", "invalidColumnKey"]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1707069600000,
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_batch_crud",
+      "parentId": "wrk_phase30_uat",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "name": "Batch CRUD",
+      "description": "Batch update and delete operations",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1707069600000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_project_crud",
+      "parentId": "wrk_phase30_uat",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "name": "Project CRUD",
+      "description": "Project cascade delete",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1707069500000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_helpers",
+      "parentId": "wrk_phase30_uat",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "name": "Helpers",
+      "description": "Helper requests to get IDs and verify state",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1707069400000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_get_projects",
+      "parentId": "fld_helpers",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects",
+      "name": "0. List Projects (get projectId)",
+      "description": "Use to get a projectId for testing",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069610000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_batches",
+      "parentId": "fld_helpers",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects/{{ _.projectId }}/batches",
+      "name": "0. List Batches (get batchId + columns)",
+      "description": "Use to get a batchId and see columnMetadata for valid identifier keys",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069609000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_batch_detail",
+      "parentId": "fld_helpers",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects/{{ _.projectId }}/batches/{{ _.batchId }}",
+      "name": "0. Get Batch Detail (verify changes)",
+      "description": "Use to verify batch was updated correctly",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069608000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_batch_rows",
+      "parentId": "fld_helpers",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects/{{ _.projectId }}/batches/{{ _.batchId }}/rows",
+      "name": "0. Get Batch Rows (verify cascade)",
+      "description": "Use to verify rows were soft-deleted after batch/project delete",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069607000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_test1_put_batch",
+      "parentId": "fld_batch_crud",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects/{{ _.projectId }}/batches/{{ _.batchId }}",
+      "name": "1. PUT - Update batch name",
+      "description": "Test 1: Update batch name via PUT endpoint",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"UAT Test - Updated Name\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069600000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_test2_patch_identifiers",
+      "parentId": "fld_batch_crud",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects/{{ _.projectId }}/batches/{{ _.batchId }}",
+      "name": "2. PATCH - Set identifier fields",
+      "description": "Test 2: Update identifier fields via PATCH. Use a valid column key from columnMetadata.",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"identifierFieldKey\": \"{{ _.validColumnKey }}\",\n  \"secondaryFieldKey\": null\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069599000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_test3_patch_invalid",
+      "parentId": "fld_batch_crud",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects/{{ _.projectId }}/batches/{{ _.batchId }}",
+      "name": "3. PATCH - Invalid identifier (expect 400)",
+      "description": "Test 3: Attempt to set identifier to non-existent column. Should return 400.",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"identifierFieldKey\": \"{{ _.invalidColumnKey }}\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069598000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_test4_delete_batch",
+      "parentId": "fld_batch_crud",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects/{{ _.projectId }}/batches/{{ _.batchId }}",
+      "name": "4. DELETE - Soft-delete batch",
+      "description": "Test 4: Soft-delete batch. All rows should also be soft-deleted.",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069597000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_test5_delete_project",
+      "parentId": "fld_project_crud",
+      "modified": 1707069600000,
+      "created": 1707069600000,
+      "url": "{{ _.baseUrl }}/projects/{{ _.projectId }}",
+      "name": "5. DELETE - Cascade delete project",
+      "description": "Test 5: Soft-delete project. All batches AND all rows should be soft-deleted.",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.authToken }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1707069596000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    }
+  ]
+}
