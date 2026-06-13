@@ -1,0 +1,16 @@
+{
+  "name": "populatte-e2e",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Offline Lab — Playwright tests for the Populatte fill engine against synthetic forms and RAL fixtures",
+  "scripts": {
+    "build:engine": "esbuild src/engine-entry.ts --bundle --format=iife --global-name=PopulatteEngine --platform=browser --outfile=dist/engine.global.js",
+    "convert:ral": "node scripts/convert-mhtml.mjs",
+    "pretest": "npm run build:engine && npm run convert:ral",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "esbuild": "^0.24.0"
+  }
+}

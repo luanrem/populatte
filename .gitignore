@@ -7,6 +7,9 @@ node_modules/
 coverage/
 *.lcov
 .nyc_output
+.playwright-mcp/
+test-results/
+playwright-report/
 
 # Production builds
 dist/
