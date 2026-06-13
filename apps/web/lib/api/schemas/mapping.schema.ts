@@ -56,9 +56,24 @@ export const updateMappingRequestSchema = z.object({
   successConfig: successConfigSchema.nullable().optional(),
 });
 
+// Update mapping response (without steps)
+export const updateMappingResponseSchema = z.object({
+  id: z.string(),
+  projectId: z.string(),
+  name: z.string(),
+  targetUrl: z.string(),
+  isActive: z.boolean(),
+  successTrigger: successTriggerSchema.nullable(),
+  successConfig: successConfigSchema.nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  deletedAt: z.string().nullable(),
+});
+
 export type MappingListItem = z.infer<typeof mappingListItemSchema>;
 export type MappingListResponse = z.infer<typeof mappingListResponseSchema>;
 export type SuccessTrigger = z.infer<typeof successTriggerSchema>;
 export type SuccessConfig = z.infer<typeof successConfigSchema>;
 export type MappingDetail = z.infer<typeof mappingDetailSchema>;
 export type UpdateMappingRequest = z.infer<typeof updateMappingRequestSchema>;
+export type UpdateMappingResponse = z.infer<typeof updateMappingResponseSchema>;

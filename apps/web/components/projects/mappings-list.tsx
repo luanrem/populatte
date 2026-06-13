@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -28,6 +29,7 @@ interface MappingsListProps {
 }
 
 export function MappingsList({ projectId }: MappingsListProps) {
+  const router = useRouter();
   const [selectedMapping, setSelectedMapping] = useState<MappingListItem | null>(
     null
   );
@@ -133,7 +135,11 @@ export function MappingsList({ projectId }: MappingsListProps) {
           </TableHeader>
           <TableBody>
             {mappings.map((mapping) => (
-              <TableRow key={mapping.id}>
+              <TableRow
+                key={mapping.id}
+                className="cursor-pointer"
+                onClick={() => router.push(`/mappings/${mapping.id}?projectId=${projectId}`)}
+              >
                 <TableCell className="font-medium">{mapping.name}</TableCell>
                 <TableCell className="max-w-xs truncate text-muted-foreground">
                   {mapping.targetUrl}
@@ -150,12 +156,10 @@ export function MappingsList({ projectId }: MappingsListProps) {
                     <Badge variant="secondary">Inativo</Badge>
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon" asChild>
-                      <Link
-                        href={`/projects/${projectId}/mappings/${mapping.id}`}
-                      >
+                      <Link href={`/mappings/${mapping.id}?projectId=${projectId}`}>
                         <Pencil className="size-4" />
                         <span className="sr-only">Editar</span>
                       </Link>

@@ -8,6 +8,7 @@ import type {
   MappingDetail,
   MappingListResponse,
   UpdateMappingRequest,
+  UpdateMappingResponse,
 } from '../../api/schemas/mapping.schema';
 
 export function useMappings(projectId: string, limit = 20, offset = 0) {
@@ -38,7 +39,7 @@ export function useUpdateMapping(projectId: string) {
   const queryClient = useQueryClient();
 
   return useMutation<
-    MappingDetail,
+    UpdateMappingResponse,
     Error,
     { mappingId: string; data: UpdateMappingRequest }
   >({

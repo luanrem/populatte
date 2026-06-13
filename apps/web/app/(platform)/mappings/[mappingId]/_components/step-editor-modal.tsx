@@ -53,12 +53,12 @@ const stepFormSchema = z.object({
     }),
   ),
   useFixedValue: z.boolean(), // UI-only field for toggle
-  sourceFieldKey: z.string().nullable(),
-  fixedValue: z.string().nullable(),
+  sourceFieldKey: z.string().nullable().optional(),
+  fixedValue: z.string().nullable().optional(),
   optional: z.boolean(),
   clearBefore: z.boolean(),
   pressEnter: z.boolean(),
-  waitMs: z.number().nullable(),
+  waitMs: z.number().nullable().optional(),
 });
 
 type StepFormData = z.infer<typeof stepFormSchema>;
@@ -331,9 +331,15 @@ export function StepEditorModal({
                   <Switch
                     id="useFixedValue"
                     checked={useFixedValue}
-                    onCheckedChange={(checked) =>
-                      form.setValue('useFixedValue', checked)
-                    }
+                    onCheckedChange={(checked) => {
+                      form.setValue('useFixedValue', checked);
+                      // Clear the other field when switching
+                      if (checked) {
+                        form.setValue('sourceFieldKey', null);
+                      } else {
+                        form.setValue('fixedValue', null);
+                      }
+                    }}
                   />
                   <Label htmlFor="useFixedValue">Usar valor fixo</Label>
                 </div>

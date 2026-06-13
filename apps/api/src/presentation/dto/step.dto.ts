@@ -14,20 +14,24 @@ export const createStepSchema = z
     action: z.nativeEnum(StepAction),
     selector: selectorEntrySchema,
     selectorFallbacks: z.array(selectorEntrySchema).optional(),
-    sourceFieldKey: z.string().min(1).optional(),
-    fixedValue: z.string().optional(),
+    sourceFieldKey: z.string().min(1).nullable().optional(),
+    fixedValue: z.string().nullable().optional(),
     optional: z.boolean().optional(),
     clearBefore: z.boolean().optional(),
     pressEnter: z.boolean().optional(),
-    waitMs: z.number().int().min(0).optional(),
+    waitMs: z.number().int().min(0).nullable().optional(),
   })
   .refine(
     (data) => {
-      // Reject if BOTH sourceFieldKey AND fixedValue are provided (non-empty)
+      // Reject if BOTH sourceFieldKey AND fixedValue are provided (non-null, non-empty)
       const hasSourceFieldKey =
-        data.sourceFieldKey !== undefined && data.sourceFieldKey !== '';
+        data.sourceFieldKey !== undefined &&
+        data.sourceFieldKey !== null &&
+        data.sourceFieldKey !== '';
       const hasFixedValue =
-        data.fixedValue !== undefined && data.fixedValue !== '';
+        data.fixedValue !== undefined &&
+        data.fixedValue !== null &&
+        data.fixedValue !== '';
       return !(hasSourceFieldKey && hasFixedValue);
     },
     {

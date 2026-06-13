@@ -3,9 +3,11 @@
 import {
   mappingDetailSchema,
   mappingListResponseSchema,
+  updateMappingResponseSchema,
   type MappingDetail,
   type MappingListResponse,
   type UpdateMappingRequest,
+  type UpdateMappingResponse,
 } from '../schemas/mapping.schema';
 
 export function createMappingEndpoints(
@@ -61,7 +63,7 @@ export function createMappingEndpoints(
       projectId: string,
       mappingId: string,
       data: UpdateMappingRequest,
-    ): Promise<MappingDetail> {
+    ): Promise<UpdateMappingResponse> {
       const response = await fetchFn(
         `/projects/${projectId}/mappings/${mappingId}`,
         {
@@ -72,7 +74,7 @@ export function createMappingEndpoints(
       );
       const json: unknown = await response.json();
 
-      const result = mappingDetailSchema.safeParse(json);
+      const result = updateMappingResponseSchema.safeParse(json);
 
       if (!result.success) {
         console.error(
