@@ -1,4 +1,4 @@
-# Local Database (Docker) — POP-6
+# Local Database (Docker)
 
 Populatte uses **PostgreSQL** as its only database. The application is driven
 **solely by `DATABASE_URL`** — switching between a local Docker Postgres and the
@@ -27,16 +27,16 @@ npm run db:up
 #    (copy apps/api/.env.example if you don't have one yet)
 
 # 3. Apply the schema to the empty local DB (creates all tables + enums).
-npm run db:push:local
+npm run db:migrate:local
 
 # 4. Run the API.
 cd apps/api && npm run start:dev
 ```
 
-> **Why `db:push` and not `db:migrate` for the local bootstrap?** See
-> [Bootstrap vs. migrations](#bootstrap-db-push-vs-migrations-db-migrate) below.
-> Short version: `db:push` materializes the current schema state directly and is
-> the reliable way to provision a fresh, empty database.
+> `db:migrate:local` replays the committed migrations in `apps/api/drizzle/`
+> against the empty DB. The history is a clean baseline, so it applies in one
+> shot. See [Bootstrap vs. migrations](#bootstrap-vs-migrations) for when
+> `db:push` is appropriate instead.
 
 Open `http://localhost:3000/projects` logged in via Clerk → should return data
 (200) instead of the 503 you get when the Supabase pooler is paused.
@@ -49,8 +49,8 @@ Open `http://localhost:3000/projects` logged in via Clerk → should return data
 | `npm run db:down` | `docker compose down` — stop containers (volume kept) |
 | `npm run db:logs` | `docker compose logs -f db` — tail DB logs |
 | `npm run db:reset` | `docker compose down -v && up -d db` — **drops the volume** (wipes all local data) and recreates a fresh DB |
-| `npm run db:push:local` | `drizzle-kit push --force` against the local DB — materializes the current schema state. **Use this to provision a fresh local DB.** |
-| `npm run db:migrate:local` | `drizzle-kit migrate` against the local DB — runs versioned migrations (see caveat below) |
+| `npm run db:migrate:local` | `drizzle-kit migrate` against the local DB — replays the committed migrations. **Canonical bootstrap; use this to provision a fresh local DB.** |
+| `npm run db:push:local` | `drizzle-kit push --force` against the local DB — pushes schema state directly, without recording a migration. For throwaway rapid iteration only. |
 
 > Both `:local` scripts export `DATABASE_URL` inline. `drizzle-kit` loads
 > `apps/api/.env` via dotenv, which does **not** override an already-set
@@ -91,8 +91,8 @@ builds its `pg` Pool straight from `DATABASE_URL`.
 ## Resetting the local DB
 
 ```bash
-npm run db:reset       # drops volume, recreates empty DB, re-runs init SQL
-npm run db:push:local  # re-apply schema to the fresh DB
+npm run db:reset          # drops volume, recreates empty DB, re-runs init SQL
+npm run db:migrate:local  # re-apply migrations to the fresh DB
 ```
 
 ## Seeding test data
@@ -120,38 +120,22 @@ docker compose exec db psql -U populatte -d populatte -c "
 > projects won't show in the UI until the Clerk webhook creates your actual
 > user. Prefer the UI path for end-to-end testing.
 
-## Bootstrap (db:push) vs. migrations (db:migrate)
+## Bootstrap vs. migrations
 
-These are two different tools and both have a place here:
+The migration history in `apps/api/drizzle/` is a clean, replayable baseline, so
+**`db:migrate` is the single source of truth** for provisioning any environment
+(local or Supabase) — run it against an empty DB and you get the full schema.
 
-- **`db:push`** diffs the Drizzle schema against the live DB and applies the
-  difference directly. It creates each type/table in its final state (e.g. an
-  enum is created with *all* its values at once). It is the reliable way to
-  provision a **fresh, empty** database — which is exactly the local-dev case.
-- **`db:migrate`** replays the committed SQL files in `apps/api/drizzle/` in
-  order, inside a **single transaction for the whole run**
-  (`drizzle-orm` wraps the migration loop in one `tx`).
+`db:push` (`db:push:local`) diffs the Drizzle schema directly against the DB and
+applies the difference *without recording a migration*. Keep it only for
+**throwaway rapid iteration** while shaping a schema change locally — always
+`db:generate` + commit a migration before sharing or deploying.
 
-### Why a from-scratch `db:migrate` does not work for this repo
-
-Migration `0003_ancient_trish_tilby.sql` does, in one file:
-
-```sql
-ALTER TYPE "public"."row_status" ADD VALUE 'DRAFT' BEFORE 'VALID';
-ALTER TABLE "ingestion_rows" ALTER COLUMN "status" SET DEFAULT 'DRAFT';
-```
-
-PostgreSQL forbids **using** a newly added enum value in the same transaction
-that added it (`unsafe use of new value "DRAFT"`). Because Drizzle runs the
-entire migration run in one transaction, replaying the full history from an
-empty DB fails on this file. This is a pre-existing property of the migration
-history (the cloud DB was originally provisioned with `db:push`, not `migrate`),
-**not** something introduced by the local-DB setup.
-
-**Consequence:** use `db:push:local` to provision a fresh local DB. `db:migrate`
-still works for *incremental* changes applied to an already-provisioned DB
-(local or Supabase), as long as a single migration run does not both add and use
-an enum value.
+> Historical note (POP-10): the original history could not be replayed from
+> scratch because migration `0003` added an enum value and used it in the same
+> transaction (Postgres forbids that, and Drizzle runs the whole migration set
+> in one transaction). It was squashed into a single baseline that creates each
+> enum with all values at once, removing the problem.
 
 ## Ongoing schema-change workflow
 
@@ -159,22 +143,25 @@ Schema definitions live in
 `apps/api/src/infrastructure/database/drizzle/schema/`. Recommended flow:
 
 1. **Author** the change in the schema files.
-2. **Apply locally** to iterate quickly:
-   ```bash
-   npm run db:push:local   # from repo root
-   ```
-3. **Generate** a versioned migration so the change is reproducible and
-   deployable (from `apps/api/`):
+2. *(Optional)* **Iterate locally** with `npm run db:push:local` to try the shape
+   quickly — but don't stop here.
+3. **Generate** a versioned migration (from `apps/api/`):
    ```bash
    cd apps/api && npm run db:generate
    ```
-   ⚠️ If the change adds an **enum value and uses it** (e.g. as a default),
-   split it across **two separate `db:migrate` runs** (add the value, deploy,
-   then use it) — otherwise the migration cannot be applied in one transaction.
-4. **Commit** the generated SQL + `meta/` files — they are the source of truth.
-5. **Deploy to Supabase:** point `DATABASE_URL` at the Supabase connection
-   string and run `npm run db:migrate` from `apps/api/`. Supabase is already
-   provisioned, so incremental migrations apply cleanly and keep cloud in sync.
+4. **Apply + verify** locally via the canonical path:
+   ```bash
+   npm run db:migrate:local   # from repo root
+   ```
+5. **Commit** the generated SQL + `meta/` files — they are the source of truth.
+6. **Deploy to Supabase:** point `DATABASE_URL` at the Supabase connection
+   string and run `npm run db:migrate` from `apps/api/`. The same baseline +
+   migrations apply, keeping local and cloud identical.
+
+> ⚠️ **Enum anti-pattern:** never add an enum value **and use it** (e.g. as a
+> column default) in the same `db:migrate` run — Postgres rejects using a new
+> enum value in the transaction that added it, and Drizzle runs the whole run in
+> one transaction. Split it across two migrations deployed separately.
 
 ## Troubleshooting
 
