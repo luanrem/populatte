@@ -6,6 +6,14 @@
     "apps/*",
     "packages/*"
   ],
+  "scripts": {
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f db",
+    "db:reset": "docker compose down -v && docker compose up -d db",
+    "db:push:local": "DATABASE_URL=postgresql://populatte:populatte@localhost:5432/populatte npm run db:push --prefix apps/api -- --force",
+    "db:migrate:local": "DATABASE_URL=postgresql://populatte:populatte@localhost:5432/populatte npm run db:migrate --prefix apps/api"
+  },
   "dependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

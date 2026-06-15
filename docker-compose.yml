@@ -1,0 +1,33 @@
+# Local development database for Populatte.
+# Production uses Supabase (cloud Postgres); only DATABASE_URL differs between
+# environments. See docs/LOCAL_DB.md for the full workflow.
+#
+# Compose v2 syntax (no obsolete `version:` key).
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: populatte-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-populatte}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-populatte}
+      POSTGRES_DB: ${POSTGRES_DB:-populatte}
+    ports:
+      # Host port is configurable; container always listens on 5432.
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - populatte_pgdata:/var/lib/postgresql/data
+      # Optional one-time initialization (extensions, seed SQL). Only runs when
+      # the data volume is empty (first boot or after `db:reset`).
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-populatte} -d ${POSTGRES_DB:-populatte}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  populatte_pgdata:
+    name: populatte_pgdata
