@@ -125,14 +125,20 @@ export async function fetchBatchDetail(
     filename: data.filename ?? null,
     mode: data.mode,
     totalRows: data.totalRows ?? 0,
+    // The API serializes the batch entity raw, so columns arrive as
+    // { normalizedKey, originalHeader, position }. Map to the extension's
+    // { key, header, index } shape, keeping fallbacks for the legacy names.
     columnMetadata: (data.columnMetadata ?? []).map((col: {
-      key: string;
-      header: string;
-      index: number;
+      key?: string;
+      header?: string;
+      index?: number;
+      normalizedKey?: string;
+      originalHeader?: string;
+      position?: number;
     }) => ({
-      key: col.key,
-      header: col.header,
-      index: col.index,
+      key: col.normalizedKey ?? col.key ?? '',
+      header: col.originalHeader ?? col.header ?? col.normalizedKey ?? col.key ?? '',
+      index: col.position ?? col.index ?? 0,
     })),
     identifierFieldKey: data.identifierFieldKey ?? null,
     secondaryFieldKey: data.secondaryFieldKey ?? null,

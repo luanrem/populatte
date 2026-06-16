@@ -54,13 +54,18 @@ export function StepConfig({
   const [showColumnDropdown, setShowColumnDropdown] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Filter columns based on search
+  // Filter columns based on search.
+  // Guard against malformed column lists (e.g. undefined entries from a bad
+  // API mapping) so a single bad value can never crash the whole panel.
   const filteredColumns = useMemo(() => {
+    const safeColumns = columns.filter(
+      (col): col is string => typeof col === 'string' && col.length > 0,
+    );
     if (!columnSearch) {
-      return columns;
+      return safeColumns;
     }
     const search = columnSearch.toLowerCase();
-    return columns.filter((col) => col.toLowerCase().includes(search));
+    return safeColumns.filter((col) => col.toLowerCase().includes(search));
   }, [columns, columnSearch]);
 
   function handleSubmit(e: React.FormEvent) {
