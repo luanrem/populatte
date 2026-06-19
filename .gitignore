@@ -63,3 +63,9 @@ PROJECT_DISCUSSION.md
 .trae/
 docs/test-documents
 docs/RAL/
+
+# Docs locais gerados (planejamento/design) — manter fora do git
+docs/ux/
+docs/adr/
+.planning/HANDOFF.md
+/Populatte-Spec-Fluxo-Design.pdf
