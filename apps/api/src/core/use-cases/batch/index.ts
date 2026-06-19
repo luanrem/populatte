@@ -6,3 +6,4 @@ export * from './get-field-values.use-case';
 export * from './list-batches.use-case';
 export * from './list-rows.use-case';
 export * from './update-batch.use-case';
+export * from './update-column-metadata.use-case';

@@ -140,6 +140,9 @@ export class IngestionService {
     typeMap: Record<string, CellType>,
   ): ColumnMetadata[] {
     return Object.entries(typeMap).map(([key, inferredType], index) => ({
+      // INBOUND label seeds to the raw key (ADR 0001 / POP-24, F1); the user
+      // can rename it later via updateColumnMetadata without touching the key.
+      label: key.trim(),
       originalHeader: key.trim(),
       normalizedKey: key.trim(),
       inferredType,

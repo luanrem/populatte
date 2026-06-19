@@ -12,6 +12,7 @@ import {
   GetFieldValuesUseCase,
   ListBatchesUseCase,
   ListRowsUseCase,
+  UpdateColumnMetadataUseCase,
 } from '../../core/use-cases/batch';
 import { UpdateRowStatusUseCase } from '../../core/use-cases/row';
 import { TypeInferenceService } from '../../core/services/type-inference.service';
@@ -27,6 +28,7 @@ import { ContentLengthMiddleware } from '../upload/middleware/content-length.mid
     GetFieldValuesUseCase,
     ListBatchesUseCase,
     ListRowsUseCase,
+    UpdateColumnMetadataUseCase,
     UpdateRowStatusUseCase,
     TypeInferenceService,
   ],

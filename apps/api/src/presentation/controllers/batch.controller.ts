@@ -27,6 +27,7 @@ import {
   ListBatchesUseCase,
   ListRowsUseCase,
   UpdateBatchUseCase,
+  UpdateColumnMetadataUseCase,
 } from '../../core/use-cases/batch';
 import { UpdateRowStatusUseCase } from '../../core/use-cases/row';
 import type { ExcelFileInput } from '../../infrastructure/excel/strategies/excel-parsing.strategy';
@@ -37,11 +38,13 @@ import {
   fieldValuesQuerySchema,
   paginationQuerySchema,
   updateBatchSchema,
+  updateColumnMetadataSchema,
 } from '../dto/batch.dto';
 import type {
   FieldValuesQueryDto,
   PaginationQueryDto,
   UpdateBatchDto,
+  UpdateColumnMetadataDto,
 } from '../dto/batch.dto';
 import { updateRowStatusSchema } from '../dto/row.dto';
 import type { UpdateRowStatusDto } from '../dto/row.dto';
@@ -60,6 +63,7 @@ export class BatchController {
     private readonly listBatches: ListBatchesUseCase,
     private readonly listRowsUseCase: ListRowsUseCase,
     private readonly updateBatchUseCase: UpdateBatchUseCase,
+    private readonly updateColumnMetadataUseCase: UpdateColumnMetadataUseCase,
     private readonly updateRowStatusUseCase: UpdateRowStatusUseCase,
   ) {}
 
@@ -147,6 +151,22 @@ export class BatchController {
     @CurrentUser() user: User,
   ) {
     return this.updateBatchUseCase.execute(projectId, batchId, user.id, body);
+  }
+
+  @Patch(':batchId/column-metadata')
+  public async updateColumnMetadata(
+    @Param('projectId') projectId: string,
+    @Param('batchId') batchId: string,
+    @Body(new ZodValidationPipe(updateColumnMetadataSchema))
+    body: UpdateColumnMetadataDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.updateColumnMetadataUseCase.execute(
+      projectId,
+      batchId,
+      user.id,
+      body.columns,
+    );
   }
 
   @Delete(':batchId')

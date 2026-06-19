@@ -3,6 +3,7 @@ import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
 import {
   Batch,
+  ColumnMetadata,
   CreateBatchData,
   UpdateBatchData,
 } from '../../../../core/entities/batch.entity';
@@ -142,6 +143,23 @@ export class DrizzleBatchRepository extends BatchRepository {
         }),
         updatedAt: new Date(),
       })
+      .where(
+        and(eq(ingestionBatches.id, id), isNull(ingestionBatches.deletedAt)),
+      )
+      .returning();
+
+    const row = result[0];
+    return row ? BatchMapper.toDomain(row) : null;
+  }
+
+  public async updateColumnMetadata(
+    id: string,
+    columnMetadata: ColumnMetadata[],
+  ): Promise<Batch | null> {
+    const result = await this.drizzle
+      .getClient()
+      .update(ingestionBatches)
+      .set({ columnMetadata, updatedAt: new Date() })
       .where(
         and(eq(ingestionBatches.id, id), isNull(ingestionBatches.deletedAt)),
       )

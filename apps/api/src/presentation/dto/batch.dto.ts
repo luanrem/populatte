@@ -18,6 +18,21 @@ export const updateBatchSchema = z.object({
 
 export type UpdateBatchDto = z.infer<typeof updateBatchSchema>;
 
+export const updateColumnMetadataSchema = z.object({
+  columns: z
+    .array(
+      z.object({
+        normalizedKey: z.string().min(1),
+        label: z.string().min(1).max(255),
+      }),
+    )
+    .min(1, { message: 'At least one column is required' }),
+});
+
+export type UpdateColumnMetadataDto = z.infer<
+  typeof updateColumnMetadataSchema
+>;
+
 export const paginationQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(50),
   offset: z.coerce.number().int().min(0).default(0),

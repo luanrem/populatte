@@ -1,5 +1,6 @@
 import {
   Batch,
+  ColumnMetadata,
   CreateBatchData,
   UpdateBatchData,
 } from '../entities/batch.entity';
@@ -34,6 +35,16 @@ export abstract class BatchRepository {
   public abstract update(
     id: string,
     data: UpdateBatchData,
+  ): Promise<Batch | null>;
+
+  /**
+   * Replaces the batch's columnMetadata (INBOUND label write path, ADR 0001 /
+   * POP-24, F2). The use-case applies the normalizedKey immutability guard
+   * before calling this; the repository only persists the merged array.
+   */
+  public abstract updateColumnMetadata(
+    id: string,
+    columnMetadata: ColumnMetadata[],
   ): Promise<Batch | null>;
 
   public abstract softDeleteRowsByBatchId(
