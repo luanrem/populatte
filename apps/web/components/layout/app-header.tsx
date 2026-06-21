@@ -1,5 +1,4 @@
 import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
-import { ModeToggle } from "@/components/theme/mode-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 interface AppHeaderProps {
@@ -24,7 +23,6 @@ export function AppHeader({ title, children }: AppHeaderProps) {
           <SignedOut>
             <SignInButton />
           </SignedOut>
-          <ModeToggle />
         </div>
       </div>
     </header>
