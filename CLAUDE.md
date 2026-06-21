@@ -357,6 +357,33 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 ```
 
+### Design System — café tokens are the single source of truth
+
+The visual design lives in **tokens, not components**. The café theme (espresso primary, gold CTA, warm "mocha" neutrals, Hanken Grotesk) is defined in `apps/web/app/globals.css` and exposed as Tailwind utilities. It mirrors the Claude Design `populatte-design-system`.
+
+1. **Never hardcode color / font / radius / spacing.** Use semantic tokens/utilities: `bg-primary`, `text-muted-foreground`, `border-border`, `rounded-lg`, `font-sans`. To change the look, edit tokens in `globals.css` — never per-component hex.
+2. **Do NOT re-theme shadcn primitives.** They already inherit the café theme through the tokens. Add a missing primitive with `pnpm dlx shadcn@latest add <comp>` (run from `apps/web`).
+3. **Status colors = status tokens** (the form-fill lifecycle), never ad-hoc green/red. Use `StatusBadge` or the tokens directly — each has `-soft` (bg) + `-text` (fg):
+   `--success` Concluído · `--warning` Preenchendo · `--danger` Erro · `--pending` Configurando/Pendente · `--gold` the "Preencher" CTA. e.g. `bg-success-soft text-success-text`, `bg-gold text-gold-foreground`.
+4. **Radii are pinned to the design:** `rounded-md`=10px (buttons/inputs), `rounded-lg`=14px (cards), `rounded-xl`=18px (modals).
+5. **Light-only** for now (`forcedTheme="light"` in the root layout). Do not add `dark:` styles or re-introduce a theme toggle until the dark theme is authored.
+6. UI copy in **pt-BR**; code/comments in **English**.
+
+### Component architecture (reusable by default)
+
+Keep components **presentational and composable**; push data and logic out of them.
+
+- `components/ui/` — shadcn primitives **+** thin generic primitives we add (e.g. `StatusBadge`, `UrlChip`, `ProgressMeter`). Pure presentation: typed props in, callbacks out. **No data fetching, no business logic, no API calls.**
+- `components/layout/` — app shell (sidebar, header, breadcrumb).
+- `components/<feature>/` (`projects/`, `data/`, `onboarding/`…) — compositions of primitives for a feature, still presentational (data arrives via props).
+- **Data & logic live outside components** — in hooks (`lib/` + TanStack Query) and on the server. A component never fetches; it receives typed props and emits events.
+- **Compose, don't duplicate.** Before building, check `components/ui/` and the living catalog (below). Reuse a primitive; extract a shared one the moment you'd copy it twice.
+- SOLID still applies: one responsibility per component, explicit prop types, never `any`.
+
+### Living catalog
+
+`/design-system` renders every primitive + custom component with all variants. **Check it before creating a component, and add any new component to it.** It is the reference for humans and AI alike. The design source of truth (full screens) is the Claude Design project — see the `design-system-unification` and `populatte-redesign-flow` memories.
+
 ## Common Patterns
 
 ### Import Organization (Enforced by ESLint)
