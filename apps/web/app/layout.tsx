@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Hanken_Grotesk, JetBrains_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -9,14 +9,20 @@ import { QueryProvider } from "@/lib/query/provider";
 import { Toaster } from "@/components/ui/sonner";
 import { GlobalLoadingIndicator } from "@/components/error/global-loading";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fontSans = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fontMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
   subsets: ["latin"],
+});
+
+const fontSerif = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -33,7 +39,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${fontSans.variable} ${fontMono.variable} ${fontSerif.variable} antialiased`}
         >
           <ThemeProvider
             attribute="class"
