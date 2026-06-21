@@ -37,80 +37,90 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-text: var(--success-text);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-text: var(--warning-text);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-text: var(--danger-text);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-text: var(--info-text);
+  --color-pending: var(--pending);
+  --color-pending-soft: var(--pending-soft);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ============================================================
+   Populatte — café design tokens (light).
+   Mirrors the Claude Design `populatte-design-system` palette:
+   espresso (primary), gold (accent/CTA), warm "mocha" neutrals,
+   green (success), terracotta (danger). Pilot is light-only.
+   ============================================================ */
 :root {
   --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.646 0.222 41.116);
-  --primary-foreground: oklch(0.98 0.016 73.684);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.75 0.183 55.934);
-  --chart-1: oklch(0.837 0.128 66.29);
-  --chart-2: oklch(0.705 0.213 47.604);
-  --chart-3: oklch(0.646 0.222 41.116);
-  --chart-4: oklch(0.553 0.195 38.402);
-  --chart-5: oklch(0.47 0.157 37.304);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.646 0.222 41.116);
-  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.75 0.183 55.934);
+
+  /* Surfaces & text (warm café neutrals) */
+  --background: #faf7f3;            /* mocha-50 — warm page */
+  --foreground: #34291f;            /* mocha-800 — body text */
+  --card: #ffffff;                  /* white cards lift off the page */
+  --card-foreground: #34291f;
+  --popover: #ffffff;
+  --popover-foreground: #34291f;
+
+  /* Primary = espresso */
+  --primary: #2d0f06;               /* espresso-900 */
+  --primary-foreground: #fcf9f4;    /* latte-50 */
+  --secondary: #f3ede6;             /* mocha-100 */
+  --secondary-foreground: #2d0f06;
+  --muted: #f3ede6;                 /* mocha-100 — wells, zebra */
+  --muted-foreground: #8c7869;      /* mocha-500 */
+
+  /* Accent = light warm hover (NOT the brand gold — see --gold) */
+  --accent: #fbf3e4;                /* latte-100 */
+  --accent-foreground: #2d0f06;
+
+  --destructive: #dc4c3f;           /* terra-500 */
+  --border: #e7ddd2;                /* mocha-200 */
+  --input: #d4c6b7;                 /* mocha-300 */
+  --ring: #f0b221;                  /* gold-500 */
+
+  /* Charts (coffee-forward sequence) */
+  --chart-1: #2d0f06;
+  --chart-2: #f0b221;
+  --chart-3: #5ba84f;
+  --chart-4: #a9774f;
+  --chart-5: #efd29a;
+
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #34291f;
+  --sidebar-primary: #2d0f06;
+  --sidebar-primary-foreground: #fcf9f4;
+  --sidebar-accent: #f7e3bd;        /* latte-200 — active item (cream) */
+  --sidebar-accent-foreground: #2d0f06;
+  --sidebar-border: #e7ddd2;
+  --sidebar-ring: #f0b221;
+
+  /* Brand gold + status (Populatte fill lifecycle) */
+  --gold: #f0b221;                  /* gold-500 — "Preencher" CTA */
+  --gold-foreground: #1c0a03;       /* espresso-950 */
+  --success: #5ba84f; --success-soft: #e3f1de; --success-text: #356a2e;  /* Concluído */
+  --warning: #f0b221; --warning-soft: #fbe7a8; --warning-text: #a66e12;  /* Preenchendo */
+  --danger:  #dc4c3f; --danger-soft:  #fae3df; --danger-text:  #97271c;  /* Erro */
+  --info:    #845433; --info-soft:    #fbf3e4; --info-text:    #532e18;
+  --pending: #b3a091; --pending-soft: #f3ede6;                           /* Pendente / Configurando */
 }
 
-.dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.705 0.213 47.604);
-  --primary-foreground: oklch(0.98 0.016 73.684);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.408 0.123 38.172);
-  --chart-1: oklch(0.837 0.128 66.29);
-  --chart-2: oklch(0.705 0.213 47.604);
-  --chart-3: oklch(0.646 0.222 41.116);
-  --chart-4: oklch(0.553 0.195 38.402);
-  --chart-5: oklch(0.47 0.157 37.304);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.705 0.213 47.604);
-  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.408 0.123 38.172);
-}
+/* Dark theme: TODO — pilot is light-only (locked via forcedTheme). */
 
 
 @layer base {
