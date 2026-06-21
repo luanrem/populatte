@@ -54,10 +54,10 @@
   --color-info-text: var(--info-text);
   --color-pending: var(--pending);
   --color-pending-soft: var(--pending-soft);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
 }
 
 /* ============================================================
@@ -67,7 +67,7 @@
    green (success), terracotta (danger). Pilot is light-only.
    ============================================================ */
 :root {
-  --radius: 0.65rem;
+  --radius: 0.875rem;               /* 14px — card base; sm/md/lg/xl pinned in @theme */
 
   /* Surfaces & text (warm café neutrals) */
   --background: #faf7f3;            /* mocha-50 — warm page */
