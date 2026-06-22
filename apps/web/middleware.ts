@@ -8,6 +8,8 @@ const isProtectedRoute = createRouteMatcher([
   "/team(.*)",
   "/billing(.*)",
   "/onboarding(.*)",
+  "/help(.*)",
+  "/settings(.*)",
 ]);
 
 // Define public routes (accessible without authentication)
