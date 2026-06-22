@@ -1,0 +1,233 @@
+/* ==========================================================================
+   Populatte Design System — token reference (concatenated)
+   Source: claude.ai/design project "Populatte Design"
+   Files: tokens/colors.css, typography.css, fonts.css, spacing.css, elevation.css
+   These are the SOURCE OF TRUTH for the Home (Espresso Dark) implementation.
+   ========================================================================== */
+
+/* ============================================================
+   COLORS
+   Grounded in the logo: espresso #2D0F06, latte cream #F7E3BD,
+   golden steam #F0B221, saucer green #5BA84F.
+   Warm-tinted neutrals (never pure cold gray).
+   ============================================================ */
+:root {
+  /* ---- Brand anchors (raw logo values) ---------------------- */
+  --brand-espresso: #2d0f06;
+  --brand-cream:    #f7e3bd;
+  --brand-gold:     #f0b221;
+  --brand-green:    #5ba84f;
+
+  /* ---- Espresso / coffee ramp ------------------------------- */
+  --espresso-50:  #faf4ef;
+  --espresso-100: #f2e6da;
+  --espresso-200: #e2c9b4;
+  --espresso-300: #cba688;
+  --espresso-400: #a9774f;
+  --espresso-500: #845433;  /* caramel */
+  --espresso-600: #6b3f23;
+  --espresso-700: #532e18;
+  --espresso-800: #3d1f0f;
+  --espresso-900: #2d0f06;  /* brand espresso */
+  --espresso-950: #1c0a03;
+
+  /* ---- Latte / cream / sand --------------------------------- */
+  --latte-50:  #fcf9f4;
+  --latte-100: #fbf3e4;
+  --latte-200: #f7e3bd;  /* brand cream / foam */
+  --latte-300: #efd29a;
+
+  /* ---- Gold / amber (steam) --------------------------------- */
+  --gold-200: #fbe7a8;
+  --gold-300: #f8d26a;
+  --gold-400: #f4c23d;
+  --gold-500: #f0b221;  /* brand gold */
+  --gold-600: #d9971a;
+  --gold-700: #a66e12;
+
+  /* ---- Green (success / saucer) ----------------------------- */
+  --green-100: #e3f1de;
+  --green-300: #9bd38b;
+  --green-400: #7bc465;
+  --green-500: #5ba84f;  /* brand green */
+  --green-600: #46893c;
+  --green-700: #356a2e;
+
+  /* ---- Terracotta (error, warm red) ------------------------- */
+  --terra-100: #fae3df;
+  --terra-400: #e8675a;
+  --terra-500: #dc4c3f;
+  --terra-600: #be3528;
+  --terra-700: #97271c;
+
+  /* ---- Warm "mocha" neutral ramp (brown-tinted gray) -------- */
+  --mocha-0:   #ffffff;
+  --mocha-50:  #faf7f3;
+  --mocha-100: #f3ede6;
+  --mocha-200: #e7ddd2;
+  --mocha-300: #d4c6b7;
+  --mocha-400: #b3a091;
+  --mocha-500: #8c7869;
+  --mocha-600: #6b584b;
+  --mocha-700: #4d3e34;
+  --mocha-800: #34291f;
+  --mocha-900: #211a13;
+
+  /* ===== SEMANTIC ALIASES — reference these in product UI ===== */
+  /* Surfaces */
+  --surface-page:    var(--latte-50);
+  --surface-card:    var(--mocha-0);
+  --surface-raised:  var(--mocha-0);
+  --surface-sunken:  var(--mocha-100);
+  --surface-muted:   var(--mocha-50);
+  --surface-inverse: var(--espresso-900);
+  --surface-accent:  var(--latte-100);
+
+  /* Text */
+  --text-strong:   var(--espresso-900);
+  --text-body:     var(--mocha-800);
+  --text-muted:    var(--mocha-500);
+  --text-subtle:   var(--mocha-400);
+  --text-on-dark:  var(--latte-50);
+  --text-on-brand: var(--latte-50);
+  --text-link:     var(--espresso-600);
+
+  /* Borders & lines */
+  --border-subtle: var(--mocha-200);
+  --border-default:var(--mocha-300);
+  --border-strong: var(--mocha-400);
+  --border-inverse: color-mix(in oklab, var(--latte-50) 16%, transparent);
+
+  /* Brand / primary action (espresso) */
+  --primary:           var(--espresso-900);
+  --primary-hover:     var(--espresso-800);
+  --primary-active:    var(--espresso-950);
+  --primary-foreground:var(--latte-50);
+  --primary-soft:      var(--espresso-100);
+  --primary-soft-text: var(--espresso-700);
+
+  /* Accent (gold) — highlights, focus, "in progress" */
+  --accent:            var(--gold-500);
+  --accent-hover:      var(--gold-600);
+  --accent-foreground: var(--espresso-950);
+  --accent-soft:       var(--gold-200);
+  --accent-soft-text:  var(--espresso-700);
+  --ring:              var(--gold-500);
+
+  /* Status — maps to Populatte form-fill lifecycle */
+  --success:        var(--green-500);   /* Concluído  */
+  --success-soft:   var(--green-100);
+  --success-text:   var(--green-700);
+  --warning:        var(--gold-500);    /* Preenchendo / em progresso */
+  --warning-soft:   var(--gold-200);
+  --warning-text:   var(--espresso-700);
+  --danger:         var(--terra-500);   /* Erro */
+  --danger-hover:   var(--terra-600);
+  --danger-soft:    var(--terra-100);
+  --danger-text:    var(--terra-700);
+  --info:           var(--espresso-500);
+  --info-soft:      var(--latte-100);
+  --info-text:      var(--espresso-700);
+  --neutral-status: var(--mocha-400);   /* Pendente */
+  --neutral-soft:   var(--mocha-100);
+
+  /* Data-viz (warm, coffee-forward sequence) */
+  --chart-1: var(--espresso-900);
+  --chart-2: var(--gold-500);
+  --chart-3: var(--green-500);
+  --chart-4: var(--espresso-400);
+  --chart-5: var(--latte-300);
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   Hanken Grotesk (UI/body) · Newsreader (editorial serif)
+   · JetBrains Mono (data/code). Tabular figures where data shows.
+   ============================================================ */
+:root {
+  --font-sans:  'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Newsreader', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-extra:    800;
+
+  --text-xs:   0.75rem;   /* 12 */
+  --text-sm:   0.875rem;  /* 14 */
+  --text-base: 1rem;      /* 16 */
+  --text-md:   1.125rem;  /* 18 */
+  --text-lg:   1.375rem;  /* 22 */
+  --text-xl:   1.75rem;   /* 28 */
+  --text-2xl:  2.25rem;   /* 36 */
+  --text-3xl:  3rem;      /* 48 */
+  --text-4xl:  4rem;      /* 64 */
+  --text-5xl:  5.25rem;   /* 84 */
+
+  --leading-tight:   1.08;
+  --leading-snug:    1.22;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-tighter: -0.03em;
+  --tracking-tight:   -0.015em;
+  --tracking-normal:  0em;
+  --tracking-wide:    0.02em;
+  --tracking-caps:    0.08em;   /* eyebrow / overline uppercase */
+}
+
+/* Webfonts (Google Fonts). In Next.js use next/font/google instead of @import. */
+/* Hanken Grotesk: 400,500,600,700,800 + italic 400,500 */
+/* Newsreader: italic + roman 400,500,600 (opsz 16..72) */
+/* JetBrains Mono: 400,500,600 */
+
+/* ============================================================
+   SPACING & LAYOUT — 4px base grid
+   ============================================================ */
+:root {
+  --space-1:  0.25rem;  /* 4  */
+  --space-2:  0.5rem;   /* 8  */
+  --space-3:  0.75rem;  /* 12 */
+  --space-4:  1rem;     /* 16 */
+  --space-5:  1.25rem;  /* 20 */
+  --space-6:  1.5rem;   /* 24 */
+  --space-8:  2rem;     /* 32 */
+  --space-10: 2.5rem;   /* 40 */
+  --space-12: 3rem;     /* 48 */
+  --space-16: 4rem;     /* 64 */
+  --space-20: 5rem;     /* 80 */
+  --space-24: 6rem;     /* 96 */
+
+  --container-max: 1200px;
+  --header-height: 60px; /* NOTE: marketing nav uses 74px height (see HTML) */
+}
+
+/* ============================================================
+   ELEVATION — radii, shadows (warm espresso-tinted), motion
+   ============================================================ */
+:root {
+  --radius-xs:  6px;
+  --radius-sm:  8px;
+  --radius-md:  10px;   /* inputs, buttons */
+  --radius-lg:  14px;   /* cards */
+  --radius-xl:  18px;   /* modals, large panels */
+  --radius-2xl: 24px;   /* hero / feature blocks */
+  --radius-full: 9999px;
+
+  --shadow-xs:  0 1px 2px rgba(45, 15, 6, 0.06);
+  --shadow-sm:  0 1px 2px rgba(45, 15, 6, 0.06), 0 2px 6px rgba(45, 15, 6, 0.05);
+  --shadow-md:  0 2px 4px rgba(45, 15, 6, 0.06), 0 8px 20px rgba(45, 15, 6, 0.08);
+  --shadow-lg:  0 8px 16px rgba(45, 15, 6, 0.08), 0 18px 40px rgba(45, 15, 6, 0.10);
+  --shadow-xl:  0 24px 60px rgba(45, 15, 6, 0.16);
+
+  --ring-width: 3px;
+  --ring-color: color-mix(in oklab, var(--gold-500) 55%, transparent);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.25, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 260ms;
+}

@@ -1,0 +1,100 @@
+/* HeroMock animations — co-located with the component.
+ *
+ * The @keyframes for the animated form-fill mock are NOT declared in
+ * globals.css (the design-system tokens own that file and have no other
+ * consumer for these). Keeping them here, next to the prefers-reduced-motion
+ * freeze, makes the mock self-contained. The var(--*) tokens are global
+ * custom properties from globals.css and resolve normally inside this module.
+ *
+ * Animated properties (row background/border/shadow, value opacity/transform,
+ * check transform/opacity) live in these classes — NOT inline on the elements —
+ * so the reduced-motion overrides below (same specificity) win. Only the
+ * per-row animation-delay is applied inline. */
+
+@keyframes popfill {
+  0%, 4% { opacity: 0; transform: translateY(4px); }
+  9% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  97%, 100% { opacity: 0; transform: translateY(4px); }
+}
+
+@keyframes popwash {
+  0%, 5% { background: var(--surface-card); border-color: var(--border-subtle); }
+  7% { border-color: var(--gold-500); box-shadow: 0 0 0 3px var(--ring-color); }
+  11%, 90% { background: rgba(91, 168, 79, 0.07); border-color: var(--green-400); box-shadow: none; }
+  98%, 100% { background: var(--surface-card); border-color: var(--border-subtle); box-shadow: none; }
+}
+
+@keyframes popchk {
+  0%, 6% { transform: scale(0); opacity: 0; }
+  12% { transform: scale(1); opacity: 1; }
+  92% { transform: scale(1); opacity: 1; }
+  99%, 100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes popspin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes popfloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* Field row: neutral baseline that popwash sweeps neutral -> gold -> green. */
+.fieldRow {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  animation: popwash 11s var(--ease-out) infinite;
+}
+
+/* Field value (JetBrains Mono): fades and lifts in via popfill. */
+.fieldValue {
+  animation: popfill 11s var(--ease-out) infinite;
+}
+
+/* Trailing check: pops in via popchk. */
+.fieldCheck {
+  animation: popchk 11s var(--ease-out) infinite;
+}
+
+/* Header status spinner. */
+.spinner {
+  animation: popspin 1.1s linear infinite;
+}
+
+/* Floating "142h" badge bob. */
+.badge {
+  animation: popfloat 5s ease-in-out infinite;
+}
+
+/* Reduced motion: stop every loop and freeze the mock in its final, filled
+ * state (green rows, values + checks visible) so it stays legible. */
+@media (prefers-reduced-motion: reduce) {
+  .fieldRow {
+    animation: none;
+    background: rgba(91, 168, 79, 0.07);
+    border-color: var(--green-400);
+    box-shadow: none;
+  }
+
+  .fieldValue {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .fieldCheck {
+    animation: none;
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .spinner {
+    animation: none;
+  }
+
+  .badge {
+    animation: none;
+  }
+}

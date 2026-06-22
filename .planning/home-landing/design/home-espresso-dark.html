@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/populatte-design-system/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/populatte-design-system/tokens/colors.css">
+<link rel="stylesheet" href="_ds/populatte-design-system/tokens/typography.css">
+<link rel="stylesheet" href="_ds/populatte-design-system/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/populatte-design-system/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/populatte-design-system/styles.css">
+<script src="_ds/populatte-design-system/_ds_bundle.js"></script>
+<script src="https://unpkg.com/lucide@0.451.0/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--espresso-950); color: var(--latte-200); font-family: 'Hanken Grotesk', ui-sans-serif, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { text-decoration: none; color: inherit; }
+  h1,h2,h3,p { margin: 0; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] > summary .faq-chev { transform: rotate(180deg); }
+  @keyframes popfill {
+    0%, 4%   { opacity: 0; transform: translateY(4px); }
+    9%       { opacity: 1; transform: translateY(0); }
+    90%      { opacity: 1; transform: translateY(0); }
+    97%, 100%{ opacity: 0; transform: translateY(4px); }
+  }
+  @keyframes popwash {
+    0%, 5%   { background: var(--surface-card); border-color: var(--border-subtle); }
+    7%       { border-color: var(--gold-500); box-shadow: 0 0 0 3px var(--ring-color); }
+    11%, 90% { background: rgba(91,168,79,0.07); border-color: var(--green-400); box-shadow: none; }
+    98%,100% { background: var(--surface-card); border-color: var(--border-subtle); box-shadow: none; }
+  }
+  @keyframes popchk { 0%,6%{ transform: scale(0); opacity:0; } 12%{ transform: scale(1); opacity:1; } 92%{ transform: scale(1); opacity:1; } 99%,100%{ transform: scale(0); opacity:0; } }
+  @keyframes popspin { to { transform: rotate(360deg); } }
+  @keyframes popfloat { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-7px); } }
+</style>
+</helmet>
+
+<div data-screen-label="Home — Espresso Dark" style="width:100%;overflow:hidden">
+
+  <!-- NAV (sticky) -->
+  <div style="position:sticky;top:0;z-index:50;height:74px;display:flex;align-items:center;gap:28px;padding:0 56px;border-bottom:1px solid var(--border-inverse);background:color-mix(in oklab, var(--espresso-950) 82%, transparent);backdrop-filter:blur(10px)">
+    <div style="display:flex;align-items:center;gap:11px">
+      <span style="width:36px;height:36px;border-radius:10px;background:var(--latte-100);display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.35)"><img src="assets/logo-mark.png" alt="Populatte" style="height:25px;display:block"></span>
+      <b style="font:800 19px/1 'Hanken Grotesk';letter-spacing:-0.02em;color:var(--latte-50)">Populatte</b>
+    </div>
+    <div style="display:flex;gap:24px;margin-left:14px;font:500 14px 'Hanken Grotesk';color:var(--latte-300)">
+      <a href="#como" style="color:var(--latte-300)" style-hover="color:var(--latte-50)">Como funciona</a>
+      <a href="#casos" style="color:var(--latte-300)" style-hover="color:var(--latte-50)">Casos de uso</a>
+      <a href="#faq" style="color:var(--latte-300)" style-hover="color:var(--latte-50)">Dúvidas</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+      <a href="/sign-in" style="display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:10px;font:600 14px 'Hanken Grotesk';color:var(--latte-100)" style-hover="background:rgba(247,227,189,0.08)">Entrar</a>
+      <a href="/sign-up" style="display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 18px;border-radius:10px;background:var(--gold-500);color:var(--espresso-950);font:600 14px 'Hanken Grotesk'" style-hover="background:var(--gold-600)">Começar grátis</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header style="position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(720px 460px at 76% 22%, rgba(240,178,33,0.16), transparent 60%),radial-gradient(620px 420px at 12% 90%, rgba(91,168,79,0.10), transparent 60%);pointer-events:none"></div>
+    <div style="position:relative;max-width:1200px;margin:0 auto;padding:80px 56px 72px;display:grid;grid-template-columns:1.02fr 0.98fr;gap:52px;align-items:center">
+      <div>
+        <span style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:rgba(240,178,33,0.12);border:1px solid rgba(240,178,33,0.30);font:600 12px 'Hanken Grotesk';color:var(--gold-400)"><i data-lucide="coffee" style="width:15px;height:15px"></i> Do Excel para a Web, num gole de café</span>
+        <h1 style="font:800 60px/1.02 'Hanken Grotesk';letter-spacing:-0.035em;color:var(--latte-50);margin:24px 0 0">Pare de digitar formulários.<br><em style="font-family:'Newsreader',serif;font-style:italic;font-weight:500;color:var(--gold-400)">Tome um café</em> enquanto o Populatte preenche.</h1>
+        <p style="font:400 19px/1.55 'Hanken Grotesk';color:var(--latte-300);margin:24px 0 32px;max-width:32em">Importe sua planilha do Excel uma vez, vincule cada coluna a um campo com a extensão e preencha milhares de formulários no navegador. Você dirige, a extensão preenche.</p>
+        <div style="display:flex;gap:12px;align-items:center">
+          <a href="/sign-up" style="display:inline-flex;align-items:center;gap:9px;height:54px;padding:0 28px;border-radius:12px;background:var(--gold-500);color:var(--espresso-950);font:700 16px 'Hanken Grotesk';box-shadow:0 12px 34px rgba(240,178,33,0.28)" style-hover="background:var(--gold-600)"><i data-lucide="zap" style="width:19px;height:19px"></i> Começar gratuitamente</a>
+          <a href="/sign-in" style="display:inline-flex;align-items:center;gap:9px;height:54px;padding:0 24px;border-radius:12px;background:transparent;border:1px solid var(--border-inverse);color:var(--latte-100);font:600 16px 'Hanken Grotesk'" style-hover="background:rgba(247,227,189,0.08)"><i data-lucide="log-in" style="width:18px;height:18px"></i> Entrar</a>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:18px;font:500 13px 'Hanken Grotesk';color:var(--mocha-400)"><i data-lucide="shield-check" style="width:15px;height:15px"></i> Sem cartão de crédito · Conforme a LGPD · Configuração em 2 minutos</div>
+      </div>
+
+      <!-- BRIGHT MOCK on dark -->
+      <div style="position:relative">
+        <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:18px;box-shadow:0 30px 70px rgba(0,0,0,0.45);overflow:hidden">
+          <div style="background:var(--espresso-800);padding:13px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.06)">
+            <span style="width:28px;height:28px;border-radius:8px;background:var(--latte-100);display:grid;place-items:center"><img src="assets/logo-mark.png" alt="Populatte" style="height:20px;display:block"></span>
+            <b style="color:var(--latte-50);font:700 14px 'Hanken Grotesk'">Populatte</b>
+            <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font:500 11px 'Hanken Grotesk';color:var(--latte-300)"><i data-lucide="loader" style="width:13px;height:13px;color:var(--gold-400);animation:popspin 1.1s linear infinite"></i> Preenchendo 1 de 6</span>
+          </div>
+          <div style="padding:15px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--border-subtle);border-radius:10px;background:var(--surface-card);animation:popwash 11s cubic-bezier(.22,1,.36,1) infinite 0s">
+              <span style="width:28px;height:28px;border-radius:8px;background:var(--success-soft);display:grid;place-items:center;flex-shrink:0"><i data-lucide="building-2" style="width:16px;height:16px;color:var(--green-600)"></i></span>
+              <div style="min-width:0"><div style="font:600 13px 'Hanken Grotesk';color:var(--text-strong)">Razão Social</div><div style="font:500 12px 'JetBrains Mono';color:var(--text-muted);animation:popfill 11s cubic-bezier(.22,1,.36,1) infinite 0s">Padaria Pão Quente LTDA</div></div>
+              <i data-lucide="check" style="width:17px;height:17px;color:var(--green-600);margin-left:auto;animation:popchk 11s cubic-bezier(.22,1,.36,1) infinite 0s"></i>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--border-subtle);border-radius:10px;background:var(--surface-card);animation:popwash 11s cubic-bezier(.22,1,.36,1) infinite 0.9s">
+              <span style="width:28px;height:28px;border-radius:8px;background:var(--success-soft);display:grid;place-items:center;flex-shrink:0"><i data-lucide="hash" style="width:16px;height:16px;color:var(--green-600)"></i></span>
+              <div style="min-width:0"><div style="font:600 13px 'Hanken Grotesk';color:var(--text-strong)">CNPJ</div><div style="font:500 12px 'JetBrains Mono';color:var(--text-muted);animation:popfill 11s cubic-bezier(.22,1,.36,1) infinite 0.9s">12.345.678/0001-90</div></div>
+              <i data-lucide="check" style="width:17px;height:17px;color:var(--green-600);margin-left:auto;animation:popchk 11s cubic-bezier(.22,1,.36,1) infinite 0.9s"></i>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--border-subtle);border-radius:10px;background:var(--surface-card);animation:popwash 11s cubic-bezier(.22,1,.36,1) infinite 1.8s">
+              <span style="width:28px;height:28px;border-radius:8px;background:var(--gold-200);display:grid;place-items:center;flex-shrink:0"><i data-lucide="mail" style="width:16px;height:16px;color:var(--espresso-700)"></i></span>
+              <div style="min-width:0"><div style="font:600 13px 'Hanken Grotesk';color:var(--text-strong)">E-mail</div><div style="font:500 12px 'JetBrains Mono';color:var(--text-muted);animation:popfill 11s cubic-bezier(.22,1,.36,1) infinite 1.8s">contato<span style="font:inherit">@</span>paoquente.com</div></div>
+              <i data-lucide="check" style="width:17px;height:17px;color:var(--green-600);margin-left:auto;animation:popchk 11s cubic-bezier(.22,1,.36,1) infinite 1.8s"></i>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--border-subtle);border-radius:10px;background:var(--surface-card);animation:popwash 11s cubic-bezier(.22,1,.36,1) infinite 2.7s">
+              <span style="width:28px;height:28px;border-radius:8px;background:var(--latte-200);display:grid;place-items:center;flex-shrink:0"><i data-lucide="map-pin" style="width:16px;height:16px;color:var(--espresso-600)"></i></span>
+              <div style="min-width:0"><div style="font:600 13px 'Hanken Grotesk';color:var(--text-strong)">Município</div><div style="font:500 12px 'JetBrains Mono';color:var(--text-muted);animation:popfill 11s cubic-bezier(.22,1,.36,1) infinite 2.7s">Belo Horizonte / MG</div></div>
+              <i data-lucide="check" style="width:17px;height:17px;color:var(--green-600);margin-left:auto;animation:popchk 11s cubic-bezier(.22,1,.36,1) infinite 2.7s"></i>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;right:-16px;bottom:26px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;box-shadow:var(--shadow-lg);padding:12px 15px;display:flex;align-items:center;gap:12px;animation:popfloat 5s ease-in-out infinite">
+          <span style="width:38px;height:38px;border-radius:10px;background:var(--success-soft);display:grid;place-items:center"><i data-lucide="check-check" style="width:20px;height:20px;color:var(--green-600)"></i></span>
+          <div><div style="font:800 22px/1 'JetBrains Mono';color:var(--espresso-900);letter-spacing:-0.02em">142h</div><div style="font:500 11px 'Hanken Grotesk';color:var(--text-muted)">economizadas este mês</div></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SEGMENTOS -->
+  <div style="border-top:1px solid var(--border-inverse);border-bottom:1px solid var(--border-inverse)">
+    <div style="max-width:1200px;margin:0 auto;padding:22px 56px;display:flex;align-items:center;gap:30px;flex-wrap:wrap;justify-content:center">
+      <span style="font:600 11px 'Hanken Grotesk';letter-spacing:0.05em;text-transform:uppercase;color:var(--mocha-400)">Confiado por equipes em</span>
+      <span style="font-family:'Newsreader',serif;font-style:italic;font-size:20px;color:var(--latte-300)">Contabilidades</span>
+      <span style="font-family:'Newsreader',serif;font-style:italic;font-size:20px;color:var(--latte-300)">Escritórios jurídicos</span>
+      <span style="font-family:'Newsreader',serif;font-style:italic;font-size:20px;color:var(--latte-300)">RH &amp; Dep. pessoal</span>
+      <span style="font-family:'Newsreader',serif;font-style:italic;font-size:20px;color:var(--latte-300)">BPO financeiro</span>
+    </div>
+  </div>
+
+  <!-- COMO FUNCIONA (dark) -->
+  <section id="como" style="max-width:1200px;margin:0 auto;padding:88px 56px">
+    <div style="text-align:center;max-width:38em;margin:0 auto 48px">
+      <div style="font:600 12px 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--gold-400);margin-bottom:12px">Como funciona</div>
+      <h2 style="font:800 40px/1.1 'Hanken Grotesk';letter-spacing:-0.03em;color:var(--latte-50)">Três passos. Nenhuma madrugada digitando.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+      <div style="background:var(--espresso-900);border:1px solid var(--border-inverse);border-radius:16px;padding:28px"><div style="font:800 12px 'JetBrains Mono';color:var(--gold-400)">01</div><div style="width:50px;height:50px;border-radius:12px;background:rgba(247,227,189,0.08);display:grid;place-items:center;margin:16px 0"><i data-lucide="file-spreadsheet" style="width:24px;height:24px;color:var(--latte-100)"></i></div><h3 style="font:700 22px 'Hanken Grotesk';color:var(--latte-50)">Importe sua planilha</h3><p style="font:400 14px/1.55 'Hanken Grotesk';color:var(--latte-300);margin-top:8px">Suba um Excel (.xlsx). Cada linha vira um registro, cada coluna um campo mapeável.</p></div>
+      <div style="background:var(--espresso-900);border:1px solid var(--border-inverse);border-radius:16px;padding:28px"><div style="font:800 12px 'JetBrains Mono';color:var(--gold-400)">02</div><div style="width:50px;height:50px;border-radius:12px;background:rgba(240,178,33,0.14);display:grid;place-items:center;margin:16px 0"><i data-lucide="git-compare-arrows" style="width:24px;height:24px;color:var(--gold-400)"></i></div><h3 style="font:700 22px 'Hanken Grotesk';color:var(--latte-50)">Mapeie com a extensão</h3><p style="font:400 14px/1.55 'Hanken Grotesk';color:var(--latte-300);margin-top:8px">Clique numa coluna, clique no campo do site. O vínculo fica salvo para os próximos registros.</p></div>
+      <div style="background:var(--espresso-900);border:1px solid var(--border-inverse);border-radius:16px;padding:28px"><div style="font:800 12px 'JetBrains Mono';color:var(--gold-400)">03</div><div style="width:50px;height:50px;border-radius:12px;background:rgba(91,168,79,0.16);display:grid;place-items:center;margin:16px 0"><i data-lucide="zap" style="width:24px;height:24px;color:var(--green-400)"></i></div><h3 style="font:700 22px 'Hanken Grotesk';color:var(--latte-50)">Preencha e valide</h3><p style="font:400 14px/1.55 'Hanken Grotesk';color:var(--latte-300);margin-top:8px">Um clique e o formulário é populado. Você confere, envia e marca como concluído.</p></div>
+    </div>
+  </section>
+
+  <!-- POR QUE + CASOS (light contrast band) -->
+  <section style="background:var(--latte-50);color:var(--text-body)">
+    <div style="max-width:1200px;margin:0 auto;padding:88px 56px">
+      <div style="display:grid;grid-template-columns:0.9fr 1.1fr;gap:48px;align-items:center;margin-bottom:72px">
+        <div>
+          <div style="font:600 12px 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--espresso-500);margin-bottom:12px">Por que Populatte</div>
+          <h2 style="font:800 36px/1.1 'Hanken Grotesk';letter-spacing:-0.025em;color:var(--text-strong)">Um copiloto, não um robô que você precisa vigiar.</h2>
+          <p style="font:400 16px/1.6 'Hanken Grotesk';color:var(--text-muted);margin-top:14px">Os dados ficam no seu navegador. A extensão só preenche o que você mapeou — e você confere antes de enviar.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:22px;box-shadow:var(--shadow-xs)"><i data-lucide="clock" style="width:22px;height:22px;color:var(--espresso-600)"></i><div style="font:700 16px 'Hanken Grotesk';color:var(--text-strong);margin-top:12px">~95% menos tempo</div><p style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:4px">O que levava noites agora leva minutos.</p></div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:22px;box-shadow:var(--shadow-xs)"><i data-lucide="target" style="width:22px;height:22px;color:var(--espresso-600)"></i><div style="font:700 16px 'Hanken Grotesk';color:var(--text-strong);margin-top:12px">Zero erro de digitação</div><p style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:4px">O valor da planilha entra exatamente como está.</p></div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:22px;box-shadow:var(--shadow-xs)"><i data-lucide="lock" style="width:22px;height:22px;color:var(--espresso-600)"></i><div style="font:700 16px 'Hanken Grotesk';color:var(--text-strong);margin-top:12px">Seus dados, seu navegador</div><p style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:4px">Nada de credenciais no nosso servidor. Conforme a LGPD.</p></div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:22px;box-shadow:var(--shadow-xs)"><i data-lucide="mouse-pointer-click" style="width:22px;height:22px;color:var(--espresso-600)"></i><div style="font:700 16px 'Hanken Grotesk';color:var(--text-strong);margin-top:12px">Onde você já trabalha</div><p style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:4px">Portais do governo, sistemas internos — sem integração.</p></div>
+        </div>
+      </div>
+      <div id="casos">
+        <div style="font:600 12px 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--espresso-500);margin-bottom:14px;text-align:center">Casos de uso</div>
+        <h2 style="font:800 34px/1.1 'Hanken Grotesk';letter-spacing:-0.025em;color:var(--text-strong);text-align:center;margin-bottom:40px">Feito para quem preenche em lote.</h2>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:24px;box-shadow:var(--shadow-sm)"><div style="width:44px;height:44px;border-radius:10px;background:var(--latte-100);display:grid;place-items:center;margin-bottom:14px"><i data-lucide="calculator" style="width:22px;height:22px;color:var(--espresso-600)"></i></div><h3 style="font:700 17px 'Hanken Grotesk';color:var(--text-strong)">Contabilidade</h3><p style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:6px">Obrigações acessórias e cadastros em portais fiscais, em massa.</p></div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:24px;box-shadow:var(--shadow-sm)"><div style="width:44px;height:44px;border-radius:10px;background:var(--latte-100);display:grid;place-items:center;margin-bottom:14px"><i data-lucide="scale" style="width:22px;height:22px;color:var(--espresso-600)"></i></div><h3 style="font:700 17px 'Hanken Grotesk';color:var(--text-strong)">Jurídico</h3><p style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:6px">Peticionamento e cadastros processuais repetitivos.</p></div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:24px;box-shadow:var(--shadow-sm)"><div style="width:44px;height:44px;border-radius:10px;background:var(--latte-100);display:grid;place-items:center;margin-bottom:14px"><i data-lucide="users" style="width:22px;height:22px;color:var(--espresso-600)"></i></div><h3 style="font:700 17px 'Hanken Grotesk';color:var(--text-strong)">RH &amp; Dep. pessoal</h3><p style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:6px">Admissões, eSocial e cadastros de colaboradores.</p></div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:24px;box-shadow:var(--shadow-sm)"><div style="width:44px;height:44px;border-radius:10px;background:var(--latte-100);display:grid;place-items:center;margin-bottom:14px"><i data-lucide="landmark" style="width:22px;height:22px;color:var(--espresso-600)"></i></div><h3 style="font:700 17px 'Hanken Grotesk';color:var(--text-strong)">BPO financeiro</h3><p style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:6px">Cadastros bancários e lançamentos para múltiplos clientes.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ (dark) -->
+  <section id="faq" style="max-width:780px;margin:0 auto;padding:88px 56px">
+    <div style="text-align:center;margin-bottom:36px">
+      <div style="font:600 12px 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--gold-400);margin-bottom:12px">Dúvidas frequentes</div>
+      <h2 style="font:800 36px/1.1 'Hanken Grotesk';letter-spacing:-0.03em;color:var(--latte-50)">Antes de começar</h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <details style="background:var(--espresso-900);border:1px solid var(--border-inverse);border-radius:14px"><summary style="display:flex;align-items:center;gap:12px;padding:18px 20px;font:700 16px 'Hanken Grotesk';color:var(--latte-50)"><span style="flex:1">Preciso instalar uma extensão?</span><i data-lucide="chevron-down" class="faq-chev" style="width:18px;height:18px;color:var(--mocha-400);transition:transform .2s"></i></summary><p style="font:400 14px/1.6 'Hanken Grotesk';color:var(--latte-300);padding:0 20px 18px">Sim. O preenchimento acontece no seu navegador, pela extensão do Populatte — é assim que mantemos seus dados fora do nosso servidor. Instala em menos de um minuto.</p></details>
+      <details style="background:var(--espresso-900);border:1px solid var(--border-inverse);border-radius:14px"><summary style="display:flex;align-items:center;gap:12px;padding:18px 20px;font:700 16px 'Hanken Grotesk';color:var(--latte-50)"><span style="flex:1">Quais formatos de planilha são aceitos?</span><i data-lucide="chevron-down" class="faq-chev" style="width:18px;height:18px;color:var(--mocha-400);transition:transform .2s"></i></summary><p style="font:400 14px/1.6 'Hanken Grotesk';color:var(--latte-300);padding:0 20px 18px">Hoje o Populatte trabalha com arquivos Excel (.xlsx). Cada linha vira um registro e cada coluna, um campo mapeável.</p></details>
+      <details style="background:var(--espresso-900);border:1px solid var(--border-inverse);border-radius:14px"><summary style="display:flex;align-items:center;gap:12px;padding:18px 20px;font:700 16px 'Hanken Grotesk';color:var(--latte-50)"><span style="flex:1">O Populatte preenche sozinho, sem mim?</span><i data-lucide="chevron-down" class="faq-chev" style="width:18px;height:18px;color:var(--mocha-400);transition:transform .2s"></i></summary><p style="font:400 14px/1.6 'Hanken Grotesk';color:var(--latte-300);padding:0 20px 18px">Ele é um copiloto: você abre o site, escolhe o registro e dispara o preenchimento a partir do mapa que ensinou. Você confere antes de enviar.</p></details>
+      <details style="background:var(--espresso-900);border:1px solid var(--border-inverse);border-radius:14px"><summary style="display:flex;align-items:center;gap:12px;padding:18px 20px;font:700 16px 'Hanken Grotesk';color:var(--latte-50)"><span style="flex:1">Meus dados ficam guardados em algum servidor?</span><i data-lucide="chevron-down" class="faq-chev" style="width:18px;height:18px;color:var(--mocha-400);transition:transform .2s"></i></summary><p style="font:400 14px/1.6 'Hanken Grotesk';color:var(--latte-300);padding:0 20px 18px">Os dados sensíveis são tratados localmente, no navegador, durante o preenchimento. Não pedimos nem guardamos as credenciais dos portais. Tudo conforme a LGPD.</p></details>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section style="max-width:1200px;margin:0 auto;padding:0 56px 88px">
+    <div style="position:relative;border-radius:24px;padding:64px 48px;text-align:center;overflow:hidden;background:linear-gradient(135deg, var(--espresso-800), var(--espresso-950));border:1px solid var(--border-inverse)">
+      <div style="position:absolute;inset:0;background:radial-gradient(500px 300px at 80% 10%, rgba(240,178,33,0.18), transparent 60%);pointer-events:none"></div>
+      <div style="position:absolute;right:30px;top:-50px;font-family:'Newsreader',serif;font-style:italic;font-size:200px;color:rgba(247,227,189,0.06);pointer-events:none">☕</div>
+      <h2 style="position:relative;font:800 44px/1.08 'Hanken Grotesk';letter-spacing:-0.03em;color:var(--latte-50)">Pronto para economizar <em style="font-family:'Newsreader',serif;font-style:italic;font-weight:500;color:var(--gold-400)">horas</em> de trabalho?</h2>
+      <p style="position:relative;font:400 18px 'Hanken Grotesk';color:var(--latte-300);margin:14px 0 30px">Crie sua conta e prepare o primeiro projeto em poucos minutos.</p>
+      <div style="position:relative;display:flex;gap:12px;justify-content:center">
+        <a href="/sign-up" style="display:inline-flex;align-items:center;gap:9px;height:54px;padding:0 28px;border-radius:12px;background:var(--gold-500);color:var(--espresso-950);font:700 16px 'Hanken Grotesk'" style-hover="background:var(--gold-600)"><i data-lucide="arrow-right" style="width:18px;height:18px"></i> Começar agora — é grátis</a>
+        <a href="/sign-in" style="display:inline-flex;align-items:center;height:54px;padding:0 24px;border-radius:12px;background:transparent;border:1px solid var(--border-inverse);color:var(--latte-100);font:600 16px 'Hanken Grotesk'" style-hover="background:rgba(247,227,189,0.08)">Já tenho conta</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="border-top:1px solid var(--border-inverse)">
+    <div style="max-width:1200px;margin:0 auto;padding:48px 56px;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="width:30px;height:30px;border-radius:9px;background:var(--latte-100);display:grid;place-items:center"><img src="assets/logo-mark.png" alt="Populatte" style="height:21px;display:block"></span><b style="font:800 17px 'Hanken Grotesk';color:var(--latte-50)">Populatte</b></div>
+        <p style="font:400 13px/1.55 'Hanken Grotesk';color:var(--mocha-400);max-width:26em">Do Excel para a Web, num gole de café. Preenchimento de formulários automatizado, seguro e validado.</p>
+      </div>
+      <div><div style="font:700 12px 'Hanken Grotesk';color:var(--latte-100);margin-bottom:12px">Produto</div><div style="display:flex;flex-direction:column;gap:9px;font:400 13px 'Hanken Grotesk';color:var(--mocha-400)"><a href="#como" style-hover="color:var(--latte-100)">Como funciona</a><a href="#casos" style-hover="color:var(--latte-100)">Casos de uso</a><a href="#faq" style-hover="color:var(--latte-100)">Dúvidas</a></div></div>
+      <div><div style="font:700 12px 'Hanken Grotesk';color:var(--latte-100);margin-bottom:12px">Empresa</div><div style="display:flex;flex-direction:column;gap:9px;font:400 13px 'Hanken Grotesk';color:var(--mocha-400)"><a href="#" style-hover="color:var(--latte-100)">Sobre</a><a href="#" style-hover="color:var(--latte-100)">Contato</a><a href="#" style-hover="color:var(--latte-100)">Blog</a></div></div>
+      <div><div style="font:700 12px 'Hanken Grotesk';color:var(--latte-100);margin-bottom:12px">Legal</div><div style="display:flex;flex-direction:column;gap:9px;font:400 13px 'Hanken Grotesk';color:var(--mocha-400)"><a href="#" style-hover="color:var(--latte-100)">Privacidade (LGPD)</a><a href="#" style-hover="color:var(--latte-100)">Termos</a></div></div>
+    </div>
+    <div style="border-top:1px solid var(--border-inverse)"><div style="max-width:1200px;margin:0 auto;padding:18px 56px;font:400 12px 'Hanken Grotesk';color:var(--mocha-500)">© 2026 Populatte · Transformando Excel em automação, um formulário por vez.</div></div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() {
+    let tries = 0;
+    const run = () => {
+      if (window.lucide) {
+        window.lucide.createIcons({ attrs: { 'stroke-width': 2 } });
+      } else if (tries++ < 60) {
+        setTimeout(run, 80);
+      }
+    };
+    run();
+  }
+}
+</script>
+</body>
+</html>

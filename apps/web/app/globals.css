@@ -7,7 +7,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-hanken);
-  --font-mono: var(--font-jetbrains);
+  --font-mono: var(--font-jetbrains-mono);
   --font-serif: var(--font-newsreader);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -54,74 +54,317 @@
   --color-info-text: var(--info-text);
   --color-pending: var(--pending);
   --color-pending-soft: var(--pending-soft);
+  --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Populatte raw ramps as Tailwind utilities (bg-/text-/border-).
+     `green` is intentionally omitted — it collides with Tailwind's
+     built-in green used by existing components; the café green is
+     available via var(--green-*) and the bg-success/text-success
+     status utilities. */
+  --color-brand-espresso: var(--brand-espresso);
+  --color-brand-cream: var(--brand-cream);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-green: var(--brand-green);
+
+  --color-espresso-50: var(--espresso-50);
+  --color-espresso-100: var(--espresso-100);
+  --color-espresso-200: var(--espresso-200);
+  --color-espresso-300: var(--espresso-300);
+  --color-espresso-400: var(--espresso-400);
+  --color-espresso-500: var(--espresso-500);
+  --color-espresso-600: var(--espresso-600);
+  --color-espresso-700: var(--espresso-700);
+  --color-espresso-800: var(--espresso-800);
+  --color-espresso-900: var(--espresso-900);
+  --color-espresso-950: var(--espresso-950);
+
+  --color-latte-50: var(--latte-50);
+  --color-latte-100: var(--latte-100);
+  --color-latte-200: var(--latte-200);
+  --color-latte-300: var(--latte-300);
+
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+
+  --color-terra-100: var(--terra-100);
+  --color-terra-400: var(--terra-400);
+  --color-terra-500: var(--terra-500);
+  --color-terra-600: var(--terra-600);
+  --color-terra-700: var(--terra-700);
+
+  --color-mocha-0: var(--mocha-0);
+  --color-mocha-50: var(--mocha-50);
+  --color-mocha-100: var(--mocha-100);
+  --color-mocha-200: var(--mocha-200);
+  --color-mocha-300: var(--mocha-300);
+  --color-mocha-400: var(--mocha-400);
+  --color-mocha-500: var(--mocha-500);
+  --color-mocha-600: var(--mocha-600);
+  --color-mocha-700: var(--mocha-700);
+  --color-mocha-800: var(--mocha-800);
+  --color-mocha-900: var(--mocha-900);
+
+  /* Semantic surface/border aliases as utilities */
+  --color-surface-page: var(--surface-page);
+  --color-surface-card: var(--surface-card);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-inverse: var(--surface-inverse);
+  --color-surface-accent: var(--surface-accent);
+  --color-border-inverse: var(--border-inverse);
 }
 
 /* ============================================================
-   Populatte — café design tokens (light).
-   Mirrors the Claude Design `populatte-design-system` palette:
-   espresso (primary), gold (accent/CTA), warm "mocha" neutrals,
-   green (success), terracotta (danger). Pilot is light-only.
+   Populatte Design System — token layer (single source of truth).
+   Raw ramps + brand anchors + semantic aliases + scales, copied
+   from .planning/home-landing/design/tokens.css (exact hex). The
+   shadcn semantic vars (:root below) reference these tokens.
+   Names that collide with shadcn (--primary/--accent/--ring/--chart-*
+   and the bare status tokens) are owned by the shadcn-integration
+   :root block to keep one source of truth per scope; the brand gold
+   "accent" is exposed as --gold / --gold-500 (shadcn --accent stays
+   the light hover surface).
+   Note: the numeric type scale (--text-xs..5xl, --leading-*,
+   --tracking-) from tokens.css is intentionally NOT declared here —
+   those names are Tailwind v4 reserved theme namespaces and would
+   override the dashboard text-size, leading, and tracking utilities.
+   The design uses literal sizes in markup, so the aliases are not
+   needed for fidelity. Only --weight- (non-reserved) is provided.
    ============================================================ */
 :root {
-  --radius: 0.875rem;               /* 14px — card base; sm/md/lg/xl pinned in @theme */
+  /* ---- Brand anchors (raw logo values) ---------------------- */
+  --brand-espresso: #2d0f06;
+  --brand-cream:    #f7e3bd;
+  --brand-gold:     #f0b221;
+  --brand-green:    #5ba84f;
 
-  /* Surfaces & text (warm café neutrals) */
-  --background: #faf7f3;            /* mocha-50 — warm page */
-  --foreground: #34291f;            /* mocha-800 — body text */
-  --card: #ffffff;                  /* white cards lift off the page */
-  --card-foreground: #34291f;
-  --popover: #ffffff;
-  --popover-foreground: #34291f;
+  /* ---- Espresso / coffee ramp ------------------------------- */
+  --espresso-50:  #faf4ef;
+  --espresso-100: #f2e6da;
+  --espresso-200: #e2c9b4;
+  --espresso-300: #cba688;
+  --espresso-400: #a9774f;
+  --espresso-500: #845433;  /* caramel */
+  --espresso-600: #6b3f23;
+  --espresso-700: #532e18;
+  --espresso-800: #3d1f0f;
+  --espresso-900: #2d0f06;  /* brand espresso */
+  --espresso-950: #1c0a03;
 
-  /* Primary = espresso */
-  --primary: #2d0f06;               /* espresso-900 */
-  --primary-foreground: #fcf9f4;    /* latte-50 */
-  --secondary: #f3ede6;             /* mocha-100 */
-  --secondary-foreground: #2d0f06;
-  --muted: #f3ede6;                 /* mocha-100 — wells, zebra */
-  --muted-foreground: #8c7869;      /* mocha-500 */
+  /* ---- Latte / cream / sand --------------------------------- */
+  --latte-50:  #fcf9f4;
+  --latte-100: #fbf3e4;
+  --latte-200: #f7e3bd;  /* brand cream / foam */
+  --latte-300: #efd29a;
 
-  /* Accent = light warm hover (NOT the brand gold — see --gold) */
-  --accent: #fbf3e4;                /* latte-100 */
-  --accent-foreground: #2d0f06;
+  /* ---- Gold / amber (steam) --------------------------------- */
+  --gold-200: #fbe7a8;
+  --gold-300: #f8d26a;
+  --gold-400: #f4c23d;
+  --gold-500: #f0b221;  /* brand gold */
+  --gold-600: #d9971a;
+  --gold-700: #a66e12;
 
-  --destructive: #dc4c3f;           /* terra-500 */
-  --border: #e7ddd2;                /* mocha-200 */
-  --input: #d4c6b7;                 /* mocha-300 */
-  --ring: #f0b221;                  /* gold-500 */
+  /* ---- Green (success / saucer) ----------------------------- */
+  --green-100: #e3f1de;
+  --green-300: #9bd38b;
+  --green-400: #7bc465;
+  --green-500: #5ba84f;  /* brand green */
+  --green-600: #46893c;
+  --green-700: #356a2e;
 
-  /* Charts (coffee-forward sequence) */
-  --chart-1: #2d0f06;
-  --chart-2: #f0b221;
-  --chart-3: #5ba84f;
-  --chart-4: #a9774f;
-  --chart-5: #efd29a;
+  /* ---- Terracotta (error, warm red) ------------------------- */
+  --terra-100: #fae3df;
+  --terra-400: #e8675a;
+  --terra-500: #dc4c3f;
+  --terra-600: #be3528;
+  --terra-700: #97271c;
 
-  /* Sidebar */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #34291f;
-  --sidebar-primary: #2d0f06;
-  --sidebar-primary-foreground: #fcf9f4;
-  --sidebar-accent: #f7e3bd;        /* latte-200 — active item (cream) */
-  --sidebar-accent-foreground: #2d0f06;
-  --sidebar-border: #e7ddd2;
-  --sidebar-ring: #f0b221;
+  /* ---- Warm "mocha" neutral ramp (brown-tinted gray) -------- */
+  --mocha-0:   #ffffff;
+  --mocha-50:  #faf7f3;
+  --mocha-100: #f3ede6;
+  --mocha-200: #e7ddd2;
+  --mocha-300: #d4c6b7;
+  --mocha-400: #b3a091;
+  --mocha-500: #8c7869;
+  --mocha-600: #6b584b;
+  --mocha-700: #4d3e34;
+  --mocha-800: #34291f;
+  --mocha-900: #211a13;
 
-  /* Brand gold + status (Populatte fill lifecycle) */
-  --gold: #f0b221;                  /* gold-500 — "Preencher" CTA */
-  --gold-foreground: #1c0a03;       /* espresso-950 */
-  --success: #5ba84f; --success-soft: #e3f1de; --success-text: #356a2e;  /* Concluído */
-  --warning: #f0b221; --warning-soft: #fbe7a8; --warning-text: #a66e12;  /* Preenchendo */
-  --danger:  #dc4c3f; --danger-soft:  #fae3df; --danger-text:  #97271c;  /* Erro */
-  --info:    #845433; --info-soft:    #fbf3e4; --info-text:    #532e18;
-  --pending: #b3a091; --pending-soft: #f3ede6;                           /* Pendente / Configurando */
+  /* ===== Semantic aliases (design-only names) ================ */
+  /* Surfaces */
+  --surface-page:    var(--latte-50);
+  --surface-card:    var(--mocha-0);
+  --surface-raised:  var(--mocha-0);
+  --surface-sunken:  var(--mocha-100);
+  --surface-muted:   var(--mocha-50);
+  --surface-inverse: var(--espresso-900);
+  --surface-accent:  var(--latte-100);
+
+  /* Text (colors; NOT the font-size scale) */
+  --text-strong:   var(--espresso-900);
+  --text-body:     var(--mocha-800);
+  --text-muted:    var(--mocha-500);
+  --text-subtle:   var(--mocha-400);
+  --text-on-dark:  var(--latte-50);
+  --text-on-brand: var(--latte-50);
+  --text-link:     var(--espresso-600);
+
+  /* Borders & lines */
+  --border-subtle:  var(--mocha-200);
+  --border-default: var(--mocha-300);
+  --border-strong:  var(--mocha-400);
+  --border-inverse: color-mix(in oklab, var(--latte-50) 16%, transparent);
+
+  /* Primary action variants (espresso). Bare --primary lives in the
+     shadcn block (same value, single source of truth). */
+  --primary-hover:     var(--espresso-800);
+  --primary-active:    var(--espresso-950);
+  --primary-soft:      var(--espresso-100);
+  --primary-soft-text: var(--espresso-700);
+
+  /* Accent (gold) variants. Bare --accent is the shadcn hover surface;
+     the brand gold "accent" is the --gold / --gold-500 token. */
+  --accent-hover:      var(--gold-600);
+  --accent-soft:       var(--gold-200);
+  --accent-soft-text:  var(--espresso-700);
+
+  /* Status extras (bare status tokens live in the shadcn block) */
+  --danger-hover:   var(--terra-600);
+  --neutral-status: var(--mocha-400);   /* Pendente */
+  --neutral-soft:   var(--mocha-100);
+
+  /* Focus ring (gold) — consumed via var() in the design */
+  --ring-width: 3px;
+  --ring-color: color-mix(in oklab, var(--gold-500) 55%, transparent);
+
+  /* ---- Radii (also pinned as utilities in @theme inline) ---- */
+  --radius-xs:  6px;
+  --radius-sm:  8px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ---- Spacing — 4px grid (Tailwind uses --spacing, no clash) - */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  --container-max: 1200px;
+  --header-height: 60px; /* app shell; marketing nav uses 74px (design) */
+
+  /* ---- Type weights (Tailwind uses --font-weight-*, no clash) - */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-extra:    800;
+
+  /* ---- Shadows (warm espresso-tinted) ---------------------- */
+  --shadow-xs:  0 1px 2px rgba(45, 15, 6, 0.06);
+  --shadow-sm:  0 1px 2px rgba(45, 15, 6, 0.06), 0 2px 6px rgba(45, 15, 6, 0.05);
+  --shadow-md:  0 2px 4px rgba(45, 15, 6, 0.06), 0 8px 20px rgba(45, 15, 6, 0.08);
+  --shadow-lg:  0 8px 16px rgba(45, 15, 6, 0.08), 0 18px 40px rgba(45, 15, 6, 0.10);
+  --shadow-xl:  0 24px 60px rgba(45, 15, 6, 0.16);
+
+  /* ---- Motion ---------------------------------------------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.25, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 260ms;
 }
 
-/* Dark theme: TODO — pilot is light-only (locked via forcedTheme). */
+/* ============================================================
+   shadcn semantic variables (light) → Populatte tokens.
+   Every value references a ramp/alias from the design-system layer
+   above (single source of truth). --accent is the light hover
+   surface (the brand gold "accent" is the --gold token). The bare
+   --primary/--ring/--chart-* agree with the design, so one
+   declaration here serves both. Pilot is light-only.
+   ============================================================ */
+:root {
+  --radius: 0.875rem;               /* base; xs/sm/md/lg/xl/2xl pinned in @theme */
+
+  /* Surfaces & text */
+  --background: var(--surface-page);
+  --foreground: var(--text-strong);
+  --card: var(--surface-card);
+  --card-foreground: var(--text-strong);
+  --popover: var(--surface-card);
+  --popover-foreground: var(--text-strong);
+
+  /* Primary = espresso */
+  --primary: var(--espresso-900);
+  --primary-foreground: var(--latte-50);
+  --secondary: var(--mocha-100);
+  --secondary-foreground: var(--espresso-900);
+  --muted: var(--mocha-100);          /* wells, zebra */
+  --muted-foreground: var(--text-muted);
+
+  /* Accent = light warm hover surface (brand gold = --gold) */
+  --accent: var(--latte-100);
+  --accent-foreground: var(--espresso-900);
+
+  --destructive: var(--terra-500);
+  --destructive-foreground: var(--latte-50);   /* added: referenced by step-card but was undefined */
+  --border: var(--border-subtle);     /* mocha-200 */
+  --input: var(--border-default);     /* mocha-300 */
+  --ring: var(--gold-500);
+
+  /* Charts (coffee-forward sequence) */
+  --chart-1: var(--espresso-900);
+  --chart-2: var(--gold-500);
+  --chart-3: var(--green-500);
+  --chart-4: var(--espresso-400);
+  --chart-5: var(--latte-300);
+
+  /* Sidebar */
+  --sidebar: var(--surface-card);
+  --sidebar-foreground: var(--text-strong);
+  --sidebar-primary: var(--espresso-900);
+  --sidebar-primary-foreground: var(--latte-50);
+  --sidebar-accent: var(--latte-200);       /* active item (cream) */
+  --sidebar-accent-foreground: var(--espresso-900);
+  --sidebar-border: var(--border-subtle);
+  --sidebar-ring: var(--gold-500);
+
+  /* Brand gold + status (Populatte fill lifecycle) */
+  --gold: var(--gold-500);                  /* "Preencher" CTA */
+  --gold-foreground: var(--espresso-950);
+  --success: var(--green-500); --success-soft: var(--green-100); --success-text: var(--green-700);  /* Concluído */
+  --warning: var(--gold-500);  --warning-soft: var(--gold-200);  --warning-text: var(--espresso-700);  /* Preenchendo */
+  --danger:  var(--terra-500); --danger-soft:  var(--terra-100); --danger-text:  var(--terra-700);  /* Erro */
+  --info:    var(--espresso-500); --info-soft: var(--latte-100); --info-text:  var(--espresso-700);
+  --pending: var(--neutral-status); --pending-soft: var(--neutral-soft);  /* Pendente / Configurando */
+}
+
+/* Dark theme (.dark): owned by the shell ticket (POP-43), which locks
+   the Home to Espresso Dark. The dashboard stays light (forcedTheme). */
 
 
 @layer base {
@@ -130,5 +373,27 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Marketing Home (Espresso Dark): smooth anchor scrolling for #como/#casos/#faq,
+   scoped via `.home-root` so the dashboard is unaffected. Gated on
+   prefers-reduced-motion so reduced-motion users never get animated scroll. */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.home-root) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Accordion (FAQ) degrades gracefully for reduced-motion users: the open/close
+   height animation and the chevron rotation snap to their final state instead
+   of animating. The data-[state=open] rotation transform still applies, so the
+   chevron points up when open — it just gets there instantly. */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="accordion-content"] {
+    animation: none !important;
+  }
+  [data-slot="accordion-trigger"] > svg {
+    transition: none !important;
   }
 }

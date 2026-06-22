@@ -1,28 +1,41 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk, JetBrains_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
 import { QueryProvider } from "@/lib/query/provider";
 import { Toaster } from "@/components/ui/sonner";
 import { GlobalLoadingIndicator } from "@/components/error/global-loading";
 
 const fontSans = Hanken_Grotesk({
   variable: "--font-hanken",
-  subsets: ["latin"],
-});
-
-const fontMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  style: ["normal", "italic"],
+  fallback: [
+    "ui-sans-serif",
+    "system-ui",
+    "-apple-system",
+    "Segoe UI",
+    "sans-serif",
+  ],
 });
 
 const fontSerif = Newsreader({
   variable: "--font-newsreader",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  weight: "variable",
+  axes: ["opsz"],
   style: ["normal", "italic"],
+  fallback: ["ui-serif", "Georgia", "Times New Roman", "serif"],
+});
+
+const fontMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  fallback: ["ui-monospace", "SF Mono", "Menlo", "Consolas", "monospace"],
 });
 
 export const metadata: Metadata = {
@@ -48,15 +61,7 @@ export default function RootLayout({
           >
             <QueryProvider>
               <GlobalLoadingIndicator />
-              <SignedIn>
-                <SidebarProvider>
-                  <AppSidebar />
-                  {children}
-                </SidebarProvider>
-              </SignedIn>
-              <SignedOut>
-                {children}
-              </SignedOut>
+              {children}
               <Toaster richColors />
             </QueryProvider>
           </ThemeProvider>
