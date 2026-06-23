@@ -52,14 +52,14 @@ export function AppHeader({ title, children }: AppHeaderProps) {
   const resolvedTitle = override?.title ?? title ?? meta.title;
 
   return (
-    <header className="sticky top-0 z-30 flex h-[60px] flex-shrink-0 items-center justify-between gap-4 border-b border-border bg-background/80 px-7 backdrop-blur-[8px]">
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-30 flex h-[60px] flex-shrink-0 items-center justify-between gap-2 border-b border-border bg-background/80 px-4 backdrop-blur-[8px] sm:gap-4 sm:px-6 lg:px-7">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         <SignedIn>
-          <SidebarTrigger className="md:hidden" />
+          <SidebarTrigger className="md:hidden" aria-label="Abrir barra lateral" />
         </SignedIn>
-        <div className="flex flex-col gap-px">
-          <Breadcrumb>
-            <BreadcrumbList className="gap-1.5 text-xs font-medium text-muted-foreground sm:gap-1.5">
+        <div className="flex min-w-0 flex-col gap-px">
+          <Breadcrumb className="hidden min-w-0 overflow-hidden md:block">
+            <BreadcrumbList className="flex-nowrap gap-1.5 text-xs font-medium text-muted-foreground sm:gap-1.5">
               {breadcrumb.map((crumb, index) => {
                 const isLast = index === breadcrumb.length - 1;
                 return (
@@ -83,19 +83,19 @@ export function AppHeader({ title, children }: AppHeaderProps) {
               })}
             </BreadcrumbList>
           </Breadcrumb>
-          <span className="text-xl font-bold leading-none tracking-[-0.02em] text-foreground">
+          <h1 className="truncate text-xl font-bold leading-none tracking-[-0.02em] text-foreground">
             {resolvedTitle}
-          </span>
+          </h1>
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {children}
 
         {/* Search — disabled until the search backend exists. */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <span tabIndex={0} className="hidden sm:inline-flex">
+            <span tabIndex={0} className="hidden lg:inline-flex">
               <span className="flex h-[38px] w-[248px] items-center gap-2 rounded-[10px] border border-input bg-card px-3">
                 <Search className="size-4 text-mocha-400" aria-hidden="true" />
                 <input
@@ -143,7 +143,7 @@ export function AppHeader({ title, children }: AppHeaderProps) {
                 className="h-[38px] gap-2 rounded-[10px] px-4 text-sm font-semibold"
               >
                 <Plus className="size-4" aria-hidden="true" />
-                Novo projeto
+                <span className="hidden sm:inline">Novo projeto</span>
               </Button>
             </span>
           </TooltipTrigger>

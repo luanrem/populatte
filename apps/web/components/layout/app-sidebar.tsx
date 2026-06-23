@@ -63,7 +63,9 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
 
-      <SidebarContent>
+      {/* The content region holds only the primary navigation, so expose it as
+          a navigation landmark (assistive tech can jump straight to the menu). */}
+      <SidebarContent role="navigation" aria-label="Navegação principal">
         {NAV_GROUPS.map((group) => (
           <SidebarGroup key={group.key}>
             <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-[0.08em] text-mocha-400">
