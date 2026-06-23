@@ -3,7 +3,7 @@
 import { Fragment } from "react";
 import { usePathname } from "next/navigation";
 import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
-import { Bell, Plus, Search } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 
 import { resolvePageMeta } from "@/lib/navigation";
 import {
@@ -40,8 +40,8 @@ interface AppHeaderProps {
 /**
  * Global app header (60px): breadcrumb + title derived from the route
  * (`resolvePageMeta`) with per-page override via `usePageHeader`, plus the
- * search / notifications / "Novo projeto" actions — disabled with an
- * "em construção" tooltip until their backends exist.
+ * search / notifications actions — disabled with an "em construção" tooltip
+ * until their backends exist.
  */
 export function AppHeader({ title, children }: AppHeaderProps) {
   const pathname = usePathname();
@@ -130,24 +130,6 @@ export function AppHeader({ title, children }: AppHeaderProps) {
             </span>
           </TooltipTrigger>
           <TooltipContent>Notificações em construção</TooltipContent>
-        </Tooltip>
-
-        {/* New project — disabled until project creation is wired up. */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span tabIndex={0}>
-              <Button
-                type="button"
-                disabled
-                aria-label="Novo projeto"
-                className="h-[38px] gap-2 rounded-[10px] px-4 text-sm font-semibold"
-              >
-                <Plus className="size-4" aria-hidden="true" />
-                <span className="hidden sm:inline">Novo projeto</span>
-              </Button>
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>Em construção</TooltipContent>
         </Tooltip>
 
         <SignedOut>
