@@ -18,7 +18,7 @@ export default function PlatformLayout({
 }>) {
   return (
     <SignedIn>
-      <SidebarProvider>
+      <SidebarProvider style={{ "--sidebar-width": "248px" } as React.CSSProperties}>
         <AppSidebar />
         {children}
       </SidebarProvider>

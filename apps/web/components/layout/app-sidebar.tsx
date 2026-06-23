@@ -1,18 +1,11 @@
-"use client"
+"use client";
 
-import {
-  LayoutDashboard,
-  FolderKanban,
-  Map,
-  Users,
-  CreditCard,
-  GraduationCap,
-  Palette,
-  LogOut,
-} from "lucide-react"
-import { useUser, useClerk } from "@clerk/nextjs"
-import Image from "next/image"
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
+import { SidebarUsageMeter } from "@/components/layout/sidebar-usage-meter";
+import { SidebarUser } from "@/components/layout/sidebar-user";
 import {
   Sidebar,
   SidebarContent,
@@ -20,123 +13,101 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { NAV_GROUPS, isActive } from "@/lib/navigation";
+import { cn } from "@/lib/utils";
 
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Projetos",
-    url: "/projects",
-    icon: FolderKanban,
-  },
-  {
-    title: "Mapeamentos",
-    url: "/mappings",
-    icon: Map,
-  },
-  {
-    title: "Equipe",
-    url: "/team",
-    icon: Users,
-  },
-  {
-    title: "Assinatura",
-    url: "/billing",
-    icon: CreditCard,
-  },
-  {
-    title: "Tutorial",
-    url: "/onboarding",
-    icon: GraduationCap,
-  },
-  {
-    title: "Cores",
-    url: "/colors",
-    icon: Palette,
-  },
-]
+/** Intrinsic pixel size of public/brand/logo-mark.png (prevents CLS). */
+const MARK_INTRINSIC = { width: 217, height: 256 } as const;
+
+/**
+ * Placeholder usage data until billing is wired. Passed as props to keep
+ * SidebarUsageMeter purely presentational; swap for real data later.
+ */
+const USAGE_PLACEHOLDER = {
+  used: 8412,
+  total: 10000,
+  planName: "Pro",
+  renewsInDays: 11,
+} as const;
 
 export function AppSidebar() {
-  const { user } = useUser()
-  const { signOut } = useClerk()
+  const pathname = usePathname();
 
   return (
     <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2.5 px-2 py-1.5"
+        >
+          <Image
+            src="/brand/logo-mark.png"
+            alt=""
+            width={MARK_INTRINSIC.width}
+            height={MARK_INTRINSIC.height}
+            className="h-[34px] w-auto shrink-0"
+          />
+          <span className="flex flex-col leading-none group-data-[collapsible=icon]:hidden">
+            <span className="text-[17px] font-extrabold tracking-[-0.02em] text-foreground">
+              Populatte
+            </span>
+            <span className="mt-0.5 font-serif text-xs italic text-espresso-500">
+              num gole de café
+            </span>
+          </span>
+        </Link>
+      </SidebarHeader>
+
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-lg font-bold flex items-center gap-2 mb-4">
-            <span className="text-2xl">🎨</span>
-            <span>Populatte</span>
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title} className="py-3">
-                    <a href={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-5 w-5" />
-                      <span className="text-base">{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {NAV_GROUPS.map((group) => (
+          <SidebarGroup key={group.key}>
+            <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-[0.08em] text-mocha-400">
+              {group.label}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => {
+                  const active = isActive(pathname, item.href);
+                  return (
+                    <SidebarMenuItem key={item.key}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        tooltip={item.label}
+                        className={cn(
+                          "h-auto gap-2.5 px-3 py-2.5 font-medium text-mocha-800",
+                          "hover:bg-mocha-50 hover:text-mocha-800",
+                          "data-[active=true]:bg-latte-100 data-[active=true]:font-semibold data-[active=true]:text-espresso-900",
+                          "[&>svg]:size-[18px]",
+                        )}
+                      >
+                        <Link href={item.href}>
+                          <item.icon
+                            className={
+                              active ? "text-espresso-700" : "text-mocha-500"
+                            }
+                          />
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
 
-      {user && (
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <div className="flex flex-col gap-3 p-3">
-                {/* User Info */}
-                <div className="flex items-center gap-3">
-                  <div className="relative h-10 w-10 rounded-full overflow-hidden flex-shrink-0">
-                    {user.imageUrl ? (
-                      <Image
-                        src={user.imageUrl}
-                        alt={user.fullName || "User"}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
-                        {user.firstName?.[0] || user.emailAddresses[0].emailAddress[0].toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <span className="text-sm font-semibold truncate">
-                      {user.fullName || user.firstName || "User"}
-                    </span>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {user.emailAddresses[0]?.emailAddress}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Sign Out Button */}
-                <SidebarMenuButton
-                  onClick={() => signOut()}
-                  className="w-full justify-start"
-                  tooltip="Sair"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span>Sair</span>
-                </SidebarMenuButton>
-              </div>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      )}
+      <SidebarFooter>
+        <SidebarUsageMeter {...USAGE_PLACEHOLDER} />
+        <SidebarUser />
+      </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
