@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
-import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
 import { DeleteProjectDialog } from "@/components/projects/delete-project-dialog";
 import { ProjectFormDialog } from "@/components/projects/project-form-dialog";
@@ -107,13 +106,13 @@ export default function ProjectsPage() {
   }
 
   return (
-    <main className="w-full">
-      <AppHeader title="Projetos">
+    <>
+      <div className="flex justify-end px-8 pt-8">
         <Button onClick={handleOpenCreate} size="sm">
           <Plus />
           Novo Projeto
         </Button>
-      </AppHeader>
+      </div>
 
       <ProjectGrid
         projects={projects}
@@ -139,6 +138,6 @@ export default function ProjectsPage() {
         project={selectedProject}
         isPending={deleteProject.isPending}
       />
-    </main>
+    </>
   );
 }

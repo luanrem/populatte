@@ -78,7 +78,7 @@ export default function BatchDetailPage({
   // Loading state
   if (batchLoading || projectLoading) {
     return (
-      <main className="w-full">
+      <div className="w-full">
         <div className="mx-auto max-w-7xl px-8 py-6">
           <div className="space-y-4">
             <Skeleton className="h-4 w-64" />
@@ -112,7 +112,7 @@ export default function BatchDetailPage({
             </div>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -123,7 +123,7 @@ export default function BatchDetailPage({
     batchErrorData.status === 404
   ) {
     return (
-      <main className="w-full">
+      <div className="w-full">
         <div className="mx-auto max-w-7xl px-8 py-16">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <h2 className="text-2xl font-bold text-foreground">
@@ -137,14 +137,14 @@ export default function BatchDetailPage({
             </Link>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   // Error state - other errors
   if (batchError) {
     return (
-      <main className="w-full">
+      <div className="w-full">
         <div className="mx-auto max-w-7xl px-8 py-16">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <h2 className="text-2xl font-bold text-foreground">
@@ -158,7 +158,7 @@ export default function BatchDetailPage({
             </Link>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -168,7 +168,7 @@ export default function BatchDetailPage({
   }
 
   return (
-    <main className="w-full">
+    <div className="w-full">
       <div className="mx-auto max-w-7xl px-8 py-6">
         <div className="space-y-6">
           <BatchDetailHeader
@@ -213,6 +213,6 @@ export default function BatchDetailPage({
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

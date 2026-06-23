@@ -118,7 +118,7 @@ export default function MappingEditorPage({
   // Loading state
   if (isLoading || !projectId) {
     return (
-      <main className="w-full">
+      <div className="w-full">
         <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex h-14 items-center justify-between px-8">
             <div className="flex items-center gap-4">
@@ -132,14 +132,14 @@ export default function MappingEditorPage({
           <Skeleton className="h-64 w-full rounded-lg" />
           <Skeleton className="h-48 w-full rounded-lg" />
         </div>
-      </main>
+      </div>
     );
   }
 
   // Error state - 404
   if (isError && error instanceof ApiError && error.status === 404) {
     return (
-      <main className="w-full">
+      <div className="w-full">
         <div className="mx-auto max-w-3xl px-8 py-16">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <h2 className="text-2xl font-bold text-foreground">
@@ -153,14 +153,14 @@ export default function MappingEditorPage({
             </Link>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   // Error state - other errors
   if (isError) {
     return (
-      <main className="w-full">
+      <div className="w-full">
         <div className="mx-auto max-w-3xl px-8 py-16">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <h2 className="text-2xl font-bold text-foreground">
@@ -174,7 +174,7 @@ export default function MappingEditorPage({
             </Link>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -186,7 +186,7 @@ export default function MappingEditorPage({
   const isSaving = updateMapping.isPending;
 
   return (
-    <main className="w-full">
+    <div className="w-full">
       <UnsavedChangesGuard isDirty={isDirty} />
 
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -226,6 +226,6 @@ export default function MappingEditorPage({
           />
         </div>
       </div>
-    </main>
+    </div>
   );
 }

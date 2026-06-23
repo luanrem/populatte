@@ -6,24 +6,15 @@ import { useRouter } from "next/navigation";
 import { Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
-import { AppHeader } from "@/components/layout/app-header";
+import { usePageHeader } from "@/components/layout/page-header-context";
 import { BatchGrid } from "@/components/projects/batch-grid";
 import { DeleteProjectDialog } from "@/components/projects/delete-project-dialog";
-import { InlineEditName } from "@/components/projects/inline-edit-name";
 import { MappingsList } from "@/components/projects/mappings-list";
 import { UploadBatchModal } from "@/components/projects/upload-batch-modal";
 import { Button } from "@/components/ui/button";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProject, useUpdateProject, useDeleteProject } from "@/lib/query/hooks/use-projects";
+import { useProject, useDeleteProject } from "@/lib/query/hooks/use-projects";
 import { useBatches } from "@/lib/query/hooks/use-batches";
 import { ApiError } from "@/lib/api/types";
 
@@ -36,10 +27,14 @@ export default function ProjectDetailPage({
   const router = useRouter();
   const { data: project, isLoading: projectLoading, isError: projectError, error: projectErrorData } = useProject(id);
   const { data: batches, isLoading: batchesLoading } = useBatches(id);
-  const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  // Drive the global header title with the project name; the breadcrumb stays
+  // route-derived (Acme › Workspace › Projetos). Called unconditionally — falls
+  // back to a generic label until the project loads.
+  usePageHeader({ title: project?.name ?? "Projeto" });
 
   const handleDeleteConfirm = async () => {
     await deleteProject.mutateAsync(id);
@@ -57,74 +52,55 @@ export default function ProjectDetailPage({
   // Loading state
   if (projectLoading) {
     return (
-      <main className="w-full">
-        <div className="px-8 pt-4">
-          <Skeleton className="h-4 w-48" />
+      <div className="mx-auto max-w-5xl px-8 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-32 rounded-lg" />
+          ))}
         </div>
-        <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex h-14 items-center justify-between px-8">
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-8 w-64" />
-            </div>
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-9 w-40" />
-            </div>
-          </div>
-        </header>
-        <div className="mx-auto max-w-5xl px-8 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-32 rounded-lg" />
-            ))}
-          </div>
-        </div>
-      </main>
+      </div>
     );
   }
 
   // Error state - 404
   if (projectError && projectErrorData instanceof ApiError && projectErrorData.status === 404) {
     return (
-      <main className="w-full">
-        <div className="mx-auto max-w-5xl px-8 py-16">
-          <div className="flex flex-col items-center justify-center gap-4 text-center">
-            <h2 className="text-2xl font-bold text-foreground">
-              Projeto nao encontrado
-            </h2>
-            <p className="text-muted-foreground">
-              O projeto que voce procura nao existe ou foi removido.
-            </p>
-            <Link href="/projects">
-              <Button variant="default">
-                Voltar para projetos
-              </Button>
-            </Link>
-          </div>
+      <div className="mx-auto max-w-5xl px-8 py-16">
+        <div className="flex flex-col items-center justify-center gap-4 text-center">
+          <h2 className="text-2xl font-bold text-foreground">
+            Projeto nao encontrado
+          </h2>
+          <p className="text-muted-foreground">
+            O projeto que voce procura nao existe ou foi removido.
+          </p>
+          <Link href="/projects">
+            <Button variant="default">
+              Voltar para projetos
+            </Button>
+          </Link>
         </div>
-      </main>
+      </div>
     );
   }
 
   // Error state - other errors
   if (projectError) {
     return (
-      <main className="w-full">
-        <div className="mx-auto max-w-5xl px-8 py-16">
-          <div className="flex flex-col items-center justify-center gap-4 text-center">
-            <h2 className="text-2xl font-bold text-foreground">
-              Algo deu errado
-            </h2>
-            <p className="text-muted-foreground">
-              Tente novamente mais tarde.
-            </p>
-            <Link href="/projects">
-              <Button variant="default">
-                Voltar para projetos
-              </Button>
-            </Link>
-          </div>
+      <div className="mx-auto max-w-5xl px-8 py-16">
+        <div className="flex flex-col items-center justify-center gap-4 text-center">
+          <h2 className="text-2xl font-bold text-foreground">
+            Algo deu errado
+          </h2>
+          <p className="text-muted-foreground">
+            Tente novamente mais tarde.
+          </p>
+          <Link href="/projects">
+            <Button variant="default">
+              Voltar para projetos
+            </Button>
+          </Link>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -134,32 +110,8 @@ export default function ProjectDetailPage({
   }
 
   return (
-    <main className="w-full">
-      <div className="px-8 pt-4">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/projects">Projetos</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{project.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-
-      <AppHeader
-        title={
-          <InlineEditName
-            value={project.name}
-            onSave={async (name) => {
-              await updateProject.mutateAsync({ id: project.id, data: { name } });
-            }}
-            isLoading={updateProject.isPending}
-          />
-        }
-      >
+    <>
+      <div className="mx-auto flex max-w-5xl items-center justify-end gap-2 px-8 pt-6">
         <Button
           variant="ghost"
           size="sm"
@@ -172,9 +124,9 @@ export default function ProjectDetailPage({
           <Upload className="mr-2 h-4 w-4" />
           Nova Importacao
         </Button>
-      </AppHeader>
+      </div>
 
-      <div className="mx-auto max-w-5xl px-8 py-6 space-y-10">
+      <div className="mx-auto max-w-5xl px-8 pb-6 space-y-10">
         {/* Batches Section */}
         <section>
           <h2 className="text-xl font-semibold mb-2">Importacoes</h2>
@@ -214,6 +166,6 @@ export default function ProjectDetailPage({
         project={project}
         isPending={deleteProject.isPending}
       />
-    </main>
+    </>
   );
 }
