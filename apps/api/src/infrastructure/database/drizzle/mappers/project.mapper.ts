@@ -2,6 +2,7 @@ import {
   Project,
   ProjectStatus,
   ProjectSummary,
+  ProjectUrl,
 } from '../../../../core/entities/project.entity';
 import type { ProjectRow } from '../schema/projects.schema';
 
@@ -13,7 +14,7 @@ export class ProjectMapper {
       name: row.name,
       description: row.description,
       targetEntity: row.targetEntity,
-      targetUrl: row.targetUrl,
+      urls: row.urls ?? [],
       status: row.status as ProjectStatus,
       createdAt: row.createdAt ?? new Date(),
       updatedAt: row.updatedAt ?? new Date(),
@@ -26,7 +27,7 @@ export class ProjectMapper {
     name: string;
     description: string | null;
     targetEntity: string | null;
-    targetUrl: string | null;
+    urls: ProjectUrl[] | null;
     status: string;
   }): ProjectSummary {
     return {
@@ -34,7 +35,7 @@ export class ProjectMapper {
       name: row.name,
       description: row.description,
       targetEntity: row.targetEntity,
-      targetUrl: row.targetUrl,
+      urls: row.urls ?? [],
       status: row.status as ProjectStatus,
     };
   }

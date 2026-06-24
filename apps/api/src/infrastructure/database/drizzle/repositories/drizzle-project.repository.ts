@@ -69,7 +69,7 @@ export class DrizzleProjectRepository extends ProjectRepository {
         name: projects.name,
         description: projects.description,
         targetEntity: projects.targetEntity,
-        targetUrl: projects.targetUrl,
+        urls: projects.urls,
         status: projects.status,
       })
       .from(projects)
@@ -88,7 +88,7 @@ export class DrizzleProjectRepository extends ProjectRepository {
         name: data.name,
         description: data.description ?? null,
         targetEntity: data.targetEntity ?? null,
-        targetUrl: data.targetUrl ?? null,
+        urls: data.urls,
       })
       .returning();
 
@@ -116,7 +116,7 @@ export class DrizzleProjectRepository extends ProjectRepository {
         ...(data.targetEntity !== undefined && {
           targetEntity: data.targetEntity,
         }),
-        ...(data.targetUrl !== undefined && { targetUrl: data.targetUrl }),
+        ...(data.urls !== undefined && { urls: data.urls }),
         ...(data.status !== undefined && { status: data.status }),
         updatedAt: new Date(),
       })

@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { Project } from '../../entities/project.entity';
+import {
+  Project,
+  ProjectUrlInput,
+  normalizeProjectUrls,
+} from '../../entities/project.entity';
 import { ProjectRepository } from '../../repositories/project.repository';
 
 export interface CreateProjectInput {
@@ -8,7 +12,7 @@ export interface CreateProjectInput {
   name: string;
   description?: string | null;
   targetEntity?: string | null;
-  targetUrl?: string | null;
+  urls?: ProjectUrlInput[];
 }
 
 @Injectable()
@@ -21,7 +25,7 @@ export class CreateProjectUseCase {
       name: input.name,
       description: input.description ?? null,
       targetEntity: input.targetEntity ?? null,
-      targetUrl: input.targetUrl ?? null,
+      urls: normalizeProjectUrls(input.urls ?? []),
     });
   }
 }

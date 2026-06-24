@@ -8,6 +8,20 @@
       "when": 1781563926702,
       "tag": "0000_lyrical_nuke",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1782301882347,
+      "tag": "0001_add_project_urls",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782301972062,
+      "tag": "0002_drop_project_target_url",
+      "breakpoints": true
     }
   ]
 }

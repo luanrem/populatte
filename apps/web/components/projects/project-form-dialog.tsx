@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { HelpCircle, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -30,10 +31,25 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  createProjectRequestSchema,
   type CreateProjectRequest,
   type ProjectSummaryResponse,
 } from "@/lib/api/schemas/project.schema";
+
+// Single-URL form for now; the multi-URL editor lands in [modals] (POP-61).
+// The single primary URL is bridged to/from the project `urls[]` contract.
+const projectFormSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório").max(100),
+  description: z.string().max(500).optional(),
+  targetEntity: z.string().max(100).optional(),
+  url: z.string().url("URL inválida").optional().or(z.literal("")),
+});
+
+type ProjectFormValues = z.infer<typeof projectFormSchema>;
+
+function primaryUrlOf(project: ProjectSummaryResponse): string {
+  const primary = project.urls.find((entry) => entry.isPrimary);
+  return primary?.url ?? project.urls[0]?.url ?? "";
+}
 
 interface ProjectFormDialogProps {
   open: boolean;
@@ -52,13 +68,13 @@ export function ProjectFormDialog({
 }: ProjectFormDialogProps) {
   const isEditing = !!project;
 
-  const form = useForm<CreateProjectRequest>({
-    resolver: zodResolver(createProjectRequestSchema),
+  const form = useForm<ProjectFormValues>({
+    resolver: zodResolver(projectFormSchema),
     defaultValues: {
       name: "",
       description: "",
       targetEntity: "",
-      targetUrl: "",
+      url: "",
     },
   });
 
@@ -69,21 +85,27 @@ export function ProjectFormDialog({
           name: project.name,
           description: project.description ?? "",
           targetEntity: project.targetEntity ?? "",
-          targetUrl: project.targetUrl ?? "",
+          url: primaryUrlOf(project),
         });
       } else {
         form.reset({
           name: "",
           description: "",
           targetEntity: "",
-          targetUrl: "",
+          url: "",
         });
       }
     }
   }, [open, project, form]);
 
-  function handleSubmit(data: CreateProjectRequest) {
-    onSubmit(data);
+  function handleSubmit(values: ProjectFormValues) {
+    const trimmedUrl = values.url?.trim();
+    onSubmit({
+      name: values.name,
+      description: values.description,
+      targetEntity: values.targetEntity,
+      urls: trimmedUrl ? [{ url: trimmedUrl, isPrimary: true }] : [],
+    });
   }
 
   return (
@@ -163,7 +185,7 @@ export function ProjectFormDialog({
             />
             <FormField
               control={form.control}
-              name="targetUrl"
+              name="url"
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-1.5">

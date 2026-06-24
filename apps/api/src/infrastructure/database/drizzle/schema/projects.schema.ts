@@ -4,11 +4,13 @@ import {
   uuid,
   text,
   timestamp,
+  jsonb,
   index,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
+import type { ProjectUrl } from '../../../../core/entities/project.entity';
 import { users } from './users.schema';
 
 export const projectStatusEnum = pgEnum('project_status', [
@@ -26,7 +28,10 @@ export const projects = pgTable(
     name: text('name').notNull(),
     description: text('description'),
     targetEntity: text('target_entity'),
-    targetUrl: text('target_url'),
+    urls: jsonb('urls')
+      .$type<ProjectUrl[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
     status: projectStatusEnum('status').notNull().default('active'),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),

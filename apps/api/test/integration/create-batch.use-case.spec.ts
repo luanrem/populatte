@@ -25,7 +25,7 @@ const MOCK_PROJECT: Project = {
   name: 'Test Project',
   description: null,
   targetEntity: null,
-  targetUrl: null,
+  urls: [],
   status: ProjectStatus.Active,
   createdAt: new Date('2026-01-01'),
   updatedAt: new Date('2026-01-01'),

@@ -109,10 +109,12 @@ export function ProjectCard({
                 {project.targetEntity}
               </Badge>
             )}
-            {project.targetUrl && (
+            {project.urls.length > 0 && (
               <Badge variant="outline" className="text-xs font-normal">
                 <ExternalLink className="size-3" />
-                URL definida
+                {project.urls.length === 1
+                  ? "URL definida"
+                  : `${project.urls.length} URLs`}
               </Badge>
             )}
           </div>

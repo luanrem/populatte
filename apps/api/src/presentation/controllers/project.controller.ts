@@ -51,7 +51,7 @@ export class ProjectController {
       name: body.name,
       description: body.description,
       targetEntity: body.targetEntity,
-      targetUrl: body.targetUrl,
+      urls: body.urls,
     });
   }
 
