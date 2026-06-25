@@ -79,9 +79,8 @@ const CAPS_TRACKING = "0.08em";
  * color explicitly so nothing leaks the light foreground from the dark page
  * scope. Presentational only; the card icons are decorative (`aria-hidden`).
  *
- * Secondary copy uses `--mocha-600` (a step darker than `--text-muted`, which is
- * `--mocha-500`) so it clears WCAG AA on `--latte-50`/`--surface-card`; darkening
- * `--text-muted` itself is the tokens ticket's call, not this component's.
+ * Secondary copy uses `--text-muted`, which clears WCAG AA on
+ * `--latte-50`/`--surface-card` after the token was darkened to `--mocha-600`.
  */
 export function WhyAndCases() {
   return (
@@ -118,7 +117,7 @@ export function WhyAndCases() {
                 fontWeight: 400,
                 fontSize: 16,
                 lineHeight: 1.6,
-                color: "var(--mocha-600)",
+                color: "var(--text-muted)",
                 marginTop: 14,
               }}
             >
@@ -196,7 +195,7 @@ function BenefitCard({ Icon, title, body }: Benefit) {
           fontWeight: 400,
           fontSize: 13,
           lineHeight: 1.5,
-          color: "var(--mocha-600)",
+          color: "var(--text-muted)",
           marginTop: 4,
         }}
       >
@@ -238,7 +237,7 @@ function UseCaseCard({ Icon, title, body }: Benefit) {
           fontWeight: 400,
           fontSize: 13,
           lineHeight: 1.5,
-          color: "var(--mocha-600)",
+          color: "var(--text-muted)",
           marginTop: 6,
         }}
       >

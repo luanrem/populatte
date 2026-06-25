@@ -78,7 +78,7 @@ function MockField({ icon: Icon, chipColor, iconColor, label, value, delay }: Mo
         </div>
         <div
           className={`${styles.fieldValue} font-mono text-[12px] font-medium`}
-          style={{ color: "var(--mocha-600)", animationDelay: delay }}
+          style={{ color: "var(--text-muted)", animationDelay: delay }}
         >
           {value}
         </div>
@@ -165,7 +165,7 @@ export function HeroMock() {
           >
             142h
           </div>
-          <div className="text-[11px] font-medium" style={{ color: "var(--mocha-600)" }}>
+          <div className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>
             economizadas este mês
           </div>
         </div>

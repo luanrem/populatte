@@ -217,7 +217,7 @@
   /* Text (colors; NOT the font-size scale) */
   --text-strong:   var(--espresso-900);
   --text-body:     var(--mocha-800);
-  --text-muted:    var(--mocha-500);
+  --text-muted:    var(--mocha-600);
   --text-subtle:   var(--mocha-400);
   --text-on-dark:  var(--latte-50);
   --text-on-brand: var(--latte-50);
