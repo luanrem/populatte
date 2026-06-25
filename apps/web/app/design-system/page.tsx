@@ -1,10 +1,14 @@
 import type { ReactNode } from "react"
 
+import { ProjectsIntro } from "@/components/projects/projects-intro"
+import { ResultCount } from "@/components/projects/projects-toolbar"
 import { AvatarGroup } from "@/components/ui/avatar-group"
 import { EntityChip } from "@/components/ui/entity-chip"
 import { ProgressMeter } from "@/components/ui/progress-meter"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { UrlChip } from "@/components/ui/url-chip"
+
+import { ProjectsToolbarDemo } from "./_projects-toolbar-demo"
 
 export default function DesignSystemPage() {
   return (
@@ -67,6 +71,28 @@ export default function DesignSystemPage() {
             { name: "Ana Lima", color: "gold" },
           ]}
         />
+      </Section>
+
+      <Section
+        title="ProjectsIntro"
+        description="Intro da página de projetos: H2 + subcopy com contagens (via props)."
+      >
+        <ProjectsIntro activeCount={6} archivedCount={2} className="w-full" />
+      </Section>
+
+      <Section
+        title="ProjectsToolbar"
+        description="Abas de filtro (Todos / Ativos / Arquivados, com contagem mono) + label de resultado. Clique para alternar o estado ativo."
+      >
+        <ProjectsToolbarDemo />
+      </Section>
+
+      <Section
+        title="ResultCount"
+        description="Label de resultado pluralizada."
+      >
+        <ResultCount count={1} />
+        <ResultCount count={8} />
       </Section>
     </main>
   )
