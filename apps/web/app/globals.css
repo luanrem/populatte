@@ -96,7 +96,9 @@
   --color-gold-600: var(--gold-600);
   --color-gold-700: var(--gold-700);
 
+  --color-terra-50: var(--terra-50);
   --color-terra-100: var(--terra-100);
+  --color-terra-200: var(--terra-200);
   --color-terra-400: var(--terra-400);
   --color-terra-500: var(--terra-500);
   --color-terra-600: var(--terra-600);
@@ -185,7 +187,9 @@
   --green-700: #356a2e;
 
   /* ---- Terracotta (error, warm red) ------------------------- */
+  --terra-50:  #fdf2f0;
   --terra-100: #fae3df;
+  --terra-200: #f5cdc6;
   --terra-400: #e8675a;
   --terra-500: #dc4c3f;
   --terra-600: #be3528;
