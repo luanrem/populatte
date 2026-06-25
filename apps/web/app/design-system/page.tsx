@@ -1,3 +1,5 @@
+"use client"
+
 import type { ReactNode } from "react"
 
 import { ProjectsIntro } from "@/components/projects/projects-intro"
@@ -7,6 +9,43 @@ import { EntityChip } from "@/components/ui/entity-chip"
 import { ProgressMeter } from "@/components/ui/progress-meter"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { UrlChip } from "@/components/ui/url-chip"
+import { NewProjectTile } from "@/components/projects/new-project-tile"
+import { ProjectCard } from "@/components/projects/project-card"
+import { ProjectEmptyState } from "@/components/projects/project-empty-state"
+import type { ProjectSummaryResponse } from "@/lib/api/schemas/project.schema"
+
+const noop = () => {}
+
+const sampleProjects: ProjectSummaryResponse[] = [
+  {
+    id: "p1",
+    name: "Cadastro RAL — ANM",
+    description:
+      "Relatório anual de lavra — preenchimento do portal da ANM com os dados das clientes.",
+    targetEntity: "Mineração",
+    urls: [
+      { url: "https://sistemas.anm.gov.br", isPrimary: true },
+      { url: "https://www.gov.br/anm", isPrimary: false },
+    ],
+    status: "active",
+  },
+  {
+    id: "p2",
+    name: "Admissões RH — Maio (eSocial, lote completo do mês)",
+    description: "Cadastro de admissões e vínculos no eSocial.",
+    targetEntity: "Pessoas",
+    urls: [],
+    status: "active",
+  },
+  {
+    id: "p3",
+    name: "Declaração ITR 2024",
+    description: "Imposto territorial rural — ciclo encerrado e arquivado.",
+    targetEntity: "Imóveis",
+    urls: [{ url: "https://www.gov.br/receitafederal", isPrimary: true }],
+    status: "archived",
+  },
+]
 
 import { ProjectsToolbarDemo } from "./_projects-toolbar-demo"
 
@@ -93,6 +132,39 @@ export default function DesignSystemPage() {
       >
         <ResultCount count={1} />
         <ResultCount count={8} />
+      </Section>
+
+      <Section
+        title="ProjectCard"
+        description="Composição: top (nome truncado + pill arquivado + kebab), badges, progresso (placeholder) e footer. O título trunca em larguras estreitas (POP-13)."
+      >
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {sampleProjects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onEdit={noop}
+              onDelete={noop}
+              onToggleArchive={noop}
+            />
+          ))}
+          <NewProjectTile onClick={noop} />
+        </div>
+      </Section>
+
+      <Section
+        title="ProjectEmptyState"
+        description="Três variantes contextuais: sem projetos, sem resultado de busca e sem arquivados."
+      >
+        <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-3">
+          <ProjectEmptyState variant="no-projects" onCreateClick={noop} />
+          <ProjectEmptyState
+            variant="no-results"
+            query="receita"
+            onClearSearch={noop}
+          />
+          <ProjectEmptyState variant="no-archived" onViewActive={noop} />
+        </div>
       </Section>
     </main>
   )
