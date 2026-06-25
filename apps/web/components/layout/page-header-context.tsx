@@ -38,6 +38,13 @@ interface PageHeaderContextValue {
   clear: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  /**
+   * Bumped whenever the search is cleared from outside the input (e.g. the page's
+   * "Limpar busca" empty state). The header input watches it to reset its local
+   * value, so an external clear stays in sync with the visible field.
+   */
+  searchResetSignal: number;
+  clearSearch: () => void;
 }
 
 const PageHeaderContext = createContext<PageHeaderContextValue | null>(null);
@@ -52,6 +59,7 @@ export function PageHeaderProvider({
 }: Readonly<{ children: React.ReactNode }>) {
   const [override, setOverride] = useState<PageHeaderOverride | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResetSignal, setSearchResetSignal] = useState(0);
 
   const register = useCallback((next: PageHeaderOverride) => {
     setOverride(next);
@@ -63,10 +71,24 @@ export function PageHeaderProvider({
     setOverride(null);
     setSearchQuery("");
   }, []);
+  // Reset the live query immediately (so the list updates at once) and signal the
+  // header input to drop its local value — keeping field and list in sync.
+  const clearSearch = useCallback(() => {
+    setSearchQuery("");
+    setSearchResetSignal((signal) => signal + 1);
+  }, []);
 
   const value = useMemo<PageHeaderContextValue>(
-    () => ({ override, register, clear, searchQuery, setSearchQuery }),
-    [override, register, clear, searchQuery],
+    () => ({
+      override,
+      register,
+      clear,
+      searchQuery,
+      setSearchQuery,
+      searchResetSignal,
+      clearSearch,
+    }),
+    [override, register, clear, searchQuery, searchResetSignal, clearSearch],
   );
 
   return (
@@ -109,10 +131,12 @@ export function usePageHeaderOverride(): PageHeaderOverride | null {
 
 /**
  * Header-facing control for the search input: lets the header push the (debounced)
- * query into the shared provider state so the active page can read it.
+ * query into the shared provider state so the active page can read it, and exposes
+ * the reset signal so the input can drop its local value on an external clear.
  */
 export function usePageHeaderSearchControl(): {
   setSearchQuery: (query: string) => void;
+  searchResetSignal: number;
 } {
   const ctx = useContext(PageHeaderContext);
   if (!ctx) {
@@ -120,7 +144,10 @@ export function usePageHeaderSearchControl(): {
       "usePageHeaderSearchControl must be used within a PageHeaderProvider",
     );
   }
-  return { setSearchQuery: ctx.setSearchQuery };
+  return {
+    setSearchQuery: ctx.setSearchQuery,
+    searchResetSignal: ctx.searchResetSignal,
+  };
 }
 
 /**
@@ -129,4 +156,13 @@ export function usePageHeaderSearchControl(): {
  */
 export function usePageHeaderSearchQuery(): string {
   return useContext(PageHeaderContext)?.searchQuery ?? "";
+}
+
+/**
+ * Page-facing action: clears the header search (query + input). Used by the
+ * "no results" empty state so the page can reset the search the header owns.
+ * No-op when rendered without a provider.
+ */
+export function usePageHeaderSearchClear(): () => void {
+  return useContext(PageHeaderContext)?.clearSearch ?? (() => {});
 }

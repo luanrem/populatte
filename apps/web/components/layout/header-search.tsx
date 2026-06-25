@@ -20,9 +20,19 @@ interface HeaderSearchProps {
 export function HeaderSearch({
   placeholder = "Buscar projetos…",
 }: HeaderSearchProps) {
-  const { setSearchQuery } = usePageHeaderSearchControl();
+  const { setSearchQuery, searchResetSignal } = usePageHeaderSearchControl();
   const [value, setValue] = useState("");
+  const [prevResetSignal, setPrevResetSignal] = useState(searchResetSignal);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Drop the local value when the search is cleared from outside the input
+  // (e.g. the page's "Limpar busca" empty state) so the field never shows a
+  // stale term after the list has already reset. Done during render — the
+  // documented way to reset state on a changing input without an effect.
+  if (searchResetSignal !== prevResetSignal) {
+    setPrevResetSignal(searchResetSignal);
+    setValue("");
+  }
 
   // Push the typed value to the shared state on a debounce so the consuming
   // page filters off a settled query rather than every keystroke.

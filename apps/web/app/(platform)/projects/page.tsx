@@ -1,14 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { usePageHeader } from "@/components/layout/page-header-context";
+import {
+  usePageHeader,
+  usePageHeaderSearchClear,
+  usePageHeaderSearchQuery,
+} from "@/components/layout/page-header-context";
 import { DeleteProjectDialog } from "@/components/projects/delete-project-dialog";
 import { ProjectFormDialog } from "@/components/projects/project-form-dialog";
 import { ProjectGrid } from "@/components/projects/project-grid";
+import { ProjectsIntro } from "@/components/projects/projects-intro";
+import {
+  ProjectsToolbar,
+  type FilterCounts,
+  type ProjectFilter,
+} from "@/components/projects/projects-toolbar";
+import type { ProjectEmptyStateVariant } from "@/components/projects/project-empty-state";
 import type {
   CreateProjectRequest,
   ProjectSummaryResponse,
@@ -21,20 +30,56 @@ import {
 } from "@/lib/query/hooks/use-projects";
 
 export default function ProjectsPage() {
-  // Activate the global header search for this route (POP-58). The debounced
-  // query is exposed via `usePageHeaderSearchQuery`; wiring it into the grid
-  // filter is handled by the integration ticket (POP-62).
+  // Activate the global header search for this route (POP-58) and read its
+  // debounced query; `clearSearch` resets both the query and the header input.
   usePageHeader({ search: { placeholder: "Buscar projetos…" } });
+  const searchQuery = usePageHeaderSearchQuery();
+  const clearSearch = usePageHeaderSearchClear();
 
   const { data: projects, isLoading } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
 
+  const [filter, setFilter] = useState<ProjectFilter>("all");
   const [formOpen, setFormOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedProject, setSelectedProject] =
     useState<ProjectSummaryResponse | null>(null);
+
+  // Counts span the full set; the tabs filter, then the header search narrows.
+  const allProjects = projects ?? [];
+  const activeCount = allProjects.filter((p) => p.status === "active").length;
+  const counts: FilterCounts = {
+    all: allProjects.length,
+    active: activeCount,
+    archived: allProjects.length - activeCount,
+  };
+
+  const query = searchQuery.trim().toLowerCase();
+  const tabFiltered = allProjects.filter((project) => {
+    if (filter === "active") return project.status === "active";
+    if (filter === "archived") return project.status === "archived";
+    return true;
+  });
+  const displayed = query
+    ? tabFiltered.filter((project) =>
+        [
+          project.name,
+          project.description ?? "",
+          project.targetEntity ?? "",
+        ].some((field) => field.toLowerCase().includes(query)),
+      )
+    : tabFiltered;
+
+  const emptyVariant: ProjectEmptyStateVariant = query
+    ? "no-results"
+    : filter === "archived"
+      ? "no-archived"
+      : "no-projects";
+  // The "create" tile only makes sense alongside results, off-search, and
+  // outside the Archived tab (where new projects never land).
+  const showTile = displayed.length > 0 && query === "" && filter !== "archived";
 
   function handleOpenCreate() {
     setSelectedProject(null);
@@ -113,21 +158,35 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <div className="flex justify-end px-8 pt-8">
-        <Button onClick={handleOpenCreate} size="sm">
-          <Plus />
-          Novo Projeto
-        </Button>
-      </div>
+      <div className="px-7 pb-8 pt-[26px]">
+        <div className="mx-auto flex max-w-[1180px] flex-col gap-5">
+          <ProjectsIntro
+            activeCount={counts.active}
+            archivedCount={counts.archived}
+          />
 
-      <ProjectGrid
-        projects={projects}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onToggleArchive={handleToggleArchive}
-        onCreateClick={handleOpenCreate}
-      />
+          <ProjectsToolbar
+            value={filter}
+            counts={counts}
+            resultCount={displayed.length}
+            onChange={setFilter}
+          />
+
+          <ProjectGrid
+            projects={displayed}
+            isLoading={isLoading}
+            emptyVariant={emptyVariant}
+            query={searchQuery}
+            showTile={showTile}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onToggleArchive={handleToggleArchive}
+            onCreateClick={handleOpenCreate}
+            onClearSearch={clearSearch}
+            onViewActive={() => setFilter("active")}
+          />
+        </div>
+      </div>
 
       <ProjectFormDialog
         open={formOpen}

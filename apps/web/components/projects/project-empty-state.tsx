@@ -11,7 +11,10 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-type ProjectEmptyStateVariant = "no-projects" | "no-results" | "no-archived";
+export type ProjectEmptyStateVariant =
+  | "no-projects"
+  | "no-results"
+  | "no-archived";
 
 interface ProjectEmptyStateProps {
   variant?: ProjectEmptyStateVariant;
