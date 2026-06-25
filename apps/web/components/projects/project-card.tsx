@@ -61,7 +61,7 @@ export function ProjectCard({
   return (
     <Link href={`/projects/${project.id}`} className="group block min-w-0">
       <Card
-        className={`gap-0 rounded-lg px-[18px] py-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
+        className={`min-w-0 gap-0 rounded-lg px-[18px] py-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
           isArchived ? "opacity-[0.72]" : ""
         }`}
       >
@@ -69,7 +69,7 @@ export function ProjectCard({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-1.5">
-              <span className="truncate text-[15px] font-semibold leading-tight text-foreground">
+              <span className="line-clamp-2 text-[15px] font-semibold leading-tight text-foreground">
                 {project.name}
               </span>
               {isArchived && (
