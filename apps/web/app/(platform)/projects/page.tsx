@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { usePageHeader } from "@/components/layout/page-header-context";
 import { DeleteProjectDialog } from "@/components/projects/delete-project-dialog";
 import { ProjectFormDialog } from "@/components/projects/project-form-dialog";
 import { ProjectGrid } from "@/components/projects/project-grid";
@@ -20,6 +21,11 @@ import {
 } from "@/lib/query/hooks/use-projects";
 
 export default function ProjectsPage() {
+  // Activate the global header search for this route (POP-58). The debounced
+  // query is exposed via `usePageHeaderSearchQuery`; wiring it into the grid
+  // filter is handled by the integration ticket (POP-62).
+  usePageHeader({ search: { placeholder: "Buscar projetos…" } });
+
   const { data: projects, isLoading } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();

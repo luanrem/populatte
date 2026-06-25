@@ -12,6 +12,16 @@ import {
 import type { Crumb } from "@/lib/navigation";
 
 /**
+ * Activates the global header search input for the page that supplies it. The
+ * mere presence of this object turns the search on; the live query lives in the
+ * provider state (not here), since this override is serialized across the
+ * register channel and functions would not survive it.
+ */
+export interface PageHeaderSearch {
+  placeholder?: string;
+}
+
+/**
  * Per-page override for the global header. A page supplies just the fields it
  * needs (e.g. a dynamic project detail page overrides only the `title`); the
  * header falls back to `resolvePageMeta(pathname)` for anything omitted.
@@ -19,12 +29,15 @@ import type { Crumb } from "@/lib/navigation";
 export interface PageHeaderOverride {
   title?: string;
   breadcrumb?: Crumb[];
+  search?: PageHeaderSearch;
 }
 
 interface PageHeaderContextValue {
   override: PageHeaderOverride | null;
   register: (override: PageHeaderOverride) => void;
   clear: () => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 const PageHeaderContext = createContext<PageHeaderContextValue | null>(null);
@@ -38,16 +51,22 @@ export function PageHeaderProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const [override, setOverride] = useState<PageHeaderOverride | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const register = useCallback(
-    (next: PageHeaderOverride) => setOverride(next),
-    [],
-  );
-  const clear = useCallback(() => setOverride(null), []);
+  const register = useCallback((next: PageHeaderOverride) => {
+    setOverride(next);
+    // Drop any stale query when the page does not request search, so it never
+    // leaks across routes (e.g. navigating from /projects to a page without it).
+    if (next.search == null) setSearchQuery("");
+  }, []);
+  const clear = useCallback(() => {
+    setOverride(null);
+    setSearchQuery("");
+  }, []);
 
   const value = useMemo<PageHeaderContextValue>(
-    () => ({ override, register, clear }),
-    [override, register, clear],
+    () => ({ override, register, clear, searchQuery, setSearchQuery }),
+    [override, register, clear, searchQuery],
   );
 
   return (
@@ -86,4 +105,28 @@ export function usePageHeader(override: PageHeaderOverride): void {
  */
 export function usePageHeaderOverride(): PageHeaderOverride | null {
   return useContext(PageHeaderContext)?.override ?? null;
+}
+
+/**
+ * Header-facing control for the search input: lets the header push the (debounced)
+ * query into the shared provider state so the active page can read it.
+ */
+export function usePageHeaderSearchControl(): {
+  setSearchQuery: (query: string) => void;
+} {
+  const ctx = useContext(PageHeaderContext);
+  if (!ctx) {
+    throw new Error(
+      "usePageHeaderSearchControl must be used within a PageHeaderProvider",
+    );
+  }
+  return { setSearchQuery: ctx.setSearchQuery };
+}
+
+/**
+ * Page-facing reader: the current (debounced) header search query. Empty string
+ * when no page has activated search. Consumption/filtering is up to the page.
+ */
+export function usePageHeaderSearchQuery(): string {
+  return useContext(PageHeaderContext)?.searchQuery ?? "";
 }

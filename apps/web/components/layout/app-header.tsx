@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { usePageHeaderOverride } from "@/components/layout/page-header-context";
+import { HeaderSearch } from "@/components/layout/header-search";
 
 interface AppHeaderProps {
   /**
@@ -50,6 +51,7 @@ export function AppHeader({ title, children }: AppHeaderProps) {
 
   const breadcrumb = override?.breadcrumb ?? meta.breadcrumb;
   const resolvedTitle = override?.title ?? title ?? meta.title;
+  const search = override?.search;
 
   return (
     <header className="sticky top-0 z-30 flex h-[60px] flex-shrink-0 items-center justify-between gap-2 border-b border-border bg-background/80 px-4 backdrop-blur-[8px] sm:gap-4 sm:px-6 lg:px-7">
@@ -92,26 +94,34 @@ export function AppHeader({ title, children }: AppHeaderProps) {
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {children}
 
-        {/* Search — disabled until the search backend exists. */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span tabIndex={0} className="hidden lg:inline-flex">
-              <span className="flex h-[38px] w-[248px] items-center gap-2 rounded-[10px] border border-input bg-card px-3">
-                <Search className="size-4 text-mocha-400" aria-hidden="true" />
-                <input
-                  disabled
-                  aria-label="Buscar projetos, planilhas"
-                  placeholder="Buscar projetos, planilhas…"
-                  className="min-w-0 flex-1 border-0 bg-transparent text-sm text-foreground outline-none placeholder:text-mocha-400 disabled:cursor-not-allowed"
-                />
-                <kbd className="rounded-[5px] border border-border bg-mocha-50 px-1.5 py-px font-mono text-[11px] font-semibold text-mocha-400">
-                  /
-                </kbd>
+        {/* Search — active only when a page opts in (e.g. /projects); otherwise
+            disabled with an "em construção" tooltip until the backend exists. */}
+        {search ? (
+          <HeaderSearch placeholder={search.placeholder} />
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span tabIndex={0} className="hidden lg:inline-flex">
+                <span className="flex h-[38px] w-[248px] items-center gap-2 rounded-[10px] border border-input bg-card px-3">
+                  <Search
+                    className="size-4 text-mocha-400"
+                    aria-hidden="true"
+                  />
+                  <input
+                    disabled
+                    aria-label="Buscar projetos, planilhas"
+                    placeholder="Buscar projetos, planilhas…"
+                    className="min-w-0 flex-1 border-0 bg-transparent text-sm text-foreground outline-none placeholder:text-mocha-400 disabled:cursor-not-allowed"
+                  />
+                  <kbd className="rounded-[5px] border border-border bg-mocha-50 px-1.5 py-px font-mono text-[11px] font-semibold text-mocha-400">
+                    /
+                  </kbd>
+                </span>
               </span>
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>Busca em construção</TooltipContent>
-        </Tooltip>
+            </TooltipTrigger>
+            <TooltipContent>Busca em construção</TooltipContent>
+          </Tooltip>
+        )}
 
         {/* Notifications — disabled until the notifications backend exists. */}
         <Tooltip>
