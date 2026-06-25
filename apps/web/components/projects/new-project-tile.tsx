@@ -24,7 +24,7 @@ export function NewProjectTile({ onClick, className }: NewProjectTileProps) {
         className
       )}
     >
-      <span className="grid size-[42px] place-items-center rounded-xl border border-latte-300 bg-latte-100">
+      <span className="grid size-[42px] place-items-center rounded-[12px] border border-latte-300 bg-latte-100">
         <Plus className="size-5 text-espresso-700" />
       </span>
       <span className="text-sm font-semibold text-foreground">

@@ -61,7 +61,7 @@ export function ProjectCard({
   return (
     <Link href={`/projects/${project.id}`} className="group block min-w-0">
       <Card
-        className={`min-w-0 gap-0 rounded-lg px-[18px] py-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
+        className={`min-w-0 gap-0 rounded-lg px-[18px] py-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-mocha-300 hover:shadow-md ${
           isArchived ? "opacity-[0.72]" : ""
         }`}
       >

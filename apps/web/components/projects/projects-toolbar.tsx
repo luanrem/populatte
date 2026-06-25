@@ -38,7 +38,7 @@ function FilterTabs({ value, counts, onChange, className }: FilterTabsProps) {
       spacing={2}
       aria-label="Filtrar projetos por estado"
       className={cn(
-        "gap-0.5 rounded-[10px] border border-border bg-card p-[3px]",
+        "gap-0.5 rounded-[10px] border border-mocha-300 bg-card p-[3px]",
         className
       )}
     >

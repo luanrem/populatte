@@ -48,7 +48,7 @@ export function ProjectEmptyState({
       <h3 className="mb-1.5 text-lg font-bold text-foreground">
         {content.title}
       </h3>
-      <p className="mb-5 max-w-[42ch] text-sm leading-relaxed text-muted-foreground">
+      <p className="mb-5 max-w-[42ch] text-sm leading-normal text-muted-foreground">
         {content.body}
       </p>
       <Button onClick={content.onAction}>
