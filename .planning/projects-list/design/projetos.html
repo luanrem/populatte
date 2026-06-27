@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/colors.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/typography.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/styles.css">
+<script src="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/_ds_bundle.js"></script>
+<script src="https://unpkg.com/lucide@0.451.0/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e7e5df; font-family: 'Hanken Grotesk', ui-sans-serif, sans-serif; -webkit-font-smoothing: antialiased; }
+  .pj h1, .pj h2, .pj h3, .pj p { margin: 0; }
+  .pj button { font-family: 'Hanken Grotesk', sans-serif; }
+  .pj input { font-family: 'Hanken Grotesk', sans-serif; }
+  @keyframes pjfill { from { width: 0; } }
+  @keyframes pjmenu { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pjpop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes pjfade { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</helmet>
+
+<div style="min-width:100%;min-height:100vh;width:max-content;box-sizing:border-box;padding:44px;background:#e7e5df">
+
+  <div style="margin-bottom:26px;max-width:760px">
+    <div style="font:800 11px/1 'Hanken Grotesk';letter-spacing:0.14em;text-transform:uppercase;color:#8c7869;margin-bottom:9px">Populatte · App (pós-login)</div>
+    <div style="font:400 14px/1.5 'Hanken Grotesk';color:#4d3e34">Tela de Projetos: o índice de tudo que você automatiza. Cada projeto agrupa importações de planilha e mapeamentos para um destino. Busca, filtros por estado, criação e ações por projeto — sobre o mesmo chrome do Dashboard.</div>
+  </div>
+
+  <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:12px">
+    <span style="font:800 13px/1 'JetBrains Mono';color:#532e18">02</span>
+    <span style="font:700 15px/1 'Hanken Grotesk';color:#2d0f06">Projetos · Lista</span>
+    <span style="font:500 12px/1 'Hanken Grotesk';color:#8c7869">— /projects · grid responsivo · busca, filtros, novo projeto, ações por card</span>
+  </div>
+
+  <div class="pj" data-screen-label="App — Projetos (lista)" style="position:relative;flex:none;width:1340px;height:880px;display:flex;background:var(--surface-page);border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(45,15,6,.16);border:1px solid var(--border-subtle);color:var(--text-body)">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside style="width:248px;flex-shrink:0;background:var(--surface-card);border-right:1px solid var(--border-subtle);display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:10px;padding:18px 18px 16px">
+        <img src="assets/logo-mark.png" alt="" style="height:34px">
+        <div style="display:flex;flex-direction:column;line-height:1">
+          <span style="font:800 17px/1 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.02em">Populatte</span>
+          <span style="font-family:'Newsreader',serif;font-style:italic;font-size:12px;color:var(--espresso-500);margin-top:3px">num gole de café</span>
+        </div>
+      </div>
+
+      <nav style="padding:8px 12px;display:flex;flex-direction:column;gap:2px;flex:1">
+        <div style="font:600 11px/1 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--text-subtle);padding:10px 12px 6px">Workspace</div>
+
+        <a href="Populatte Dashboard.dc.html" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="layout-dashboard" style="width:18px;height:18px;color:var(--mocha-500)"></i> Dashboard
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:600 14px 'Hanken Grotesk';color:var(--espresso-900);background:var(--latte-100);text-decoration:none">
+          <i data-lucide="folder-kanban" style="width:18px;height:18px;color:var(--espresso-700)"></i> Projetos
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="git-compare-arrows" style="width:18px;height:18px;color:var(--mocha-500)"></i> Mapeamentos
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="users" style="width:18px;height:18px;color:var(--mocha-500)"></i> Equipe
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="credit-card" style="width:18px;height:18px;color:var(--mocha-500)"></i> Assinatura
+        </a>
+
+        <div style="font:600 11px/1 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--text-subtle);padding:18px 12px 6px">Suporte</div>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="life-buoy" style="width:18px;height:18px;color:var(--mocha-500)"></i> Ajuda
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="settings" style="width:18px;height:18px;color:var(--mocha-500)"></i> Configurações
+        </a>
+      </nav>
+
+      <div style="margin:0 12px 8px;padding:13px 14px;border-radius:12px;background:var(--latte-50);border:1px solid var(--border-subtle)">
+        <div style="display:flex;align-items:center;justify-content:space-between;font:600 12px 'Hanken Grotesk';color:var(--text-body)">
+          <span>Preenchimentos</span>
+          <span style="font-family:'JetBrains Mono';color:var(--espresso-600)">8.412 / 10k</span>
+        </div>
+        <div style="height:6px;border-radius:99px;background:var(--mocha-100);overflow:hidden;margin-top:8px">
+          <div style="width:84%;height:100%;border-radius:99px;background:var(--gold-500);animation:pjfill .9s cubic-bezier(.22,1,.36,1)"></div>
+        </div>
+        <div style="font:500 11px 'Hanken Grotesk';color:var(--text-muted);margin-top:8px">Renova em 11 dias · Plano Pro</div>
+      </div>
+
+      <div style="padding:12px;border-top:1px solid var(--border-subtle)">
+        <div style="display:flex;align-items:center;gap:10px;padding:6px">
+          <span style="width:36px;height:36px;border-radius:var(--radius-full);display:inline-flex;align-items:center;justify-content:center;font:700 var(--text-sm) 'Hanken Grotesk';color:var(--espresso-700);background:var(--gold-200);flex-shrink:0;user-select:none">MC</span>
+          <div style="min-width:0;flex:1">
+            <div style="font:600 14px 'Hanken Grotesk';color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Marina Costa</div>
+            <div style="font:400 12px 'Hanken Grotesk';color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">marina@populatte.com.br</div>
+          </div>
+          <x-import component-from-global-scope="PopulatteDesignSystem_142491.Badge" tone="accent" variant="soft" hint-size="38px,22px">Pro</x-import>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
+
+      <!-- HEADER -->
+      <header style="height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--border-subtle);background:color-mix(in oklab, var(--surface-page) 80%, transparent);backdrop-filter:blur(8px);z-index:5">
+        <div style="display:flex;flex-direction:column;gap:1px">
+          <span style="font:500 12px 'Hanken Grotesk';color:var(--text-muted);display:flex;align-items:center;gap:6px">Acme Contabilidade <i data-lucide="chevron-right" style="width:13px;height:13px"></i> Workspace</span>
+          <span style="font:700 20px 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.02em">Projetos</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;width:268px;background:var(--surface-card);border:1px solid var(--border-default);border-radius:10px">
+            <i data-lucide="search" style="width:16px;height:16px;color:var(--text-subtle)"></i>
+            <input value="{{ query }}" onInput="{{ onSearch }}" placeholder="Buscar projetos…" style="border:none;outline:none;background:transparent;flex:1;min-width:0;font:400 14px 'Hanken Grotesk';color:var(--text-strong)">
+            <span style="font:600 11px 'JetBrains Mono';color:var(--text-subtle);background:var(--mocha-50);border:1px solid var(--border-subtle);border-radius:5px;padding:1px 5px">/</span>
+          </div>
+          <button style="position:relative;width:38px;height:38px;border-radius:10px;background:var(--surface-card);border:1px solid var(--border-default);display:grid;place-items:center;cursor:pointer" style-hover="background:var(--mocha-50)">
+            <i data-lucide="bell" style="width:18px;height:18px;color:var(--mocha-500)"></i>
+            <span style="position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--gold-500);border:1.5px solid var(--surface-card)"></span>
+          </button>
+          <button onClick="{{ openCreate }}" style="height:38px;padding:0 16px;border-radius:10px;background:var(--espresso-900);color:var(--latte-50);border:none;display:inline-flex;align-items:center;gap:8px;font:600 14px 'Hanken Grotesk';cursor:pointer;box-shadow:var(--shadow-xs)" style-hover="background:var(--espresso-800)">
+            <i data-lucide="plus" style="width:16px;height:16px"></i> Novo projeto
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div style="flex:1;min-height:0;overflow:auto;padding:26px 28px 32px">
+       <div style="max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px">
+
+        <!-- intro row -->
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font:800 26px 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.02em">Seus projetos</div>
+            <div style="font:400 15px 'Hanken Grotesk';color:var(--text-muted);margin-top:3px">Agrupe importações de planilha e mapeamentos por destino. <b style="color:var(--espresso-700);font-weight:700">{{ activeCount }} ativos</b> · {{ archivedCount }} arquivados.</div>
+          </div>
+        </div>
+
+        <!-- toolbar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div style="display:inline-flex;background:var(--surface-card);border:1px solid var(--border-default);border-radius:10px;padding:3px;gap:2px">
+            <button onClick="{{ setFilterTodos }}" style="{{ tabTodos }}">Todos <span style="font-family:'JetBrains Mono';opacity:.75">{{ totalCount }}</span></button>
+            <button onClick="{{ setFilterAtivos }}" style="{{ tabAtivos }}">Ativos <span style="font-family:'JetBrains Mono';opacity:.75">{{ activeCount }}</span></button>
+            <button onClick="{{ setFilterArquivados }}" style="{{ tabArquivados }}">Arquivados <span style="font-family:'JetBrains Mono';opacity:.75">{{ archivedCount }}</span></button>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font:500 13px 'Hanken Grotesk';color:var(--text-muted)">{{ resultLabel }}</span>
+            <div style="display:inline-flex;border:1px solid var(--border-default);border-radius:9px;overflow:hidden;background:var(--surface-card)">
+              <span style="display:grid;place-items:center;width:34px;height:34px;background:var(--espresso-900)"><i data-lucide="layout-grid" style="width:16px;height:16px;color:var(--latte-50)"></i></span>
+              <span style="display:grid;place-items:center;width:34px;height:34px"><i data-lucide="list" style="width:16px;height:16px;color:var(--mocha-500)"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRID -->
+        <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+        <div style="{{ gridStyle }}">
+          <sc-for list="{{ visible }}" as="p" hint-placeholder-count="6">
+            <div onClick="{{ p.onOpen }}" style="{{ p.cardStyle }}" style-hover="box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--border-default)">
+              <div style="{{ p.padStyle }}">
+                <!-- top -->
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                  <div style="min-width:0;flex:1">
+                    <div style="display:flex;align-items:center;gap:7px;min-width:0">
+                      <span style="font:600 15px/1.25 'Hanken Grotesk';color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.name }}</span>
+                      <sc-if value="{{ p.archived }}" hint-placeholder-val="{{ false }}">
+                        <span style="flex-shrink:0;font:600 9px/1 'Hanken Grotesk';letter-spacing:0.04em;text-transform:uppercase;color:var(--mocha-600);background:var(--mocha-100);border:1px solid var(--mocha-300);padding:3px 7px;border-radius:999px">Arquivado</span>
+                      </sc-if>
+                    </div>
+                    <div style="font:400 13px/1.45 'Hanken Grotesk';color:var(--text-muted);margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ p.description }}</div>
+                  </div>
+                  <div style="position:relative;flex-shrink:0">
+                    <button onClick="{{ p.onMenu }}" style="width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;display:grid;place-items:center;cursor:pointer" style-hover="background:var(--mocha-50);border-color:var(--border-subtle)">
+                      <i data-lucide="more-vertical" style="width:17px;height:17px;color:var(--mocha-500)"></i>
+                    </button>
+                    <sc-if value="{{ p.menuOpen }}" hint-placeholder-val="{{ false }}">
+                      <div onClick="{{ stop }}" style="position:absolute;top:34px;right:0;z-index:20;width:176px;background:var(--surface-card);border:1px solid var(--border-default);border-radius:11px;box-shadow:var(--shadow-lg);padding:5px;animation:pjmenu .14s cubic-bezier(.22,1,.36,1)">
+                        <button onClick="{{ p.onEdit }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;background:transparent;border-radius:8px;cursor:pointer;font:500 13px 'Hanken Grotesk';color:var(--text-body);text-align:left" style-hover="background:var(--mocha-50)"><i data-lucide="pencil" style="width:15px;height:15px;color:var(--mocha-500)"></i> Editar</button>
+                        <button onClick="{{ p.onArchive }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;background:transparent;border-radius:8px;cursor:pointer;font:500 13px 'Hanken Grotesk';color:var(--text-body);text-align:left" style-hover="background:var(--mocha-50)"><i data-lucide="{{ p.archiveIcon }}" style="width:15px;height:15px;color:var(--mocha-500)"></i> {{ p.archiveLabel }}</button>
+                        <div style="height:1px;background:var(--border-subtle);margin:4px 6px"></div>
+                        <button onClick="{{ p.onDelete }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border:none;background:transparent;border-radius:8px;cursor:pointer;font:500 13px 'Hanken Grotesk';color:var(--terra-600);text-align:left" style-hover="background:var(--terra-50)"><i data-lucide="trash-2" style="width:15px;height:15px;color:var(--terra-500)"></i> Excluir</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+
+                <!-- badges -->
+                <div style="display:flex;align-items:center;gap:7px;margin-top:12px;flex-wrap:wrap">
+                  <x-import component-from-global-scope="PopulatteDesignSystem_142491.StatusPill" status="{{ p.status }}" hint-size="92px,22px"></x-import>
+                  <span style="font:500 11px/1 'Hanken Grotesk';color:var(--espresso-700);background:var(--espresso-100);padding:4px 9px;border-radius:999px">{{ p.entity }}</span>
+                  <sc-if value="{{ p.hasUrl }}" hint-placeholder-val="{{ false }}">
+                    <span style="display:inline-flex;align-items:center;gap:4px;font:500 11px/1 'Hanken Grotesk';color:var(--text-muted);background:var(--mocha-50);border:1px solid var(--border-subtle);padding:4px 8px 4px 7px;border-radius:999px"><i data-lucide="external-link" style="width:12px;height:12px"></i> {{ p.urlLabel }}</span>
+                  </sc-if>
+                </div>
+
+                <!-- progress -->
+                <div style="margin-top:14px">
+                  <div style="display:flex;justify-content:space-between;font:400 12px 'Hanken Grotesk';color:var(--text-muted);margin-bottom:6px"><span>{{ p.progressLabel }}</span><span style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--espresso-600)">{{ p.pctLabel }}</span></div>
+                  <div style="height:7px;border-radius:99px;background:var(--mocha-100);overflow:hidden"><div style="{{ p.barStyle }}"></div></div>
+                </div>
+
+                <!-- footer -->
+                <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between">
+                  <div style="display:flex">
+                    <sc-for list="{{ p.members }}" as="m" hint-placeholder-count="2">
+                      <div style="{{ m.wrapStyle }}"><span style="{{ m.avStyle }}">{{ m.initials }}</span></div>
+                    </sc-for>
+                  </div>
+                  <span style="font:400 12px 'Hanken Grotesk';color:var(--text-subtle)">{{ p.updated }}</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+
+          <!-- new project tile -->
+          <sc-if value="{{ showNewTile }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ openCreate }}" style="{{ newTileStyle }}" style-hover="border-color:var(--gold-500);background:var(--latte-50);color:var(--espresso-700)">
+            <span style="width:42px;height:42px;border-radius:12px;background:var(--latte-100);border:1px solid var(--latte-300);display:grid;place-items:center"><i data-lucide="plus" style="width:21px;height:21px;color:var(--espresso-700)"></i></span>
+            <span style="font:600 14px 'Hanken Grotesk';color:var(--text-strong)">Novo projeto</span>
+            <span style="font:400 12px 'Hanken Grotesk';color:var(--text-muted)">Agrupe importações e mapeamentos</span>
+          </button>
+          </sc-if>
+        </div>
+        </sc-if>
+
+        <!-- EMPTY STATE -->
+        <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:56px 24px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px">
+          <div style="width:64px;height:64px;border-radius:var(--radius-full);background:var(--mocha-50);border:1px solid var(--border-subtle);display:grid;place-items:center;margin-bottom:18px"><i data-lucide="{{ emptyIcon }}" style="width:28px;height:28px;color:var(--mocha-400)"></i></div>
+          <div style="font:700 18px 'Hanken Grotesk';color:var(--text-strong);margin-bottom:6px">{{ emptyTitle }}</div>
+          <div style="font:400 14px/1.5 'Hanken Grotesk';color:var(--text-muted);max-width:42ch;margin-bottom:20px">{{ emptyBody }}</div>
+          <button onClick="{{ emptyAction }}" style="height:40px;padding:0 18px;border-radius:10px;background:var(--espresso-900);color:var(--latte-50);border:none;display:inline-flex;align-items:center;gap:8px;font:600 14px 'Hanken Grotesk';cursor:pointer" style-hover="background:var(--espresso-800)"><i data-lucide="{{ emptyActionIcon }}" style="width:16px;height:16px"></i> {{ emptyActionLabel }}</button>
+        </div>
+        </sc-if>
+
+       </div>
+      </div>
+    </div>
+
+    <!-- ===================== MENU BACKDROP ===================== -->
+    <sc-if value="{{ menuBackdrop }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeMenu }}" style="position:absolute;inset:0;z-index:10"></div>
+    </sc-if>
+
+    <!-- ===================== CREATE/EDIT MODAL ===================== -->
+    <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:40;display:grid;place-items:center;background:color-mix(in oklab, var(--espresso-950) 38%, transparent);backdrop-filter:blur(2px);animation:pjfade .16s ease-out">
+      <div onClick="{{ stop }}" style="width:480px;max-width:calc(100% - 48px);background:var(--surface-card);border-radius:18px;box-shadow:var(--shadow-xl);overflow:hidden;animation:pjpop .2s cubic-bezier(.22,1,.36,1)">
+        <div style="padding:22px 24px 6px">
+          <div style="font:700 19px 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.01em">{{ modalTitle }}</div>
+          <div style="font:400 13.5px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-top:4px">{{ modalSubtitle }}</div>
+        </div>
+        <div style="padding:14px 24px 4px;display:flex;flex-direction:column;gap:15px">
+          <div>
+            <label style="display:block;font:600 12.5px 'Hanken Grotesk';color:var(--text-body);margin-bottom:6px">Nome <span style="color:var(--terra-500)">*</span></label>
+            <input value="{{ draftName }}" onInput="{{ onDraftName }}" placeholder="Ex: Cadastro de empresas — Receita Federal" style="width:100%;height:42px;padding:0 13px;border:1px solid var(--border-default);border-radius:10px;background:var(--surface-card);outline:none;font:400 14px 'Hanken Grotesk';color:var(--text-strong)" style-focus="border-color:var(--espresso-700);box-shadow:0 0 0 3px var(--gold-200)">
+          </div>
+          <div>
+            <label style="display:block;font:600 12.5px 'Hanken Grotesk';color:var(--text-body);margin-bottom:6px">Descrição</label>
+            <textarea value="{{ draftDesc }}" onInput="{{ onDraftDesc }}" placeholder="Descreva brevemente o objetivo deste projeto" rows="2" style="width:100%;padding:10px 13px;border:1px solid var(--border-default);border-radius:10px;background:var(--surface-card);outline:none;resize:none;font:400 14px/1.45 'Hanken Grotesk';color:var(--text-strong)" style-focus="border-color:var(--espresso-700);box-shadow:0 0 0 3px var(--gold-200)"></textarea>
+          </div>
+          <div style="width:60%">
+            <label style="display:flex;align-items:center;gap:5px;font:600 12.5px 'Hanken Grotesk';color:var(--text-body);margin-bottom:6px">Entidade alvo <i data-lucide="help-circle" style="width:13px;height:13px;color:var(--text-subtle)"></i></label>
+            <input value="{{ draftEntity }}" onInput="{{ onDraftEntity }}" placeholder="Ex: Empresas" style="width:100%;height:42px;padding:0 13px;border:1px solid var(--border-default);border-radius:10px;background:var(--surface-card);outline:none;font:400 14px 'Hanken Grotesk';color:var(--text-strong)" style-focus="border-color:var(--espresso-700);box-shadow:0 0 0 3px var(--gold-200)">
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px">
+              <label style="display:flex;align-items:center;gap:5px;font:600 12.5px 'Hanken Grotesk';color:var(--text-body)">URLs do formulário <i data-lucide="help-circle" style="width:13px;height:13px;color:var(--text-subtle)"></i></label>
+              <span style="font:600 10.5px/1 'Hanken Grotesk';color:var(--text-muted);background:var(--mocha-100);padding:4px 9px;border-radius:999px">{{ draftUrlCount }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ draftUrls }}" as="u" hint-placeholder-count="1">
+                <div style="display:flex;align-items:center;gap:9px;border:1px solid var(--border-default);border-radius:11px;background:var(--surface-card);padding:6px 8px 6px 11px">
+                  <i data-lucide="link" style="width:15px;height:15px;color:var(--mocha-500);flex-shrink:0"></i>
+                  <input value="{{ u.value }}" onInput="{{ u.onInput }}" placeholder="gov.br/exemplo/novo" style="flex:1;min-width:0;height:30px;border:none;outline:none;background:transparent;font:400 13px 'JetBrains Mono';color:var(--espresso-700)">
+                  <sc-if value="{{ u.isPrimary }}" hint-placeholder-val="{{ true }}">
+                    <span style="display:inline-flex;align-items:center;gap:4px;font:600 9px/1 'Hanken Grotesk';letter-spacing:0.04em;text-transform:uppercase;color:var(--espresso-800);background:var(--gold-200);border:1px solid var(--gold-400);padding:4px 7px;border-radius:6px;flex-shrink:0"><i data-lucide="star" style="width:9px;height:9px"></i> principal</span>
+                  </sc-if>
+                  <sc-if value="{{ u.canRemove }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ u.onRemove }}" title="Remover" style="width:30px;height:30px;border-radius:8px;border:none;background:transparent;display:grid;place-items:center;cursor:pointer;flex-shrink:0" style-hover="background:var(--terra-50)"><i data-lucide="x" style="width:15px;height:15px;color:var(--mocha-400)"></i></button>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <button onClick="{{ addDraftUrl }}" style="margin-top:9px;width:100%;height:38px;border-radius:10px;border:1.5px dashed var(--mocha-300);background:transparent;display:inline-flex;align-items:center;justify-content:center;gap:7px;font:600 13px 'Hanken Grotesk';color:var(--espresso-700);cursor:pointer;transition:border-color .14s,background .14s" style-hover="border-color:var(--gold-500);background:var(--latte-50)"><i data-lucide="plus" style="width:16px;height:16px"></i> Adicionar URL</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:18px 24px 22px;margin-top:6px">
+          <button onClick="{{ closeModal }}" style="height:40px;padding:0 16px;border-radius:10px;background:var(--surface-card);border:1px solid var(--border-default);font:600 14px 'Hanken Grotesk';color:var(--text-body);cursor:pointer" style-hover="background:var(--mocha-50)">Cancelar</button>
+          <button onClick="{{ submitModal }}" style="{{ submitStyle }}"><i data-lucide="check" style="width:16px;height:16px"></i> {{ submitLabel }}</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== DELETE CONFIRM MODAL ===================== -->
+    <sc-if value="{{ confirmOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:color-mix(in oklab, var(--espresso-950) 38%, transparent);backdrop-filter:blur(2px);animation:pjfade .16s ease-out">
+      <div onClick="{{ stop }}" style="width:420px;max-width:calc(100% - 48px);background:var(--surface-card);border-radius:18px;box-shadow:var(--shadow-xl);overflow:hidden;animation:pjpop .2s cubic-bezier(.22,1,.36,1)">
+        <div style="padding:24px 24px 6px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <span style="width:42px;height:42px;border-radius:11px;background:var(--terra-50);border:1px solid var(--terra-200);display:grid;place-items:center;flex-shrink:0"><i data-lucide="trash-2" style="width:20px;height:20px;color:var(--terra-500)"></i></span>
+            <div style="font:700 18px 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.01em">Excluir projeto?</div>
+          </div>
+          <div style="font:400 13.5px/1.55 'Hanken Grotesk';color:var(--text-muted);margin-top:12px">O projeto <b style="color:var(--text-body);font-weight:700">{{ confirmName }}</b> e todos os seus dados serão removidos. Esta ação <b style="color:var(--text-body);font-weight:700">não pode ser desfeita</b>.</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:20px 24px 22px">
+          <button onClick="{{ closeConfirm }}" style="height:40px;padding:0 16px;border-radius:10px;background:var(--surface-card);border:1px solid var(--border-default);font:600 14px 'Hanken Grotesk';color:var(--text-body);cursor:pointer" style-hover="background:var(--mocha-50)">Cancelar</button>
+          <button onClick="{{ confirmDelete }}" style="height:40px;padding:0 18px;border-radius:10px;background:var(--terra-500);color:#fff;border:none;display:inline-flex;align-items:center;gap:8px;font:700 14px 'Hanken Grotesk';cursor:pointer" style-hover="background:var(--terra-600)"><i data-lucide="trash-2" style="width:16px;height:16px"></i> Excluir projeto</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1428,&quot;height&quot;:968},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = {
+    query: "",
+    filter: "todos",
+    menuId: null,
+    confirmId: null,
+    modalOpen: false,
+    editingId: null,
+    draft: { name: "", description: "", entity: "", urls: [""] },
+    projects: [
+      { id: "p1", name: "Cadastro RAL — ANM", description: "Relatório anual de lavra — preenchimento do portal da ANM.", entity: "Mineração", hasUrl: true, urls: 2, status: "filling", filled: 1, total: 1, members: [["MC","gold"]], updated: "há 12min", archived: false },
+      { id: "p2", name: "Imposto de Renda 2025", description: "Declaração anual dos clientes pessoa física na Receita Federal.", entity: "Pessoas", hasUrl: true, urls: 1, status: "done", filled: 312, total: 312, members: [["MC","gold"],["JP","green"]], updated: "há 2h", archived: false },
+      { id: "p3", name: "Abertura de CNPJ — Lote 04", description: "Registro de novas empresas na Junta Comercial do estado.", entity: "Empresas", hasUrl: true, urls: 3, status: "filling", filled: 51, total: 84, members: [["MC","gold"]], updated: "há 18min", archived: false },
+      { id: "p4", name: "Admissões RH — Maio", description: "Cadastro de admissões e vínculos no eSocial.", entity: "Pessoas", hasUrl: false, status: "ready", filled: 0, total: 47, members: [["AL","gold"],["MC","gold"],["RS","green"]], updated: "ontem", archived: false },
+      { id: "p5", name: "Importação CRM — Clientes", description: "Migração da base de clientes para o Pipedrive.", entity: "Empresas", hasUrl: true, urls: 1, status: "filling", filled: 1190, total: 1284, members: [["RS","green"]], updated: "há 1h", archived: false },
+      { id: "p6", name: "Frota de veículos", description: "Cadastro de frota no sistema interno da operação.", entity: "Veículos", hasUrl: false, status: "ready", filled: 0, total: 120, members: [["MC","gold"]], updated: "há 3 dias", archived: false },
+      { id: "p7", name: "Declaração ITR 2024", description: "Imposto territorial rural — ciclo encerrado e arquivado.", entity: "Imóveis", hasUrl: true, urls: 1, status: "done", filled: 88, total: 88, members: [["JP","green"]], updated: "há 2 meses", archived: true }
+    ]
+  };
+
+  componentDidMount() { this._icons(); }
+  componentDidUpdate() { this._icons(); }
+  _icons() {
+    let t = 0;
+    const run = () => {
+      if (window.lucide) window.lucide.createIcons({ attrs: { "stroke-width": 2 } });
+      else if (t++ < 80) setTimeout(run, 80);
+    };
+    run();
+  }
+
+  _fmt(n) { return n.toLocaleString("pt-BR"); }
+
+  _barStyle(p) {
+    const pct = p.total > 0 ? Math.round((p.filled / p.total) * 100) : 0;
+    let color = "var(--gold-500)";
+    if (p.status === "done") color = "var(--success)";
+    else if (p.status === "ready" || p.total === 0) color = "var(--mocha-300)";
+    const anim = pct > 0 ? "animation:pjfill 1s cubic-bezier(.22,1,.36,1);" : "";
+    return `width:${pct}%;height:100%;border-radius:99px;background:${color};${anim}`;
+  }
+
+  _members(p) {
+    return p.members.map((m, i) => {
+      const [initials, kind] = m;
+      const bg = kind === "green" ? "var(--green-100)" : "var(--gold-200)";
+      const fg = kind === "green" ? "var(--green-700)" : "var(--espresso-700)";
+      const wrapStyle = `border:2px solid var(--surface-card);border-radius:50%;${i > 0 ? "margin-left:-8px;" : ""}`;
+      const avStyle = `width:28px;height:28px;border-radius:var(--radius-full);display:inline-flex;align-items:center;justify-content:center;font:700 var(--text-xs) 'Hanken Grotesk';color:${fg};background:${bg};flex-shrink:0;user-select:none`;
+      return { initials, wrapStyle, avStyle };
+    });
+  }
+
+  toggleMenu(id) { this.setState(s => ({ menuId: s.menuId === id ? null : id })); }
+  closeMenu() { this.setState({ menuId: null }); }
+
+  openCreate() { this.setState({ modalOpen: true, editingId: null, menuId: null, draft: { name: "", description: "", entity: "", urls: [""] } }); }
+  openEdit(p) { this.setState({ modalOpen: true, editingId: p.id, menuId: null, draft: { name: p.name, description: p.description, entity: p.entity, urls: (p.urls && p.urls > 0) ? Array.from({length: p.urls}, (_, i) => i === 0 ? "gov.br/exemplo/novo" : "gov.br/exemplo/" + (i + 1)) : [""] } }); }
+  closeModal() { this.setState({ modalOpen: false, editingId: null }); }
+
+  archive(id) {
+    this.setState(s => ({ menuId: null, projects: s.projects.map(p => p.id === id ? { ...p, archived: !p.archived } : p) }));
+  }
+  askRemove(id) { this.setState({ confirmId: id, menuId: null }); }
+  closeConfirm() { this.setState({ confirmId: null }); }
+  remove() {
+    this.setState(s => ({ confirmId: null, projects: s.projects.filter(p => p.id !== s.confirmId) }));
+  }
+
+  submit() {
+    const d = this.state.draft;
+    if (!d.name.trim()) return;
+    const filled = (d.urls || []).map(u => u.trim()).filter(Boolean);
+    const urlCount = filled.length;
+    if (this.state.editingId) {
+      this.setState(s => ({
+        modalOpen: false, editingId: null,
+        projects: s.projects.map(p => p.id === s.editingId ? { ...p, name: d.name.trim(), description: d.description, entity: d.entity || p.entity, hasUrl: urlCount > 0, urls: urlCount } : p)
+      }));
+    } else {
+      const np = { id: "p" + Date.now(), name: d.name.trim(), description: d.description || "Novo projeto — importe uma planilha para começar.", entity: d.entity || "Geral", hasUrl: urlCount > 0, urls: urlCount, status: "pending", filled: 0, total: 0, members: [["MC","gold"]], updated: "agora", archived: false };
+      this.setState(s => ({ modalOpen: false, editingId: null, filter: "todos", query: "", projects: [np, ...s.projects] }));
+    }
+  }
+
+  renderVals() {
+    const s = this.state;
+    const q = s.query.trim().toLowerCase();
+    const all = s.projects;
+    const activeCount = all.filter(p => !p.archived).length;
+    const archivedCount = all.filter(p => p.archived).length;
+
+    let base;
+    if (s.filter === "ativos") base = all.filter(p => !p.archived);
+    else if (s.filter === "arquivados") base = all.filter(p => p.archived);
+    else base = all;
+    const visibleRaw = q ? base.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.entity.toLowerCase().includes(q)) : base;
+
+    const cardBase = "background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;box-shadow:var(--shadow-sm);cursor:pointer;transition:box-shadow .16s,transform .16s,border-color .16s;position:relative";
+    const pad = (this.props.density === "compact") ? "13px 15px" : "16px 18px";
+
+    const visible = visibleRaw.map(p => {
+      const pct = p.total > 0 ? Math.round((p.filled / p.total) * 100) : 0;
+      const progressLabel = p.total > 0 ? `${this._fmt(p.filled)} de ${this._fmt(p.total)} preenchidos` : "Aguardando importação";
+      return {
+        id: p.id, name: p.name, description: p.description, entity: p.entity, hasUrl: p.hasUrl,
+        urlLabel: (p.urls && p.urls > 1) ? p.urls + " URLs" : "1 URL",
+        status: p.status, archived: p.archived, updated: p.updated,
+        progressLabel, pctLabel: p.total > 0 ? pct + "%" : "—",
+        barStyle: this._barStyle(p), members: this._members(p),
+        menuOpen: s.menuId === p.id,
+        archiveIcon: p.archived ? "archive-restore" : "archive",
+        archiveLabel: p.archived ? "Desarquivar" : "Arquivar",
+        cardStyle: cardBase + (p.archived ? ";opacity:.72" : ""),
+        padStyle: `padding:${pad}`,
+        onMenu: (e) => { e.stopPropagation(); this.toggleMenu(p.id); },
+        onOpen: () => { if (s.menuId) { this.closeMenu(); return; } window.location.href = "Populatte Projeto Detalhe.dc.html"; },
+        onEdit: (e) => { e.stopPropagation(); this.openEdit(p); },
+        onArchive: (e) => { e.stopPropagation(); this.archive(p.id); },
+        onDelete: (e) => { e.stopPropagation(); this.askRemove(p.id); }
+      };
+    });
+
+    const tab = (key) => {
+      const on = s.filter === key;
+      return `display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-radius:8px;border:none;cursor:pointer;font:600 13px 'Hanken Grotesk';${on ? "background:var(--espresso-900);color:var(--latte-50)" : "background:transparent;color:var(--text-body)"}`;
+    };
+
+    const hasResults = visible.length > 0;
+    const isEmpty = !hasResults;
+    const gridGap = (this.props.density === "compact") ? "13px" : "16px";
+
+    let emptyIcon = "folder-kanban", emptyTitle, emptyBody, emptyActionLabel = "Criar primeiro projeto", emptyActionIcon = "plus", emptyAction = () => this.openCreate();
+    if (q) {
+      emptyIcon = "search-x";
+      emptyTitle = "Nenhum projeto encontrado";
+      emptyBody = `Nada corresponde a “${s.query.trim()}”. Tente outro termo ou limpe a busca.`;
+      emptyActionLabel = "Limpar busca"; emptyActionIcon = "x";
+      emptyAction = () => this.setState({ query: "" });
+    } else if (s.filter === "arquivados") {
+      emptyIcon = "archive";
+      emptyTitle = "Nenhum projeto arquivado";
+      emptyBody = "Projetos arquivados saem da lista de ativos, mas continuam acessíveis aqui.";
+      emptyActionLabel = "Ver ativos"; emptyActionIcon = "folder-kanban";
+      emptyAction = () => this.setState({ filter: "ativos" });
+    } else {
+      emptyTitle = "Nenhum projeto ainda";
+      emptyBody = "Crie seu primeiro projeto para começar a automatizar o preenchimento de formulários com dados do Excel.";
+    }
+
+    return {
+      query: s.query,
+      onSearch: (e) => this.setState({ query: e.target.value }),
+      totalCount: all.length, activeCount, archivedCount,
+      setFilterTodos: () => this.setState({ filter: "todos" }),
+      setFilterAtivos: () => this.setState({ filter: "ativos" }),
+      setFilterArquivados: () => this.setState({ filter: "arquivados" }),
+      tabTodos: tab("todos"), tabAtivos: tab("ativos"), tabArquivados: tab("arquivados"),
+      resultLabel: visible.length === 1 ? "1 projeto" : `${visible.length} projetos`,
+      gridStyle: `display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:${gridGap};align-items:start`,
+      visible, hasResults, isEmpty,
+      showNewTile: hasResults && !q && s.filter !== "arquivados",
+      newTileStyle: "display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;min-height:150px;justify-content:center;padding:18px;border:1.5px dashed var(--mocha-300);border-radius:14px;background:var(--surface-card);cursor:pointer;transition:border-color .16s,background .16s",
+      emptyIcon, emptyTitle, emptyBody, emptyActionLabel, emptyActionIcon, emptyAction,
+      openCreate: () => this.openCreate(),
+      closeMenu: () => this.closeMenu(),
+      menuBackdrop: s.menuId !== null,
+      confirmOpen: s.confirmId !== null,
+      confirmName: (s.projects.find(p => p.id === s.confirmId) || {}).name || "",
+      closeConfirm: () => this.closeConfirm(),
+      confirmDelete: () => this.remove(),
+      stop: (e) => e.stopPropagation(),
+      modalOpen: s.modalOpen,
+      modalTitle: s.editingId ? "Editar projeto" : "Novo projeto",
+      modalSubtitle: s.editingId ? "Atualize as informações do projeto." : "Preencha as informações para criar um novo projeto.",
+      submitLabel: s.editingId ? "Salvar" : "Criar projeto",
+      submitStyle: "height:40px;padding:0 18px;border-radius:10px;background:var(--gold-500);color:var(--espresso-950);border:none;display:inline-flex;align-items:center;gap:8px;font:700 14px 'Hanken Grotesk';cursor:pointer;box-shadow:var(--shadow-sm)",
+      draftName: s.draft.name, draftDesc: s.draft.description, draftEntity: s.draft.entity, draftUrl: s.draft.url,
+      onDraftName: (e) => this.setState({ draft: { ...this.state.draft, name: e.target.value } }),
+      onDraftDesc: (e) => this.setState({ draft: { ...this.state.draft, description: e.target.value } }),
+      onDraftEntity: (e) => this.setState({ draft: { ...this.state.draft, entity: e.target.value } }),
+      draftUrls: (s.draft.urls || [""]).map((val, i, arr) => ({
+        value: val,
+        isPrimary: i === 0,
+        canRemove: arr.length > 1,
+        onInput: (e) => { const v = e.target.value; this.setState(st => ({ draft: { ...st.draft, urls: st.draft.urls.map((u, idx) => idx === i ? v : u) } })); },
+        onRemove: () => this.setState(st => ({ draft: { ...st.draft, urls: st.draft.urls.filter((_, idx) => idx !== i) } }))
+      })),
+      draftUrlCount: ((s.draft.urls || []).filter(u => u.trim()).length) === 1 ? "1 página" : ((s.draft.urls || []).filter(u => u.trim()).length) + " páginas",
+      addDraftUrl: () => this.setState(st => ({ draft: { ...st.draft, urls: [...st.draft.urls, ""] } })),
+      closeModal: () => this.closeModal(),
+      submitModal: () => this.submit()
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/colors.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/typography.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/styles.css">
+<script src="_ds/populatte-design-system-14249167-5c43-4026-b10d-5c605117c26c/_ds_bundle.js"></script>
+<script src="https://unpkg.com/lucide@0.451.0/dist/umd/lucide.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e7e5df; font-family: 'Hanken Grotesk', ui-sans-serif, sans-serif; -webkit-font-smoothing: antialiased; }
+  .pd h1, .pd h2, .pd h3, .pd p { margin: 0; }
+  .pd button { font-family: 'Hanken Grotesk', sans-serif; }
+  .pd input { font-family: 'Hanken Grotesk', sans-serif; }
+  @keyframes pdfill { from { width: 0; } }
+  @keyframes pdfade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pdpop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes pdrise { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</helmet>
+
+<div style="min-width:100%;min-height:100vh;width:max-content;box-sizing:border-box;padding:44px;background:#e7e5df">
+
+  <div style="margin-bottom:26px;max-width:760px">
+    <div style="font:800 11px/1 'Hanken Grotesk';letter-spacing:0.14em;text-transform:uppercase;color:#8c7869;margin-bottom:9px">Populatte · App (pós-login)</div>
+    <div style="font:400 14px/1.5 'Hanken Grotesk';color:#4d3e34">Detalhe de um projeto — abre ao clicar num card da lista. Mesmo chrome da lista hi-fi: configuração (faixa que ensina e some) + duas zonas empilhadas, Importações e Mapeamentos. Clique no card de importação para abrir o <b>Significado dos dados</b>.</div>
+  </div>
+
+  <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:12px">
+    <span style="font:800 13px/1 'JetBrains Mono';color:#532e18">03</span>
+    <span style="font:700 15px/1 'Hanken Grotesk';color:#2d0f06">Projeto · Detalhe</span>
+    <span style="font:500 12px/1 'Hanken Grotesk';color:#8c7869">— /projects/[id] · configuração + Importações + Mapeamentos · Significado dos dados</span>
+  </div>
+
+  <div class="pd" data-screen-label="App — Projeto (detalhe)" style="position:relative;flex:none;width:1340px;height:880px;display:flex;background:var(--surface-page);border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(45,15,6,.16);border:1px solid var(--border-subtle);color:var(--text-body)">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside style="width:248px;flex-shrink:0;background:var(--surface-card);border-right:1px solid var(--border-subtle);display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:10px;padding:18px 18px 16px">
+        <img src="assets/logo-mark.png" alt="" style="height:34px">
+        <div style="display:flex;flex-direction:column;line-height:1">
+          <span style="font:800 17px/1 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.02em">Populatte</span>
+          <span style="font-family:'Newsreader',serif;font-style:italic;font-size:12px;color:var(--espresso-500);margin-top:3px">num gole de café</span>
+        </div>
+      </div>
+
+      <nav style="padding:8px 12px;display:flex;flex-direction:column;gap:2px;flex:1">
+        <div style="font:600 11px/1 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--text-subtle);padding:10px 12px 6px">Trabalho</div>
+        <a href="Populatte Dashboard.dc.html" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="layout-dashboard" style="width:18px;height:18px;color:var(--mocha-500)"></i> Dashboard
+        </a>
+        <a href="Populatte Projetos.dc.html" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:600 14px 'Hanken Grotesk';color:var(--espresso-900);background:var(--latte-100);text-decoration:none">
+          <i data-lucide="folder-kanban" style="width:18px;height:18px;color:var(--espresso-700)"></i> Projetos
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="git-compare-arrows" style="width:18px;height:18px;color:var(--mocha-500)"></i> Mapeamentos
+          <span style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;font:600 9px/1 'Hanken Grotesk';letter-spacing:0.04em;text-transform:uppercase;color:var(--mocha-400);background:var(--mocha-100);padding:3px 6px;border-radius:5px"><i data-lucide="lock" style="width:9px;height:9px"></i> lib</span>
+        </a>
+
+        <div style="font:600 11px/1 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--text-subtle);padding:18px 12px 6px">Conta</div>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="users" style="width:18px;height:18px;color:var(--mocha-500)"></i> Equipe
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="credit-card" style="width:18px;height:18px;color:var(--mocha-500)"></i> Assinatura
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body);text-decoration:none" style-hover="background:var(--mocha-50)">
+          <i data-lucide="graduation-cap" style="width:18px;height:18px;color:var(--mocha-500)"></i> Tutorial
+        </a>
+      </nav>
+
+      <div style="margin:0 12px 8px;padding:13px 14px;border-radius:12px;background:var(--latte-50);border:1px solid var(--border-subtle)">
+        <div style="display:flex;align-items:center;justify-content:space-between;font:600 12px 'Hanken Grotesk';color:var(--text-body)">
+          <span>Preenchimentos</span>
+          <span style="font-family:'JetBrains Mono';color:var(--espresso-600)">8.412 / 10k</span>
+        </div>
+        <div style="height:6px;border-radius:99px;background:var(--mocha-100);overflow:hidden;margin-top:8px">
+          <div style="width:84%;height:100%;border-radius:99px;background:var(--gold-500);animation:pdfill .9s cubic-bezier(.22,1,.36,1)"></div>
+        </div>
+        <div style="font:500 11px 'Hanken Grotesk';color:var(--text-muted);margin-top:8px">Renova em 11 dias · Plano Pro</div>
+      </div>
+
+      <div style="padding:12px;border-top:1px solid var(--border-subtle)">
+        <div style="display:flex;align-items:center;gap:10px;padding:6px">
+          <span style="width:36px;height:36px;border-radius:var(--radius-full);display:inline-flex;align-items:center;justify-content:center;font:700 var(--text-sm) 'Hanken Grotesk';color:var(--espresso-700);background:var(--gold-200);flex-shrink:0;user-select:none">MC</span>
+          <div style="min-width:0;flex:1">
+            <div style="font:600 14px 'Hanken Grotesk';color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Marina Costa</div>
+            <div style="font:400 12px 'Hanken Grotesk';color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">marina@populatte.com.br</div>
+          </div>
+          <x-import component-from-global-scope="PopulatteDesignSystem_142491.Badge" tone="accent" variant="soft" hint-size="38px,22px">Pro</x-import>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
+
+      <!-- HEADER -->
+      <header style="height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--border-subtle);background:color-mix(in oklab, var(--surface-page) 80%, transparent);backdrop-filter:blur(8px);z-index:5">
+        <div style="display:flex;align-items:center;gap:7px;font:500 13px 'Hanken Grotesk';color:var(--text-muted);min-width:0">
+          <span>Acme Contabilidade</span>
+          <i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--text-subtle)"></i>
+          <span>Workspace</span>
+          <i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--text-subtle)"></i>
+          <a href="Populatte Projetos.dc.html" style="color:var(--text-muted);text-decoration:none" style-hover="color:var(--espresso-700)">Projetos</a>
+          <i data-lucide="chevron-right" style="width:14px;height:14px;color:var(--text-subtle)"></i>
+          <span style="font-weight:700;color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Cadastro RAL — ANM</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <a href="Populatte Projetos.dc.html" style="height:38px;padding:0 13px;border-radius:10px;background:var(--surface-card);border:1px solid var(--border-default);display:inline-flex;align-items:center;gap:7px;font:600 13px 'Hanken Grotesk';color:var(--text-body);cursor:pointer;text-decoration:none" style-hover="background:var(--mocha-50)">
+            <i data-lucide="arrow-left" style="width:16px;height:16px;color:var(--mocha-500)"></i> Projetos
+          </a>
+          <button style="position:relative;width:38px;height:38px;border-radius:10px;background:var(--surface-card);border:1px solid var(--border-default);display:grid;place-items:center;cursor:pointer" style-hover="background:var(--mocha-50)">
+            <i data-lucide="bell" style="width:18px;height:18px;color:var(--mocha-500)"></i>
+            <span style="position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--gold-500);border:1.5px solid var(--surface-card)"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div style="flex:1;min-height:0;overflow:auto;padding:24px 28px 30px">
+       <div style="max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:18px">
+
+        <!-- DEMO STATE BAR (annotation) -->
+        <sc-if value="{{ annotations }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 12px 9px 14px;border:1px dashed var(--mocha-300);border-radius:11px;background:var(--mocha-50)">
+          <span style="display:inline-flex;align-items:center;gap:6px;font:700 10px/1 'Hanken Grotesk';letter-spacing:0.05em;text-transform:uppercase;color:var(--mocha-500)"><i data-lucide="eye" style="width:13px;height:13px"></i> Demonstração</span>
+          <span style="font:400 12px/1.4 'Hanken Grotesk';color:var(--text-muted);flex:1;min-width:160px">Alterne o estado da configuração para ver a faixa <b style="color:var(--text-body)">aparecer (A)</b> ou <b style="color:var(--text-body)">sumir (B)</b>.</span>
+          <div style="display:inline-flex;background:var(--surface-card);border:1px solid var(--border-default);border-radius:9px;padding:3px;gap:2px">
+            <button onClick="{{ setA }}" style="{{ segA }}">A · Configurando</button>
+            <button onClick="{{ setB }}" style="{{ segB }}">B · Configurado</button>
+          </div>
+        </div>
+        </sc-if>
+
+        <!-- ===== PROJECT HEADER ===== -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap">
+          <div style="min-width:0">
+            <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap">
+              <h1 style="font:800 27px/1.1 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.02em">Cadastro RAL — ANM</h1>
+              <sc-if value="{{ mappingReady }}" hint-placeholder-val="{{ false }}">
+                <x-import component-from-global-scope="PopulatteDesignSystem_142491.StatusPill" status="filling" hint-size="104px,24px"></x-import>
+              </sc-if>
+              <sc-if value="{{ configuring }}" hint-placeholder-val="{{ true }}">
+                <span style="display:inline-flex;align-items:center;gap:6px;font:600 11.5px/1 'Hanken Grotesk';color:var(--mocha-500);background:var(--mocha-100);border:1px solid var(--border-default);padding:5px 11px 5px 9px;border-radius:999px"><span style="width:7px;height:7px;border-radius:50%;background:var(--mocha-400)"></span> Configurando</span>
+              </sc-if>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:11px;flex-wrap:wrap">
+              <span style="display:inline-flex;align-items:center;gap:6px;font:600 12px/1 'Hanken Grotesk';color:var(--espresso-700);background:var(--espresso-100);padding:6px 11px;border-radius:999px"><i data-lucide="pickaxe" style="width:13px;height:13px"></i> Mineração</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;font:500 12px/1 'JetBrains Mono';color:var(--text-muted);background:var(--mocha-50);border:1px solid var(--border-subtle);padding:6px 11px 6px 9px;border-radius:999px"><i data-lucide="external-link" style="width:13px;height:13px"></i> gov.br/anm/ral/novo <span style="font:700 10px/1 'Hanken Grotesk';color:var(--espresso-700);background:var(--latte-200);padding:3px 5px;border-radius:5px;margin-left:1px">+1 URL</span></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;font:600 12px/1 'Hanken Grotesk';color:var(--text-body);background:var(--surface-card);border:1px solid var(--border-subtle);padding:5px 11px 5px 10px;border-radius:999px">
+                <span style="width:54px;height:6px;border-radius:99px;background:var(--mocha-100);overflow:hidden;display:inline-block"><span style="display:block;height:100%;border-radius:99px;width:{{ fillPct }};background:{{ fillColor }}"></span></span>
+                {{ fillLabel }} preenchido
+              </span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+            <button style="width:40px;height:40px;border-radius:10px;background:var(--surface-card);border:1px solid var(--border-default);display:grid;place-items:center;cursor:pointer" style-hover="background:var(--mocha-50)">
+              <i data-lucide="more-vertical" style="width:18px;height:18px;color:var(--mocha-500)"></i>
+            </button>
+            <button style="height:40px;padding:0 15px;border-radius:10px;background:var(--surface-card);border:1px solid var(--border-default);display:inline-flex;align-items:center;gap:8px;font:600 14px 'Hanken Grotesk';color:var(--text-body);cursor:pointer" style-hover="background:var(--mocha-50)">
+              <i data-lucide="plus" style="width:16px;height:16px;color:var(--mocha-500)"></i> Nova importação
+            </button>
+            <button style="height:40px;padding:0 18px;border-radius:10px;background:var(--gold-500);color:var(--espresso-950);border:none;display:inline-flex;align-items:center;gap:8px;font:700 14px 'Hanken Grotesk';cursor:pointer;box-shadow:var(--shadow-sm)" style-hover="background:var(--gold-600)">
+              <i data-lucide="zap" style="width:16px;height:16px"></i> Preencher
+            </button>
+          </div>
+        </div>
+
+        <!-- ===== CONFIG BAND (state A) ===== -->
+        <sc-if value="{{ bandVisible }}" hint-placeholder-val="{{ true }}">
+        <div style="background:var(--latte-50);border:1px solid var(--latte-300);border-radius:14px;padding:18px 20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="font:700 15px/1 'Hanken Grotesk';color:var(--espresso-800)">Configuração do projeto</span>
+              <sc-if value="{{ annotations }}" hint-placeholder-val="{{ true }}">
+                <span style="font:600 9px/1 'Hanken Grotesk';letter-spacing:0.05em;text-transform:uppercase;color:var(--gold-700);background:var(--gold-200);border:1px solid var(--gold-400);padding:3px 7px;border-radius:999px">Proposto</span>
+              </sc-if>
+            </div>
+            <span style="display:inline-flex;align-items:center;gap:6px;font:500 12px/1 'Hanken Grotesk';color:var(--text-muted)"><i data-lucide="info" style="width:14px;height:14px"></i> Ensina e some quando os 4 passos terminarem · escopo do projeto</span>
+          </div>
+
+          <div style="display:flex;align-items:stretch;gap:8px;margin-top:15px;flex-wrap:wrap">
+            <!-- step 1 done -->
+            <div style="flex:1;min-width:170px;border:1px solid var(--green-300);border-radius:12px;padding:13px 14px;background:var(--green-100)">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+                <span style="width:24px;height:24px;border-radius:50%;background:var(--green-500);color:#fff;display:grid;place-items:center"><i data-lucide="check" style="width:14px;height:14px"></i></span>
+                <span style="font:700 10px/1 'JetBrains Mono';color:var(--green-700)">01</span>
+              </div>
+              <div style="font:700 14px/1.15 'Hanken Grotesk';color:var(--green-700)">Importar</div>
+              <div style="font:400 11px/1.35 'Hanken Grotesk';color:var(--green-600);margin-top:3px">Planilha enviada</div>
+            </div>
+            <div style="display:grid;place-items:center"><i data-lucide="chevron-right" style="width:18px;height:18px;color:var(--mocha-400)"></i></div>
+            <!-- step 2 current -->
+            <div style="flex:1;min-width:170px;border:1.5px solid var(--gold-500);border-radius:12px;padding:13px 14px;background:var(--surface-card);box-shadow:var(--shadow-xs)">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px">
+                <span style="width:24px;height:24px;border-radius:50%;background:var(--gold-500);color:var(--espresso-950);display:grid;place-items:center;font:700 12px 'Hanken Grotesk'">2</span>
+                <span style="font:700 9px/1 'Hanken Grotesk';letter-spacing:0.05em;text-transform:uppercase;color:var(--gold-700)">Agora</span>
+              </div>
+              <div style="font:700 14px/1.15 'Hanken Grotesk';color:var(--text-strong)">Significado dos dados</div>
+              <div style="font:400 11px/1.35 'Hanken Grotesk';color:var(--text-muted);margin-top:3px">Rotule as colunas</div>
+            </div>
+            <div style="display:grid;place-items:center"><i data-lucide="chevron-right" style="width:18px;height:18px;color:var(--mocha-400)"></i></div>
+            <!-- step 3 -->
+            <div style="flex:1;min-width:170px;border:1px solid var(--border-subtle);border-radius:12px;padding:13px 14px;background:var(--surface-card)">
+              <div style="margin-bottom:9px"><span style="width:24px;height:24px;border-radius:50%;background:var(--mocha-100);color:var(--mocha-500);display:grid;place-items:center;font:700 12px 'Hanken Grotesk'">3</span></div>
+              <div style="font:700 14px/1.15 'Hanken Grotesk';color:var(--text-strong)">Mapear</div>
+              <div style="font:400 11px/1.35 'Hanken Grotesk';color:var(--mocha-400);margin-top:3px">na extensão · ✓ ao salvar</div>
+            </div>
+            <div style="display:grid;place-items:center"><i data-lucide="chevron-right" style="width:18px;height:18px;color:var(--mocha-400)"></i></div>
+            <!-- step 4 -->
+            <div style="flex:1;min-width:170px;border:1px solid var(--border-subtle);border-radius:12px;padding:13px 14px;background:var(--surface-card)">
+              <div style="margin-bottom:9px"><span style="width:24px;height:24px;border-radius:50%;background:var(--mocha-100);color:var(--mocha-500);display:grid;place-items:center;font:700 12px 'Hanken Grotesk'">4</span></div>
+              <div style="font:700 14px/1.15 'Hanken Grotesk';color:var(--text-strong)">Preencher</div>
+              <div style="font:400 11px/1.35 'Hanken Grotesk';color:var(--mocha-400);margin-top:3px">abre a extensão</div>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <!-- ===== ZONE: IMPORTAÇÕES ===== -->
+        <div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:11px">
+            <h2 style="font:700 16px/1 'Hanken Grotesk';color:var(--text-strong)">Importações</h2>
+            <span style="font:400 13px/1.4 'Hanken Grotesk';color:var(--text-muted)">clique para abrir o detalhe (e o Significado dos dados)</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <!-- import card -->
+            <a href="Populatte Importação Detalhe.dc.html" style="display:flex;align-items:center;gap:13px;background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow-sm);cursor:pointer;text-decoration:none;color:inherit;transition:box-shadow .16s,transform .16s,border-color .16s" style-hover="box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--border-default)">
+              <span style="width:42px;height:42px;border-radius:11px;background:var(--green-100);border:1px solid var(--green-300);display:grid;place-items:center;flex-shrink:0"><i data-lucide="file-spreadsheet" style="width:21px;height:21px;color:var(--green-700)"></i></span>
+              <div style="flex:1;min-width:0">
+                <div style="font:600 15px/1.2 'Hanken Grotesk';color:var(--text-strong)">ral-jan.xlsx</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap">
+                  <span style="font:600 10.5px/1 'Hanken Grotesk';color:var(--espresso-700);background:var(--latte-200);padding:3px 8px;border-radius:999px">Um registro por arquivo</span>
+                  <span style="font:600 10.5px/1 'Hanken Grotesk';color:var(--text-muted);background:var(--mocha-100);padding:3px 8px;border-radius:999px">1 registro</span>
+                  <span style="{{ sigChipStyle }}"><i data-lucide="{{ sigChipIcon }}" style="width:12px;height:12px"></i> {{ sigChipLabel }}</span>
+                </div>
+              </div>
+              <i data-lucide="chevron-right" style="width:18px;height:18px;color:var(--mocha-400);flex-shrink:0"></i>
+            </a>
+            <!-- new import tile -->
+            <button style="display:flex;align-items:center;justify-content:center;gap:9px;border:1.5px dashed var(--mocha-300);border-radius:14px;padding:15px 16px;background:var(--surface-card);cursor:pointer;font:600 13px 'Hanken Grotesk';color:var(--text-muted);transition:border-color .16s,background .16s,color .16s" style-hover="border-color:var(--gold-500);background:var(--latte-50);color:var(--espresso-700)">
+              <i data-lucide="plus" style="width:17px;height:17px"></i> Nova importação
+            </button>
+          </div>
+        </div>
+
+        <!-- ===== ZONE: MAPEAMENTOS ===== -->
+        <div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:11px">
+            <h2 style="font:700 16px/1 'Hanken Grotesk';color:var(--text-strong)">Mapeamentos</h2>
+            <span style="font:400 13px/1.4 'Hanken Grotesk';color:var(--text-muted)">receita reutilizável (feita na extensão)</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <!-- mapping card (only when configured) -->
+            <sc-if value="{{ mappingReady }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="width:34px;height:34px;border-radius:9px;background:var(--espresso-100);display:grid;place-items:center;flex-shrink:0"><i data-lucide="git-compare-arrows" style="width:17px;height:17px;color:var(--espresso-700)"></i></span>
+                <span style="font:600 15px/1.2 'Hanken Grotesk';color:var(--text-strong);flex:1;min-width:0">Cadastro RAL</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;font:600 10px/1 'Hanken Grotesk';color:var(--green-700);background:var(--green-100);border:1px solid var(--green-300);padding:4px 8px;border-radius:999px"><i data-lucide="check" style="width:11px;height:11px"></i> pronto p/ usar</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:7px;font:500 12px/1 'JetBrains Mono';color:var(--espresso-600)">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">gov.br/anm/ral/novo</span>
+                <span style="color:var(--mocha-300)">·</span>
+                <span style="color:var(--text-muted);white-space:nowrap">12 passos</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:auto">
+                <button style="height:34px;padding:0 14px;border-radius:9px;background:var(--surface-card);border:1px solid var(--border-default);display:inline-flex;align-items:center;gap:7px;font:600 13px 'Hanken Grotesk';color:var(--text-body);cursor:pointer" style-hover="background:var(--mocha-50)">
+                  <i data-lucide="pencil" style="width:14px;height:14px;color:var(--mocha-500)"></i> Editar
+                </button>
+              </div>
+            </div>
+            </sc-if>
+            <!-- helper guide card -->
+            <div style="{{ helperStyle }}">
+              <div style="font:700 14px/1.2 'Hanken Grotesk';color:var(--text-strong);margin-bottom:4px">{{ helperTitle }}</div>
+              <div style="font:400 12.5px/1.5 'Hanken Grotesk';color:var(--text-muted);margin-bottom:13px;max-width:42ch">{{ helperBody }}</div>
+              <button style="align-self:flex-start;height:34px;padding:0 14px;border-radius:9px;background:var(--gold-500);color:var(--espresso-950);border:none;display:inline-flex;align-items:center;gap:7px;font:700 13px 'Hanken Grotesk';cursor:pointer;box-shadow:var(--shadow-xs)" style-hover="background:var(--gold-600)">
+                {{ helperCta }} <i data-lucide="arrow-right" style="width:15px;height:15px"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== FOOTER NOTE ===== -->
+        <div style="display:flex;align-items:center;gap:11px;padding:13px 16px;border-radius:12px;background:var(--surface-card);border:1px solid var(--border-subtle);box-shadow:var(--shadow-xs)">
+          <span style="width:30px;height:30px;border-radius:8px;background:var(--gold-200);display:grid;place-items:center;flex-shrink:0"><i data-lucide="zap" style="width:16px;height:16px;color:var(--espresso-800)"></i></span>
+          <div style="font:400 13px/1.5 'Hanken Grotesk';color:var(--text-body)"><b style="color:var(--text-strong);font-weight:700">Preencher</b> = 1 importação + 1 mapeamento <i data-lucide="arrow-right" style="width:13px;height:13px;color:var(--mocha-400);vertical-align:-2px;margin:0 1px"></i> abre a extensão.</div>
+        </div>
+
+       </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1428,&quot;height&quot;:968},&quot;configState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;incompleta&quot;,&quot;completa&quot;],&quot;default&quot;:&quot;incompleta&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;annotations&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = {
+    configComplete: null,
+    sigOpen: false,
+    rows: [
+      { cell: "A1", label: "Mês de referência", value: "janeiro/2024", isId: true },
+      { cell: "B1", label: "Produção (t)", value: "1.500,5", isId: false },
+      { cell: "C1", label: "", value: "Ouro", isId: false }
+    ]
+  };
+
+  componentDidMount() { this._icons(); }
+  componentDidUpdate() { this._icons(); }
+  _icons() {
+    let t = 0;
+    const run = () => {
+      if (window.lucide) window.lucide.createIcons({ attrs: { "stroke-width": 2 } });
+      else if (t++ < 80) setTimeout(run, 80);
+    };
+    run();
+  }
+
+  _effComplete() {
+    if (this.state.configComplete != null) return this.state.configComplete;
+    return this.props.configState === "completa";
+  }
+
+  setRowLabel(i, val) {
+    this.setState(s => ({ rows: s.rows.map((r, idx) => idx === i ? { ...r, label: val } : r) }));
+  }
+  pickId(i) {
+    this.setState(s => ({ rows: s.rows.map((r, idx) => ({ ...r, isId: idx === i })) }));
+  }
+
+  renderVals() {
+    const complete = this._effComplete();
+    const annotations = this.props.annotations !== false;
+
+    const seg = (on) => `display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:7px;border:none;cursor:pointer;font:600 12px 'Hanken Grotesk';${on ? "background:var(--espresso-900);color:var(--latte-50)" : "background:transparent;color:var(--text-body)"}`;
+
+    const rows = this.state.rows.map((r, i) => {
+      const zebra = (i % 2 === 1);
+      const rowBg = r.isId ? "background:var(--latte-50)" : (zebra ? "background:var(--mocha-50)" : "");
+      const rowStyle = `display:grid;grid-template-columns:96px 1.5fr 1.2fr 124px;align-items:center;${i < this.state.rows.length - 1 ? "border-bottom:1px solid var(--border-subtle);" : ""}${rowBg}`;
+      const inputStyle = `width:100%;height:40px;padding:0 12px;border:1px solid ${r.isId ? "var(--espresso-300)" : "var(--border-default)"};border-radius:9px;background:var(--surface-card);outline:none;font:500 13.5px 'Hanken Grotesk';color:${r.label ? "var(--text-strong)" : "var(--text-muted)"}`;
+      const pickStyle = `display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 10px 0 7px;border:1px solid ${r.isId ? "var(--gold-400)" : "var(--border-default)"};border-radius:999px;background:${r.isId ? "var(--gold-200)" : "var(--surface-card)"};cursor:pointer;font:600 11px 'Hanken Grotesk';color:${r.isId ? "var(--espresso-800)" : "var(--text-muted)"}`;
+      const boxStyle = r.isId
+        ? "width:18px;height:18px;border-radius:5px;background:var(--gold-500);color:var(--espresso-950);display:grid;place-items:center"
+        : "width:18px;height:18px;border-radius:5px;background:transparent;border:1.5px solid var(--mocha-300);color:transparent;display:grid;place-items:center";
+      return {
+        cell: r.cell, label: r.label, value: r.value, isId: r.isId,
+        rowStyle, inputStyle, pickStyle, boxStyle,
+        pickLabel: r.isId ? "Identificador" : "Marcar",
+        onLabel: (e) => this.setRowLabel(i, e.target.value),
+        onPick: () => this.pickId(i)
+      };
+    });
+
+    const idRow = this.state.rows.find(r => r.isId);
+    const idTitle = idRow ? (idRow.value || idRow.label || "—") : "—";
+
+    return {
+      annotations,
+      bandVisible: !complete,
+      configuring: !complete,
+      mappingReady: complete,
+      fillPct: complete ? "100%" : "0%",
+      fillColor: complete ? "var(--gold-500)" : "var(--mocha-300)",
+      fillLabel: complete ? "1 de 1" : "0 de 1",
+      sigChipStyle: complete
+        ? "display:inline-flex;align-items:center;gap:5px;font:600 10.5px/1 'Hanken Grotesk';color:var(--green-700);background:var(--green-100);border:1px solid var(--green-300);padding:3px 8px;border-radius:999px"
+        : "display:inline-flex;align-items:center;gap:5px;font:600 10.5px/1 'Hanken Grotesk';color:var(--gold-700);background:var(--gold-200);border:1px solid var(--gold-400);padding:3px 8px;border-radius:999px",
+      sigChipIcon: complete ? "check" : "arrow-right",
+      sigChipLabel: complete ? "Significado: pronto" : "Significado: pendente",
+      helperStyle: (complete
+        ? "border:1.5px dashed var(--mocha-300);border-radius:14px;padding:16px;background:var(--mocha-50);display:flex;flex-direction:column;justify-content:center"
+        : "grid-column:1 / -1;border:1.5px dashed var(--mocha-300);border-radius:14px;padding:18px 20px;background:var(--mocha-50);display:flex;flex-direction:column;justify-content:center"),
+      helperTitle: complete ? "Criar outro mapeamento" : "Criar um mapeamento",
+      helperBody: complete
+        ? "Precisa de outro formulário-alvo? Os mapeamentos nascem ao vivo na extensão. Aqui você acompanha e edita."
+        : "Ainda não há mapeamento. Ele nasce ao vivo na extensão, sobre o formulário-alvo — aqui você acompanha e edita.",
+      helperCta: "Como criar",
+      setA: () => this.setState({ configComplete: false }),
+      setB: () => this.setState({ configComplete: true }),
+      segA: seg(!complete),
+      segB: seg(complete),
+      sigOpen: this.state.sigOpen,
+      openSig: () => this.setState({ sigOpen: true }),
+      closeSig: () => this.setState({ sigOpen: false }),
+      stop: (e) => e.stopPropagation(),
+      rows, idTitle
+    };
+  }
+}
+</script>
+</body>
+</html>

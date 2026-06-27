@@ -1,0 +1,142 @@
+<!--
+  Source of truth: Claude Design — "Populatte Design" project
+  https://claude.ai/design/p/1a97966a-4217-4773-a3f6-94e730d7b31c?file=Populatte+Dashboard.dc.html
+  Imported 2026-06-22 via the claude_design (DesignSync) MCP for the
+  "App Shell do Dashboard" epic (Linear POP-47).
+
+  This is the design's <x-dc> body. It defines the APP CHROME we are building:
+  - sidebar 248px (lockup + Workspace/Suporte groups + usage meter + user footer)
+  - header 60px (breadcrumb + title + search + bell + "Novo projeto")
+  The CONTENT below the header (greeting / KPIs / recent projects / activity)
+  is OUT OF SCOPE for this epic — kept here only for context.
+
+  Tokens (var(--surface-*), var(--espresso-*), var(--gold-*), ...) already
+  exist globally in apps/web/app/globals.css. See ../REFERENCE.md for the
+  design-token -> Tailwind-utility mapping. `<x-import ...>` are the design
+  system's StatusPill/Badge components (map to StatusBadge / Badge in code).
+-->
+<div style="min-width:100%;min-height:100vh;width:max-content;box-sizing:border-box;padding:44px;background:#e7e5df">
+
+  <div style="margin-bottom:26px;max-width:760px">
+    <div style="font:800 11px/1 'Hanken Grotesk';letter-spacing:0.14em;text-transform:uppercase;color:#8c7869;margin-bottom:9px">Populatte · App (pós-login)</div>
+    <div style="font:400 14px/1.5 'Hanken Grotesk';color:#4d3e34">Dashboard inicial do usuário logado, sobre o design system Populatte. Define o padrão de chrome do app: sidebar de navegação, header fixo com busca e ações, e o conteúdo de visão geral — KPIs, projetos recentes e atividade.</div>
+  </div>
+
+  <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:12px">
+    <span style="font:800 13px/1 'JetBrains Mono';color:#532e18">01</span>
+    <span style="font:700 15px/1 'Hanken Grotesk';color:#2d0f06">Dashboard · Visão geral</span>
+    <span style="font:500 12px/1 'Hanken Grotesk';color:#8c7869">— sidebar 248px · header 60px · grid de KPIs e projetos</span>
+  </div>
+
+  <div class="db" data-screen-label="App — Dashboard (visão geral)" style="flex:none;width:1340px;height:880px;display:flex;background:var(--surface-page);border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(45,15,6,.16);border:1px solid var(--border-subtle);color:var(--text-body)">
+
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside style="width:248px;flex-shrink:0;background:var(--surface-card);border-right:1px solid var(--border-subtle);display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:10px;padding:18px 18px 16px">
+        <img src="assets/logo-mark.png" alt="" style="height:34px">
+        <div style="display:flex;flex-direction:column;line-height:1">
+          <span style="font:800 17px/1 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.02em">Populatte</span>
+          <span style="font-family:'Newsreader',serif;font-style:italic;font-size:12px;color:var(--espresso-500);margin-top:3px">num gole de café</span>
+        </div>
+      </div>
+
+      <nav style="padding:8px 12px;display:flex;flex-direction:column;gap:2px;flex:1">
+        <div style="font:600 11px/1 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--text-subtle);padding:10px 12px 6px">Workspace</div>
+
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:600 14px 'Hanken Grotesk';color:var(--espresso-900);background:var(--latte-100)">
+          <i data-lucide="layout-dashboard" style="width:18px;height:18px;color:var(--espresso-700)"></i> Dashboard
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body)" style-hover="background:var(--mocha-50)">
+          <i data-lucide="folder-kanban" style="width:18px;height:18px;color:var(--mocha-500)"></i> Projetos
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body)" style-hover="background:var(--mocha-50)">
+          <i data-lucide="git-compare-arrows" style="width:18px;height:18px;color:var(--mocha-500)"></i> Mapeamentos
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body)" style-hover="background:var(--mocha-50)">
+          <i data-lucide="users" style="width:18px;height:18px;color:var(--mocha-500)"></i> Equipe
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body)" style-hover="background:var(--mocha-50)">
+          <i data-lucide="credit-card" style="width:18px;height:18px;color:var(--mocha-500)"></i> Assinatura
+        </a>
+
+        <div style="font:600 11px/1 'Hanken Grotesk';letter-spacing:0.08em;text-transform:uppercase;color:var(--text-subtle);padding:18px 12px 6px">Suporte</div>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body)" style-hover="background:var(--mocha-50)">
+          <i data-lucide="life-buoy" style="width:18px;height:18px;color:var(--mocha-500)"></i> Ajuda
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font:500 14px 'Hanken Grotesk';color:var(--text-body)" style-hover="background:var(--mocha-50)">
+          <i data-lucide="settings" style="width:18px;height:18px;color:var(--mocha-500)"></i> Configurações
+        </a>
+      </nav>
+
+      <!-- usage meter -->
+      <div style="margin:0 12px 8px;padding:13px 14px;border-radius:12px;background:var(--latte-50);border:1px solid var(--border-subtle)">
+        <div style="display:flex;align-items:center;justify-content:space-between;font:600 12px 'Hanken Grotesk';color:var(--text-body)">
+          <span>Preenchimentos</span>
+          <span style="font-family:'JetBrains Mono';color:var(--espresso-600)">8.412 / 10k</span>
+        </div>
+        <div style="height:6px;border-radius:99px;background:var(--mocha-100);overflow:hidden;margin-top:8px">
+          <div style="width:84%;height:100%;border-radius:99px;background:var(--gold-500);animation:dbfill .9s cubic-bezier(.22,1,.36,1)"></div>
+        </div>
+        <div style="font:500 11px 'Hanken Grotesk';color:var(--text-muted);margin-top:8px">Renova em 11 dias · Plano Pro</div>
+      </div>
+
+      <div style="padding:12px;border-top:1px solid var(--border-subtle)">
+        <div style="display:flex;align-items:center;gap:10px;padding:6px">
+          <span style="width:36px;height:36px;border-radius:var(--radius-full);display:inline-flex;align-items:center;justify-content:center;font:700 var(--text-sm) 'Hanken Grotesk';color:var(--espresso-700);background:var(--gold-200);flex-shrink:0;user-select:none">MC</span>
+          <div style="min-width:0;flex:1">
+            <div style="font:600 14px 'Hanken Grotesk';color:var(--text-strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Marina Costa</div>
+            <div style="font:400 12px 'Hanken Grotesk';color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">marina@populatte.com.br</div>
+          </div>
+          <x-import component-from-global-scope="PopulatteDesignSystem_142491.Badge" tone="accent" variant="soft" hint-size="38px,22px">Pro</x-import>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===================== MAIN ===================== -->
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:auto">
+
+      <!-- HEADER -->
+      <header style="height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--border-subtle);background:color-mix(in oklab, var(--surface-page) 80%, transparent);backdrop-filter:blur(8px);position:sticky;top:0;z-index:5">
+        <div style="display:flex;flex-direction:column;gap:1px">
+          <span style="font:500 12px 'Hanken Grotesk';color:var(--text-muted);display:flex;align-items:center;gap:6px">Acme Contabilidade <i data-lucide="chevron-right" style="width:13px;height:13px"></i> Workspace</span>
+          <span style="font:700 20px 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.02em">Dashboard</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;width:248px;background:var(--surface-card);border:1px solid var(--border-default);border-radius:10px">
+            <i data-lucide="search" style="width:16px;height:16px;color:var(--text-subtle)"></i>
+            <input placeholder="Buscar projetos, planilhas…" style="border:none;outline:none;background:transparent;flex:1;min-width:0;font:400 14px 'Hanken Grotesk';color:var(--text-strong)">
+            <span style="font:600 11px 'JetBrains Mono';color:var(--text-subtle);background:var(--mocha-50);border:1px solid var(--border-subtle);border-radius:5px;padding:1px 5px">/</span>
+          </div>
+          <button style="position:relative;width:38px;height:38px;border-radius:10px;background:var(--surface-card);border:1px solid var(--border-default);display:grid;place-items:center;cursor:pointer" style-hover="background:var(--mocha-50)">
+            <i data-lucide="bell" style="width:18px;height:18px;color:var(--mocha-500)"></i>
+            <span style="position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--gold-500);border:1.5px solid var(--surface-card)"></span>
+          </button>
+          <button style="height:38px;padding:0 16px;border-radius:10px;background:var(--espresso-900);color:var(--latte-50);border:none;display:inline-flex;align-items:center;gap:8px;font:600 14px 'Hanken Grotesk';cursor:pointer;box-shadow:var(--shadow-xs)" style-hover="background:var(--espresso-800)">
+            <i data-lucide="plus" style="width:16px;height:16px"></i> Novo projeto
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT (OUT OF SCOPE for the shell epic — context only) -->
+      <div style="padding:28px;display:flex;flex-direction:column;gap:24px;max-width:1180px;width:100%;margin:0 auto">
+
+        <!-- greeting -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font:800 26px 'Hanken Grotesk';color:var(--text-strong);letter-spacing:-0.02em">Bom dia, Marina ☕</div>
+            <div style="font:400 15px 'Hanken Grotesk';color:var(--text-muted);margin-top:3px">Você tem <b style="color:var(--espresso-700);font-weight:700">135 registros</b> na fila esperando preenchimento.</div>
+          </div>
+          <button style="height:44px;padding:0 20px;border-radius:10px;background:var(--gold-500);color:var(--espresso-950);border:none;display:inline-flex;align-items:center;gap:9px;font:700 15px 'Hanken Grotesk';cursor:pointer;box-shadow:var(--shadow-sm)" style-hover="background:var(--gold-600)">
+            <i data-lucide="zap" style="width:17px;height:17px"></i> Preencher fila
+          </button>
+        </div>
+
+        <!-- KPI cards (4): Tempo economizado / Registros preenchidos / Projetos ativos / Taxa de sucesso -->
+        <!-- Recent projects (2-col grid of project cards w/ StatusPill + progress) + Recent activity (timeline) -->
+        <!-- ^ Full content preserved in the live design link; omitted here as it is out of scope. -->
+
+      </div>
+    </div>
+
+  </div>
+</div>
