@@ -55,7 +55,9 @@ PROJECT_DISCUSSION.md
 .project-docs/
 .agent/
 .agents/
-.claude/
+.claude/*
+!.claude/commands/
+!.claude/commands/**
 .codex/
 .gemini/
 .cursor/
