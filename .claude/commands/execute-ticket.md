@@ -7,7 +7,9 @@ argument-hint: <TICKET> [branch-base]  ex.: POP-50 epic/pop-47-dashboard-shell
 
 Argumentos: **$ARGUMENTS** → o 1º token é o **TICKET** (ex.: `POP-50`); o 2º, se vier, é a
 **BRANCH-BASE** (a branch de onde sair e onde fazer o merge; ex.: `epic/pop-47-dashboard-shell` ou
-`main`). Se a branch-base não for dada, **pergunte** antes de criar o worktree.
+`main`). **Se a branch-base não for dada, DERIVE-A do parent** (ver FASE 1): sub-ticket de uma
+feature guarda-chuva → a **epic branch** registrada na feature pai; ticket solto (sem parent) →
+`main`. Só **pergunte** se não conseguir derivar.
 
 > Objetivo: implementar este ticket com fidelidade ao spec, commits atômicos limpos e verificação
 > real — sem desperdiçar token e sem deixar assinatura de IA em lugar nenhum.
@@ -40,6 +42,11 @@ Argumentos: **$ARGUMENTS** → o 1º token é o **TICKET** (ex.: `POP-50`); o 2�
 ## FASE 1 — PESQUISA + PLANO (modo plano, SOMENTE LEITURA — pesquisa pesada no subagente)
 1. Leia o issue **{{TICKET}}** no Linear: descrição, critérios de aceite (AC), labels, prioridade,
    parent e relations (`blockedBy`/`blocks`) + o `gitBranchName` sugerido.
+   **Resolva a BRANCH-BASE** (se não veio por argumento): se o ticket tem **parent** (feature
+   guarda-chuva), use a **epic branch** registrada na descrição da feature pai / no `REFERENCE.md`
+   (padrão `epic/pop-<parent>-<slug>`); garanta que existe (`git fetch origin` + `git switch`). Se
+   **não houver parent**, a base é **`main`**. Se for sub-ticket mas a epic branch não existir →
+   **PARE e avise** (a feature precisa ter sido criada via `/organize-feature`).
 2. Confirme que **todo `blockedBy` está Done** (logo, já mergeado na branch-base). Se algum NÃO
    estiver → **PARE e avise**; não inicie.
 3. Dispare **1 subagente** (Explore/Task) para devolver um **DIGEST CURTO** (os arquivos crus não

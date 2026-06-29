@@ -79,14 +79,23 @@ Com base no digest, me pergunte em **rodadas curtas** (1–4 perguntas por vez),
 responsabilidades com dependências entre si.
 Apresente: (a) a **feature guarda-chuva** (título + resumo + decisões travadas); (b) a **lista de
 subtickets** com título, **1 linha de responsabilidade**, **dependências** e a **ordem em fases**
-(ex.: Fundação → Peças → Integração → QA). Peça aprovação; permita ajustar granularidade.
-**Não crie nada no Linear sem o meu OK.**
+(ex.: Fundação → Peças → Integração → QA); (c) a **estratégia de branch**: se for guarda-chuva,
+será criada a **epic branch** `epic/pop-XX-<slug>` (base de todos os sub-tickets; merge final na
+main); se forem **tickets soltos**, a base é `main` (sem epic branch). Peça aprovação; permita
+ajustar granularidade. **Não crie nada no Linear nem branch sem o meu OK.**
 
 ## FASE 4 — CRIAÇÃO (só depois da aprovação)
 1. **Issue pai (feature)** no projeto **Piloto RAL**, time **Populatte**, descrição rica nas seções:
    **Resumo / Contexto & problema / Decisões travadas / Design & fonte / Abordagem técnica /
    Sub-issues (ordem e dependências) / Definition of Done / Riscos**. Anexar link de design (se houver);
    labels (UI/UX, Web|API|Extension, Feature); prioridade.
+   **(Só feature guarda-chuva) Crie a epic branch** agora que a issue pai tem ID (`<XX>`):
+   ```
+   git switch main && git pull --ff-only origin main
+   git switch -c epic/pop-<XX>-<slug> main && git push -u origin epic/pop-<XX>-<slug>
+   ```
+   Registre o nome **na descrição da feature pai** ("Branch base: `epic/pop-<XX>-<slug>`") e no
+   `REFERENCE.md` (o `execute-ticket` lê dali). **Tickets soltos NÃO criam branch** — base = `main`.
 2. **Sub-issues** com `parentId` = feature, descrição nas seções: **Contexto / Objetivo /
    Escopo (Inclui / Não inclui) / Referência de design / Arquivos afetados / Passos de implementação /
    Critérios de aceite (checkboxes) / Dependências / Riscos & observações**.
@@ -101,6 +110,21 @@ subtickets** com título, **1 linha de responsabilidade**, **dependências** e a
 5. **Memória:** criar `.../memory/<feature-slug>.md` (type: project, com refs POP-XX, decisões,
    achados-chave) + 1 linha no `MEMORY.md`.
 6. **Relatório final:** tabela (POP-XX | título | depende de), ordem "fazer um a um", links e pendências.
+
+## FINALIZAÇÃO DA FEATURE (epic → main) — quando todos os sub-tickets estão Done
+Acionada por "finaliza/fecha a feature POP-XX". Só para guarda-chuva (com epic branch).
+1. Confirme no Linear que **todos os sub-tickets estão Done**. Se algum não estiver → **PARE e avise**.
+2. Integre na main (de `apps/web`, base verde antes E depois):
+   ```
+   git switch main && git pull --ff-only origin main
+   git merge --ff-only epic/pop-<XX>-<slug>   # se falhar (main divergiu):
+   #   git merge --squash epic/pop-<XX>-<slug> && git commit -m "feat(web): <feature> (POP-XX)"
+   (cd apps/web && ./node_modules/.bin/tsc --noEmit && ./node_modules/.bin/eslint .)   # verde
+   git push origin main
+   ```
+3. **Limpe a branch:** `git branch -d epic/pop-<XX>-<slug>` e `git push origin --delete epic/pop-<XX>-<slug>`.
+4. **Linear:** feature pai → **Done** com comentário-resumo (sub-tickets + SHA(s) na main). Sem assinatura de IA.
+5. **Relatório:** SHA(s) na main, branch removida, link da feature.
 
 ## REGRAS DE OURO
 - Pesquisa pesada vai no **subagente**; o contexto principal guarda só o **digest** (economia de token).
