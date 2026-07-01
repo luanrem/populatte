@@ -64,7 +64,7 @@ export function MappingsList({ projectId }: MappingsListProps) {
     await deleteMapping.mutateAsync({ mappingId: selectedMapping.id });
     setDeleteDialogOpen(false);
     setSelectedMapping(null);
-    toast.success("Mapping excluído");
+    toast.success("Mapeamento excluído");
   };
 
   if (isLoading) {
@@ -103,7 +103,7 @@ export function MappingsList({ projectId }: MappingsListProps) {
       <div className="flex justify-end">
         <Button onClick={() => setNewMappingModalOpen(true)}>
           <Plus className="size-4" />
-          Novo Mapping
+          Novo mapeamento
         </Button>
       </div>
 

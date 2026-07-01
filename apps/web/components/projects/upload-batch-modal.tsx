@@ -137,10 +137,10 @@ export function UploadBatchModal({
 
         switch (error.code) {
           case "file-invalid-type":
-            toast.error("Formato invalido. Use arquivos .xlsx ou .xls");
+            toast.error("Formato inválido. Use arquivos .xlsx ou .xls");
             break;
           case "file-too-large":
-            toast.error("Arquivo muito grande. Tamanho maximo: 5MB");
+            toast.error("Arquivo muito grande. Tamanho máximo: 5MB");
             break;
           case "too-many-files":
             toast.error("Uma linha por registro aceita apenas 1 arquivo");
@@ -177,7 +177,7 @@ export function UploadBatchModal({
     mutate(formData, {
       onSuccess: () => {
         handleOpenChange(false);
-        toast.success("Importacao realizada com sucesso");
+        toast.success("Importação realizada com sucesso");
       },
       onError: () => {
         toast.error("Erro ao importar. Tente novamente.");
@@ -242,16 +242,16 @@ export function UploadBatchModal({
                 {selectedFiles.map((file, index) => (
                   <div
                     key={`${file.name}-${index}`}
-                    className="flex items-center gap-3 rounded-[13px] border border-green-300 bg-green-100 px-4 py-3.5"
+                    className="flex items-center gap-3 rounded-[13px] border border-success/40 bg-success-soft px-4 py-3.5"
                   >
-                    <span className="grid size-10 shrink-0 place-items-center rounded-[10px] border border-green-300 bg-card">
-                      <FileSpreadsheet className="size-5 text-green-700" />
+                    <span className="grid size-10 shrink-0 place-items-center rounded-[10px] border border-success/40 bg-card">
+                      <FileSpreadsheet className="size-5 text-success-text" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-foreground">
                         {file.name}
                       </p>
-                      <p className="mt-1 inline-flex items-center gap-1.5 text-[11.5px] font-medium text-green-700">
+                      <p className="mt-1 inline-flex items-center gap-1.5 text-[11.5px] font-medium text-success-text">
                         <CheckCheck className="size-3" />
                         carregado · {formatFileSize(file.size)}
                       </p>
@@ -261,7 +261,7 @@ export function UploadBatchModal({
                       onClick={() => removeFile(index)}
                       disabled={isPending}
                       aria-label={`Remover ${file.name}`}
-                      className="grid size-[34px] shrink-0 place-items-center rounded-[9px] border border-green-300 bg-card text-mocha-500 transition-colors hover:bg-latte-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-gold-400 disabled:opacity-50"
+                      className="grid size-[34px] shrink-0 place-items-center rounded-[9px] border border-success/40 bg-card text-mocha-500 transition-colors hover:bg-latte-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-gold-400 disabled:opacity-50"
                     >
                       <X className="size-4" />
                     </button>

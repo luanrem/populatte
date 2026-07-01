@@ -10,20 +10,28 @@ interface BatchEmptyStateProps {
 
 export function BatchEmptyState({ onUploadClick }: BatchEmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4">
-      <div className="rounded-full border-2 border-dashed border-muted-foreground/25 bg-muted/50 p-6 mb-6">
-        <FileSpreadsheet className="h-12 w-12 text-muted-foreground/50" />
-      </div>
-      <h3 className="text-lg font-semibold text-foreground mt-2">
-        Nenhuma importacao ainda
+    <div className="flex flex-col items-center rounded-lg border-[1.5px] border-dashed border-mocha-300 bg-card px-6 py-10 text-center">
+      <span className="mb-4 grid size-[60px] place-items-center rounded-lg border border-latte-300 bg-latte-100">
+        <FileSpreadsheet className="size-7 text-espresso-700" />
+      </span>
+      <h3 className="mb-1.5 text-lg font-bold text-foreground">
+        Nenhuma planilha ainda
       </h3>
-      <p className="text-sm text-muted-foreground mt-1 text-center max-w-sm">
-        Clique em &quot;Nova Importacao&quot; acima para enviar sua primeira planilha.
+      <p className="mb-5 max-w-[46ch] text-sm leading-relaxed text-muted-foreground">
+        Importe sua primeira planilha para começar. A gente cuida do resto — você
+        só dá nome às colunas e parte para o preenchimento.
       </p>
-      <Button onClick={onUploadClick} className="mt-6">
-        <Upload className="mr-2 h-4 w-4" />
-        Enviar planilha
+      <Button
+        onClick={onUploadClick}
+        size="lg"
+        className="bg-gold font-bold text-gold-foreground hover:bg-gold-600"
+      >
+        <Upload className="size-[18px]" />
+        Importar planilha
       </Button>
+      <p className="mt-3 text-[11.5px] text-mocha-400">
+        .xlsx ou .xls · até 5 MB
+      </p>
     </div>
   );
 }

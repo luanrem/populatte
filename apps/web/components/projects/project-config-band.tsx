@@ -121,14 +121,15 @@ function StepCard({ step, state }: StepCardProps) {
 
   return (
     <div
+      aria-current={isCurrent ? "step" : undefined}
       className={[
         "flex-1 min-w-[170px] rounded-[12px] px-[14px] py-[13px] transition-colors",
         isDone &&
-          "border border-green-300 bg-green-100",
+          "border border-success/40 bg-success-soft",
         isCurrent &&
           "border-[1.5px] border-gold bg-card shadow-xs",
         !isDone && !isCurrent &&
-          "border border-border-subtle bg-card",
+          "border border-border bg-card",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -137,10 +138,10 @@ function StepCard({ step, state }: StepCardProps) {
       <div className="mb-[9px] flex items-center gap-2">
         {isDone ? (
           <>
-            <span className="inline-grid size-6 place-items-center rounded-full bg-green-500 text-white">
+            <span className="inline-grid size-6 place-items-center rounded-full bg-success text-white">
               <Check className="size-3.5" />
             </span>
-            <span className="font-bold font-mono text-[10px] text-green-700">
+            <span className="font-bold font-mono text-[10px] text-success-text">
               {String(step.number).padStart(2, "0")}
             </span>
           </>
@@ -169,7 +170,7 @@ function StepCard({ step, state }: StepCardProps) {
       <div
         className={[
           "font-bold text-sm leading-[1.15]",
-          isDone ? "text-green-700" : "text-foreground",
+          isDone ? "text-success-text" : "text-foreground",
         ].join(" ")}
       >
         {step.title}
@@ -180,7 +181,7 @@ function StepCard({ step, state }: StepCardProps) {
         className={[
           "mt-[3px] text-[11px] leading-[1.35]",
           isDone
-            ? "text-green-600"
+            ? "text-success-text"
             : isCurrent
               ? "text-muted-foreground"
               : "text-mocha-400",

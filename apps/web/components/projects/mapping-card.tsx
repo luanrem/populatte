@@ -65,7 +65,7 @@ export function MappingCard({ mapping, onEdit, onDelete }: MappingCardProps) {
 
         {onDelete && (
           <div
-            className="absolute top-3 right-3 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+            className="absolute top-3 right-3 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

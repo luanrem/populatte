@@ -113,17 +113,15 @@ export function ProjectDetailHeader({
         {/* Preencher (gold, placeholder — action fires but is a no-op until extension is ready) */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <span tabIndex={0}>
-              <Button
-                size="lg"
-                className="bg-gold-500 text-espresso-950 hover:bg-gold-600 font-bold shadow-sm border-0"
-                aria-label="Preencher"
-                onClick={onFill}
-              >
-                <Zap />
-                Preencher
-              </Button>
-            </span>
+            <Button
+              size="lg"
+              className="bg-gold-500 text-espresso-950 hover:bg-gold-600 font-bold shadow-sm border-0"
+              aria-label="Preencher"
+              onClick={onFill}
+            >
+              <Zap />
+              Preencher
+            </Button>
           </TooltipTrigger>
           <TooltipContent>
             Abra a extensão para preencher
