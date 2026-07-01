@@ -2,21 +2,32 @@
 
 import { useState } from "react";
 import { useDropzone, type DropzoneOptions, type FileRejection } from "react-dropzone";
-import { FileSpreadsheet, List, Loader2, Upload, Users, X } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCheck,
+  File as FileIcon,
+  FileSpreadsheet,
+  FileUp,
+  Info,
+  Loader2,
+  Plus,
+  Rows3,
+  Upload,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useUploadBatch } from "@/lib/query/hooks/use-batches";
+
+type ImportMode = "LIST_MODE" | "PROFILE_MODE";
 
 interface UploadBatchModalProps {
   open: boolean;
@@ -24,57 +35,97 @@ interface UploadBatchModalProps {
   projectId: string;
 }
 
+interface ImportModeOption {
+  value: ImportMode;
+  title: string;
+  description: string;
+  icon: typeof Rows3;
+  iconTileClassName: string;
+  iconClassName: string;
+}
+
+const MODE_OPTIONS: ImportModeOption[] = [
+  {
+    value: "LIST_MODE",
+    title: "Uma linha por registro",
+    description: "Vários registros numa planilha — cada linha é um.",
+    icon: Rows3,
+    iconTileClassName: "bg-mocha-100",
+    iconClassName: "text-mocha-500",
+  },
+  {
+    value: "PROFILE_MODE",
+    title: "Um arquivo por registro",
+    description: "Os campos estão em células (A1, B2…) — a planilha é um registro só.",
+    icon: FileIcon,
+    iconTileClassName: "bg-latte-100",
+    iconClassName: "text-espresso-700",
+  },
+];
+
+function formatFileSize(bytes: number): string {
+  const kb = bytes / 1024;
+  if (kb < 1024) {
+    return `${Math.max(1, Math.round(kb))} KB`;
+  }
+  return `${(kb / 1024).toFixed(1)} MB`;
+}
+
 export function UploadBatchModal({
   open,
   onOpenChange,
   projectId,
 }: UploadBatchModalProps) {
-  const [selectedMode, setSelectedMode] = useState<'LIST_MODE' | 'PROFILE_MODE' | null>(null);
+  // Manual mode selection with a sensible default (no auto-detection).
+  const [selectedMode, setSelectedMode] = useState<ImportMode>("LIST_MODE");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const { mutate, isPending } = useUploadBatch(projectId);
 
-  // Custom onOpenChange handler that blocks closing during upload
+  const isListMode = selectedMode === "LIST_MODE";
+
+  // Custom onOpenChange handler that blocks closing during upload.
   const handleOpenChange = (newOpen: boolean) => {
-    // Block closing if upload is in progress
     if (!newOpen && isPending) {
       return;
     }
 
-    // Reset state when closing
+    // Reset state when closing.
     if (!newOpen) {
-      setSelectedMode(null);
+      setSelectedMode("LIST_MODE");
       setSelectedFiles([]);
     }
 
     onOpenChange(newOpen);
   };
 
-  // Handle mode selection change
-  const handleModeChange = (mode: 'LIST_MODE' | 'PROFILE_MODE') => {
-    // If mode changes, clear selected files to prevent invalid file counts
+  // Handle mode selection change.
+  const handleModeChange = (mode: ImportMode) => {
+    // Clearing files when the mode changes keeps the file count valid
+    // (list accepts a single file; profile accepts many).
     if (selectedMode !== mode) {
       setSelectedFiles([]);
     }
     setSelectedMode(mode);
   };
 
-  // Configure dropzone
-  // Type assertion needed due to react-dropzone v14 type incompatibility with strict TypeScript
+  // Configure dropzone.
+  // Type assertion needed due to react-dropzone v14 type incompatibility with strict TypeScript.
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+      "application/vnd.ms-excel": [".xls"],
     },
     maxSize: 5 * 1024 * 1024, // 5MB
-    maxFiles: selectedMode === 'LIST_MODE' ? 1 : undefined,
-    multiple: selectedMode !== 'LIST_MODE',
+    maxFiles: isListMode ? 1 : undefined,
+    multiple: !isListMode,
     onDrop: (acceptedFiles: File[]) => {
-      if (selectedMode === 'LIST_MODE') {
-        // Replace previous file for List Mode
+      if (isListMode) {
+        // Replace the previous file in list mode.
         setSelectedFiles(acceptedFiles.slice(0, 1));
       } else {
-        // Append files for Profile Mode
-        setSelectedFiles(prev => [...prev, ...acceptedFiles]);
+        // Append files in profile mode (one file per record).
+        setSelectedFiles((prev) => [...prev, ...acceptedFiles]);
       }
     },
     onDropRejected: (fileRejections: FileRejection[]) => {
@@ -85,14 +136,14 @@ export function UploadBatchModal({
         }
 
         switch (error.code) {
-          case 'file-invalid-type':
-            toast.error('Formato invalido. Use arquivos .xlsx');
+          case "file-invalid-type":
+            toast.error("Formato invalido. Use arquivos .xlsx ou .xls");
             break;
-          case 'file-too-large':
-            toast.error('Arquivo muito grande. Tamanho maximo: 5MB');
+          case "file-too-large":
+            toast.error("Arquivo muito grande. Tamanho maximo: 5MB");
             break;
-          case 'too-many-files':
-            toast.error('Modo Lista aceita apenas 1 arquivo');
+          case "too-many-files":
+            toast.error("Uma linha por registro aceita apenas 1 arquivo");
             break;
           default:
             toast.error(error.message);
@@ -103,185 +154,231 @@ export function UploadBatchModal({
     noKeyboard: false,
   } as unknown as DropzoneOptions);
 
-  // Remove file by index
   const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Handle form submission
   const handleSubmit = () => {
-    if (!selectedMode || selectedFiles.length === 0) {
+    if (selectedFiles.length === 0) {
       return;
     }
 
     const formData = new FormData();
-    formData.append('mode', selectedMode);
+    formData.append("mode", selectedMode);
 
-    if (selectedMode === 'LIST_MODE') {
-      formData.append('documents', selectedFiles[0]!);
+    if (isListMode) {
+      formData.append("documents", selectedFiles[0]!);
     } else {
-      selectedFiles.forEach(file => {
-        formData.append('documents', file);
+      selectedFiles.forEach((file) => {
+        formData.append("documents", file);
       });
     }
 
     mutate(formData, {
       onSuccess: () => {
         handleOpenChange(false);
-        toast.success('Importacao realizada com sucesso');
+        toast.success("Importacao realizada com sucesso");
       },
       onError: () => {
-        toast.error('Erro ao importar. Tente novamente.');
+        toast.error("Erro ao importar. Tente novamente.");
       },
     });
   };
 
+  const hasFiles = selectedFiles.length > 0;
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg" showCloseButton={!isPending}>
-        <DialogHeader>
-          <DialogTitle>Nova Importacao</DialogTitle>
-          <DialogDescription>
-            Selecione o modo de importacao e adicione seus arquivos .xlsx
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          {/* Mode selector cards */}
-          <div className="grid grid-cols-2 gap-4">
-            <Card
-              className={cn(
-                "cursor-pointer transition-all hover:border-primary/50",
-                selectedMode === 'LIST_MODE' && "border-primary ring-2 ring-primary"
-              )}
-              onClick={() => handleModeChange('LIST_MODE')}
-            >
-              <CardHeader className="space-y-1 p-4">
-                <div className="flex items-center gap-2">
-                  <List className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-base">Modo Lista</CardTitle>
-                </div>
-                <CardDescription className="text-xs">
-                  Importe uma planilha com varios registros
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card
-              className={cn(
-                "cursor-pointer transition-all hover:border-primary/50",
-                selectedMode === 'PROFILE_MODE' && "border-primary ring-2 ring-primary"
-              )}
-              onClick={() => handleModeChange('PROFILE_MODE')}
-            >
-              <CardHeader className="space-y-1 p-4">
-                <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-base">Modo Perfil</CardTitle>
-                </div>
-                <CardDescription className="text-xs">
-                  Importe arquivos individuais por entidade
-                </CardDescription>
-              </CardHeader>
-            </Card>
+      <DialogContent className="gap-0 p-0 sm:max-w-[560px]" showCloseButton={!isPending}>
+        {/* Header */}
+        <div className="flex items-center gap-3 px-6 pt-6 pb-1">
+          <span className="grid size-[42px] shrink-0 place-items-center rounded-[11px] border border-latte-300 bg-latte-100">
+            <FileUp className="size-[21px] text-espresso-700" />
+          </span>
+          <div className="min-w-0">
+            <DialogTitle className="text-[19px] font-bold tracking-[-0.01em] text-foreground">
+              Nova importação
+            </DialogTitle>
+            <DialogDescription className="mt-0.5 text-[13px] text-muted-foreground">
+              Envie uma planilha. Em seguida você dá nome às colunas.
+            </DialogDescription>
           </div>
+        </div>
 
-          {/* Dropzone section (shown when mode is selected) */}
-          {selectedMode && (
-            <div className="space-y-4">
+        <div className="flex flex-col gap-4 px-6 pt-4 pb-2">
+          {/* File zone */}
+          <div className="flex flex-col gap-3">
+            {!hasFiles && (
               <div
                 {...(getRootProps() as React.HTMLAttributes<HTMLDivElement>)}
                 className={cn(
-                  "flex flex-col items-center justify-center rounded-lg p-8 text-center transition-colors cursor-pointer",
+                  "flex cursor-pointer flex-col items-center justify-center rounded-[14px] border-[1.5px] border-dashed p-8 text-center transition-colors",
                   isDragActive
-                    ? "bg-primary/10 border-2 border-primary border-dashed"
-                    : "bg-muted/50 border-2 border-dashed border-muted-foreground/25"
+                    ? "border-gold-500 bg-latte-100"
+                    : "border-mocha-300 bg-latte-50 hover:border-gold-500 hover:bg-latte-100"
                 )}
               >
                 <input {...(getInputProps() as unknown as React.InputHTMLAttributes<HTMLInputElement>)} />
-                {isDragActive ? (
-                  <>
-                    <Upload className="mb-4 h-10 w-10 text-primary" />
-                    <p className="text-sm font-medium text-primary">
-                      Solte os arquivos aqui
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="mb-4 h-10 w-10 text-muted-foreground" />
-                    <p className="mb-2 text-sm font-medium">
-                      Arraste arquivos .xlsx ou clique para selecionar
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Tamanho maximo: 5MB
-                      {selectedMode === 'LIST_MODE' && ' • Apenas 1 arquivo'}
-                    </p>
-                  </>
+                <Upload
+                  className={cn(
+                    "mb-3 size-8",
+                    isDragActive ? "text-gold-600" : "text-mocha-400"
+                  )}
+                />
+                <p className="text-sm font-semibold text-foreground">
+                  {isDragActive
+                    ? "Solte a planilha aqui"
+                    : "Arraste a planilha ou clique para selecionar"}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  .xlsx e .xls · até 5 MB
+                  {isListMode ? " · 1 arquivo" : " · um arquivo por registro"}
+                </p>
+              </div>
+            )}
+
+            {hasFiles && (
+              <div className="flex flex-col gap-2">
+                {selectedFiles.map((file, index) => (
+                  <div
+                    key={`${file.name}-${index}`}
+                    className="flex items-center gap-3 rounded-[13px] border border-green-300 bg-green-100 px-4 py-3.5"
+                  >
+                    <span className="grid size-10 shrink-0 place-items-center rounded-[10px] border border-green-300 bg-card">
+                      <FileSpreadsheet className="size-5 text-green-700" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-foreground">
+                        {file.name}
+                      </p>
+                      <p className="mt-1 inline-flex items-center gap-1.5 text-[11.5px] font-medium text-green-700">
+                        <CheckCheck className="size-3" />
+                        carregado · {formatFileSize(file.size)}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      disabled={isPending}
+                      aria-label={`Remover ${file.name}`}
+                      className="grid size-[34px] shrink-0 place-items-center rounded-[9px] border border-green-300 bg-card text-mocha-500 transition-colors hover:bg-latte-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-gold-400 disabled:opacity-50"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                ))}
+
+                {/* Profile mode allows appending more files (one per record). */}
+                {!isListMode && (
+                  <div
+                    {...(getRootProps() as React.HTMLAttributes<HTMLDivElement>)}
+                    className={cn(
+                      "flex cursor-pointer items-center justify-center gap-2 rounded-[10px] border-[1.5px] border-dashed px-3 py-2.5 text-[13px] font-semibold transition-colors",
+                      isDragActive
+                        ? "border-gold-500 bg-latte-100 text-espresso-700"
+                        : "border-mocha-300 text-espresso-700 hover:border-gold-500 hover:bg-latte-50"
+                    )}
+                  >
+                    <input {...(getInputProps() as unknown as React.InputHTMLAttributes<HTMLInputElement>)} />
+                    <Plus className="size-4" />
+                    Adicionar mais arquivos ({selectedFiles.length})
+                  </div>
                 )}
               </div>
+            )}
 
-              {/* Selected files list */}
-              {selectedFiles.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">
-                    Arquivos selecionados ({selectedFiles.length})
-                  </p>
-                  <div className="space-y-2">
-                    {selectedFiles.map((file, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between rounded-lg border bg-card p-3"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <FileSpreadsheet className="h-5 w-5 shrink-0 text-primary" />
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium">
-                              {file.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {(file.size / 1024).toFixed(2)} KB
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFile(index)}
-                          disabled={isPending}
-                          className="shrink-0"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <p className="-mt-1 flex items-center gap-2 text-[11.5px] text-muted-foreground">
+              <Info className="size-[13px] shrink-0" />
+              Aceita .xlsx e .xls · até 5 MB. Para trocar, remova e selecione outro
+              arquivo.
+            </p>
+          </div>
+
+          {/* Mode selection */}
+          <div>
+            <p className="mb-3 text-sm font-bold text-foreground">
+              Como seus dados estão organizados?
+            </p>
+            <div
+              role="radiogroup"
+              aria-label="Como seus dados estão organizados?"
+              className="flex flex-col gap-2.5"
+            >
+              {MODE_OPTIONS.map((option) => {
+                const checked = selectedMode === option.value;
+                const OptionIcon = option.icon;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={checked}
+                    onClick={() => handleModeChange(option.value)}
+                    className={cn(
+                      "flex w-full cursor-pointer items-center gap-[13px] rounded-[13px] bg-card px-3.5 py-3.5 text-left transition-[border-color,box-shadow] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-gold-400",
+                      checked
+                        ? "border-[1.5px] border-gold-500 ring-[3px] ring-gold-200"
+                        : "border border-mocha-300 hover:border-mocha-400"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "grid size-5 shrink-0 place-items-center rounded-full border-[1.5px] bg-card",
+                        checked ? "border-gold-500" : "border-mocha-300"
+                      )}
+                    >
+                      {checked && <span className="size-2.5 rounded-full bg-gold-500" />}
+                    </span>
+                    <span
+                      className={cn(
+                        "grid size-[34px] shrink-0 place-items-center rounded-[9px]",
+                        option.iconTileClassName
+                      )}
+                    >
+                      <OptionIcon className={cn("size-[17px]", option.iconClassName)} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-bold text-foreground">
+                        {option.title}
+                      </span>
+                      <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
+                        {option.description}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Footer (shown when mode is selected) */}
-        {selectedMode && (
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-              disabled={isPending}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              onClick={handleSubmit}
-              disabled={selectedFiles.length === 0 || isPending}
-            >
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Importar
-            </Button>
-          </DialogFooter>
-        )}
+        {/* Footer */}
+        <div className="flex items-center justify-between gap-2.5 px-6 pt-2 pb-6">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => handleOpenChange(false)}
+            disabled={isPending}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={!hasFiles || isPending}
+            className="bg-gold font-bold text-gold-foreground hover:bg-gold-600"
+          >
+            {isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>
+                Continuar
+                <ArrowRight className="size-4" />
+              </>
+            )}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
