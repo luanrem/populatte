@@ -9,12 +9,56 @@ import { EntityChip } from "@/components/ui/entity-chip"
 import { ProgressMeter } from "@/components/ui/progress-meter"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { UrlChip } from "@/components/ui/url-chip"
+import { BatchCard } from "@/components/projects/batch-card"
+import { MappingCard } from "@/components/projects/mapping-card"
+import { NewImportTile } from "@/components/projects/new-import-tile"
 import { NewProjectTile } from "@/components/projects/new-project-tile"
 import { ProjectCard } from "@/components/projects/project-card"
 import { ProjectEmptyState } from "@/components/projects/project-empty-state"
+import type { BatchResponse } from "@/lib/api/schemas/batch.schema"
+import type { MappingListItem } from "@/lib/api/schemas/mapping.schema"
 import type { ProjectSummaryResponse } from "@/lib/api/schemas/project.schema"
 
 const noop = () => {}
+
+const sampleMapping: MappingListItem = {
+  id: "m1",
+  name: "Cadastro RAL — ANM (template oficial)",
+  targetUrl: "https://sistemas.anm.gov.br/ral/cadastro",
+  isActive: true,
+  stepCount: 12,
+  createdAt: "2026-06-25T21:00:00.000Z",
+  updatedAt: "2026-06-30T18:00:00.000Z",
+}
+
+const sampleMappingInactive: MappingListItem = {
+  id: "m2",
+  name: "eSocial Admissão (rascunho)",
+  targetUrl: "https://www.esocial.gov.br/admissao",
+  isActive: false,
+  stepCount: 3,
+  createdAt: "2026-06-20T10:00:00.000Z",
+  updatedAt: "2026-06-28T14:00:00.000Z",
+}
+
+const sampleBatch: BatchResponse = {
+  id: "b1",
+  projectId: "p1",
+  userId: "u1",
+  mode: "LIST_MODE",
+  name: "cadastro_ral_anm_2026.xlsx",
+  status: "COMPLETED",
+  fileCount: 1,
+  rowCount: 245,
+  columnMetadata: [],
+  totalRows: 245,
+  identifierFieldKey: null,
+  secondaryFieldKey: null,
+  createdAt: "2026-06-28T10:00:00.000Z",
+  updatedAt: "2026-06-28T10:05:00.000Z",
+  deletedAt: null,
+  deletedBy: null,
+}
 
 const sampleProjects: ProjectSummaryResponse[] = [
   {
@@ -164,6 +208,47 @@ export default function DesignSystemPage() {
             onClearSearch={noop}
           />
           <ProjectEmptyState variant="no-archived" onViewActive={noop} />
+        </div>
+      </Section>
+
+      <Section
+        title="MappingCard"
+        description="Card de mapeamento da zona Mapeamentos (POP-67). Badge dinâmico: ativo → 'pronto p/ usar' (success); inativo → 'inativo' (secondary)."
+      >
+        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+          <MappingCard
+            mapping={sampleMapping}
+            onEdit={noop}
+            onDelete={noop}
+          />
+          <MappingCard
+            mapping={sampleMappingInactive}
+            onEdit={noop}
+            onDelete={noop}
+          />
+        </div>
+      </Section>
+
+      <Section
+        title="BatchCard"
+        description="Card de importação da zona Importações (POP-67). Chips: modo, registros e chip estático 'Significado: pendente' (gold)."
+      >
+        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+          <BatchCard
+            batch={sampleBatch}
+            projectId="p1"
+            onSettingsClick={noop}
+            onDeleteClick={noop}
+          />
+        </div>
+      </Section>
+
+      <Section
+        title="NewImportTile"
+        description="Tile dashed 'Nova importação' exibido no grid de importações (POP-67)."
+      >
+        <div className="w-full max-w-xs">
+          <NewImportTile onClick={noop} />
         </div>
       </Section>
     </main>

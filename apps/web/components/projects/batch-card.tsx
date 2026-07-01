@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, FileSpreadsheet, Rows, Settings, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronRight,
+  FileSpreadsheet,
+  Settings,
+  Trash2,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,79 +21,58 @@ interface BatchCardProps {
   onDeleteClick?: (batch: BatchResponse) => void;
 }
 
-function formatRelativeDate(dateStr: string): string {
-  const now = Date.now();
-  const date = new Date(dateStr);
-  const deltaMs = now - date.getTime();
-
-  const deltaMinutes = Math.floor(deltaMs / (1000 * 60));
-  const deltaHours = Math.floor(deltaMs / (1000 * 60 * 60));
-  const deltaDays = Math.floor(deltaMs / (1000 * 60 * 60 * 24));
-  const deltaWeeks = Math.floor(deltaMs / (1000 * 60 * 60 * 24 * 7));
-  const deltaMonths = Math.floor(deltaMs / (1000 * 60 * 60 * 24 * 30));
-
-  const rtf = new Intl.RelativeTimeFormat("pt-BR", { numeric: "auto" });
-
-  if (deltaMinutes < 1) {
-    return "agora mesmo";
-  } else if (deltaMinutes < 60) {
-    return rtf.format(-deltaMinutes, "minute");
-  } else if (deltaHours < 24) {
-    return rtf.format(-deltaHours, "hour");
-  } else if (deltaDays < 7) {
-    return rtf.format(-deltaDays, "day");
-  } else if (deltaWeeks < 4) {
-    return rtf.format(-deltaWeeks, "week");
-  } else {
-    return rtf.format(-deltaMonths, "month");
-  }
-}
-
 export function BatchCard({
   batch,
   projectId,
   onSettingsClick,
   onDeleteClick,
 }: BatchCardProps) {
-  const modeConfig = {
-    LIST_MODE: {
-      text: "Modo Lista",
-      className:
-        "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 hover:bg-blue-100",
-    },
-    PROFILE_MODE: {
-      text: "Modo Perfil",
-      className:
-        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 hover:bg-purple-100",
-    },
-  };
+  const modeLabel =
+    batch.mode === "LIST_MODE"
+      ? "Uma linha por registro"
+      : "Um registro por arquivo";
 
-  const mode = modeConfig[batch.mode];
+  const rowLabel =
+    batch.totalRows === 1
+      ? "1 registro"
+      : `${batch.totalRows} registros`;
 
   return (
     <Link href={`/projects/${projectId}/batches/${batch.id}`}>
       <Card className="group relative transition-all hover:shadow-md hover:-translate-y-0.5 cursor-pointer">
-        <CardContent className="flex items-center justify-between p-6">
-          <div className="flex flex-col gap-3 flex-1">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <FileSpreadsheet className="h-4 w-4 text-muted-foreground" />
-              <span>{batch.name ?? "Sem nome"}</span>
-            </div>
+        <CardContent className="flex items-center gap-4 p-5">
+          <div className="flex size-[42px] shrink-0 items-center justify-center rounded-lg bg-success-soft">
+            <FileSpreadsheet className="size-[34px] text-success-text" />
+          </div>
 
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <span>{formatRelativeDate(batch.createdAt)}</span>
-            </div>
+          <div className="flex flex-col gap-2 flex-1 min-w-0">
+            <span className="font-medium text-foreground truncate">
+              {batch.name ?? "Sem nome"}
+            </span>
 
-            <Badge className={mode.className}>{mode.text}</Badge>
-
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Rows className="h-4 w-4" />
-              <span>
-                {batch.totalRows} {batch.totalRows === 1 ? "registro" : "registros"}
-              </span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Badge
+                variant="secondary"
+                className="text-xs font-normal"
+              >
+                {modeLabel}
+              </Badge>
+              <span className="text-muted-foreground/40 text-xs">·</span>
+              <Badge
+                variant="secondary"
+                className="text-xs font-normal"
+              >
+                {rowLabel}
+              </Badge>
+              <span className="text-muted-foreground/40 text-xs">·</span>
+              <Badge className="bg-gold/10 text-gold hover:bg-gold/10 text-xs font-normal gap-1">
+                Significado: pendente
+                <ArrowRight className="size-3" />
+              </Badge>
             </div>
           </div>
+
+          <ChevronRight className="size-5 text-muted-foreground/40 shrink-0" />
 
           {(onSettingsClick || onDeleteClick) && (
             <div
@@ -105,7 +90,7 @@ export function BatchCard({
                   className="text-muted-foreground hover:text-foreground"
                 >
                   <Settings className="h-4 w-4" />
-                  <span className="sr-only">Configuracoes</span>
+                  <span className="sr-only">Configurações</span>
                 </Button>
               )}
               {onDeleteClick && (

@@ -11,6 +11,7 @@ import { BatchCard } from "./batch-card";
 import { BatchEmptyState } from "./batch-empty-state";
 import { BatchSettingsModal } from "./batch-settings-modal";
 import { DeleteBatchDialog } from "./delete-batch-dialog";
+import { NewImportTile } from "./new-import-tile";
 
 interface BatchGridProps {
   projectId: string;
@@ -21,19 +22,17 @@ interface BatchGridProps {
 
 function BatchCardSkeleton() {
   return (
-    <div className="flex items-center justify-between rounded-xl border bg-card p-6 shadow-sm">
-      <div className="flex flex-col gap-3 flex-1">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-4 rounded-full" />
-          <Skeleton className="h-4 w-32" />
-        </div>
-        <Skeleton className="h-5 w-24 rounded-full" />
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-4 rounded-full" />
-          <Skeleton className="h-4 w-28" />
+    <div className="flex items-center gap-4 rounded-xl border bg-card p-5 shadow-sm">
+      <Skeleton className="size-[42px] rounded-lg shrink-0" />
+      <div className="flex flex-col gap-2 flex-1">
+        <Skeleton className="h-5 w-40" />
+        <div className="flex items-center gap-1.5">
+          <Skeleton className="h-5 w-32 rounded-full" />
+          <Skeleton className="h-5 w-20 rounded-full" />
+          <Skeleton className="h-5 w-36 rounded-full" />
         </div>
       </div>
-      <Skeleton className="h-5 w-5 rounded-full shrink-0 ml-4" />
+      <Skeleton className="size-5 shrink-0" />
     </div>
   );
 }
@@ -69,7 +68,7 @@ export function BatchGrid({
         onSuccess: () => {
           setDeleteOpen(false);
           setSelectedBatch(null);
-          toast.success("Importacao excluida");
+          toast.success("Importação excluída");
         },
       }
     );
@@ -77,8 +76,8 @@ export function BatchGrid({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px]">
+        {Array.from({ length: 4 }).map((_, i) => (
           <BatchCardSkeleton key={i} />
         ))}
       </div>
@@ -91,7 +90,7 @@ export function BatchGrid({
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px]">
         {batches.items.map((batch) => (
           <BatchCard
             key={batch.id}
@@ -101,6 +100,7 @@ export function BatchGrid({
             onDeleteClick={handleDeleteClick}
           />
         ))}
+        <NewImportTile onClick={onUploadClick} />
       </div>
 
       <BatchSettingsModal
