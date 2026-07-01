@@ -70,8 +70,7 @@ export function MappingsList({ projectId }: MappingsListProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-7 w-32" />
+        <div className="flex justify-end">
           <Skeleton className="h-10 w-36" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[14px]">
@@ -99,8 +98,9 @@ export function MappingsList({ projectId }: MappingsListProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Mapeamentos</h2>
+      {/* Zone title lives on the page (page-owned zone headers); this row only
+          carries the create action. */}
+      <div className="flex justify-end">
         <Button onClick={() => setNewMappingModalOpen(true)}>
           <Plus className="size-4" />
           Novo Mapping

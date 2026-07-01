@@ -3,20 +3,26 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { usePageHeader } from "@/components/layout/page-header-context";
 import { BatchGrid } from "@/components/projects/batch-grid";
 import { DeleteProjectDialog } from "@/components/projects/delete-project-dialog";
 import { MappingsList } from "@/components/projects/mappings-list";
+import { ProjectConfigBand } from "@/components/projects/project-config-band";
+import { ProjectDetailHeader } from "@/components/projects/project-detail-header";
+import { ProjectFormDialog } from "@/components/projects/project-form-dialog";
 import { UploadBatchModal } from "@/components/projects/upload-batch-modal";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProject, useDeleteProject } from "@/lib/query/hooks/use-projects";
-import { useBatches } from "@/lib/query/hooks/use-batches";
+import type { CreateProjectRequest } from "@/lib/api/schemas/project.schema";
 import { ApiError } from "@/lib/api/types";
+import { useBatches } from "@/lib/query/hooks/use-batches";
+import {
+  useDeleteProject,
+  useProject,
+  useUpdateProject,
+} from "@/lib/query/hooks/use-projects";
 
 export default function ProjectDetailPage({
   params,
@@ -25,10 +31,17 @@ export default function ProjectDetailPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const { data: project, isLoading: projectLoading, isError: projectError, error: projectErrorData } = useProject(id);
+  const {
+    data: project,
+    isLoading: projectLoading,
+    isError: projectError,
+    error: projectErrorData,
+  } = useProject(id);
   const { data: batches, isLoading: batchesLoading } = useBatches(id);
+  const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Drive the global header title with the project name; the breadcrumb stays
@@ -36,15 +49,40 @@ export default function ProjectDetailPage({
   // back to a generic label until the project loads.
   usePageHeader({ title: project?.name ?? "Projeto" });
 
+  // The config band teaches the setup flow and disappears once the project has
+  // at least one import. It is gated on `!batchesLoading` so it never flashes
+  // in before we know whether imports exist.
+  const hasBatches = (batches?.total ?? 0) > 0;
+  const bandVisible = !batchesLoading && !hasBatches;
+
+  const handleUpdate = (data: CreateProjectRequest) => {
+    updateProject.mutate(
+      { id, data },
+      {
+        onSuccess: () => {
+          setFormOpen(false);
+          toast.success("Projeto atualizado");
+        },
+        onError: () => {
+          toast.error("Erro ao atualizar o projeto");
+        },
+      },
+    );
+  };
+
   const handleDeleteConfirm = async () => {
     await deleteProject.mutateAsync(id);
-    toast.success("Projeto excluido");
+    toast.success("Projeto excluído");
     router.push("/projects");
   };
 
   // Handle error toasts
   useEffect(() => {
-    if (projectError && projectErrorData instanceof ApiError && projectErrorData.status !== 404) {
+    if (
+      projectError &&
+      projectErrorData instanceof ApiError &&
+      projectErrorData.status !== 404
+    ) {
       toast.error("Erro ao carregar o projeto");
     }
   }, [projectError, projectErrorData]);
@@ -52,7 +90,7 @@ export default function ProjectDetailPage({
   // Loading state
   if (projectLoading) {
     return (
-      <div className="mx-auto max-w-5xl px-8 py-6">
+      <div className="mx-auto max-w-[1060px] px-7 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-32 rounded-lg" />
@@ -63,20 +101,22 @@ export default function ProjectDetailPage({
   }
 
   // Error state - 404
-  if (projectError && projectErrorData instanceof ApiError && projectErrorData.status === 404) {
+  if (
+    projectError &&
+    projectErrorData instanceof ApiError &&
+    projectErrorData.status === 404
+  ) {
     return (
-      <div className="mx-auto max-w-5xl px-8 py-16">
+      <div className="mx-auto max-w-[1060px] px-7 py-16">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
           <h2 className="text-2xl font-bold text-foreground">
-            Projeto nao encontrado
+            Projeto não encontrado
           </h2>
           <p className="text-muted-foreground">
-            O projeto que voce procura nao existe ou foi removido.
+            O projeto que você procura não existe ou foi removido.
           </p>
           <Link href="/projects">
-            <Button variant="default">
-              Voltar para projetos
-            </Button>
+            <Button variant="default">Voltar para projetos</Button>
           </Link>
         </div>
       </div>
@@ -86,18 +126,14 @@ export default function ProjectDetailPage({
   // Error state - other errors
   if (projectError) {
     return (
-      <div className="mx-auto max-w-5xl px-8 py-16">
+      <div className="mx-auto max-w-[1060px] px-7 py-16">
         <div className="flex flex-col items-center justify-center gap-4 text-center">
           <h2 className="text-2xl font-bold text-foreground">
             Algo deu errado
           </h2>
-          <p className="text-muted-foreground">
-            Tente novamente mais tarde.
-          </p>
+          <p className="text-muted-foreground">Tente novamente mais tarde.</p>
           <Link href="/projects">
-            <Button variant="default">
-              Voltar para projetos
-            </Button>
+            <Button variant="default">Voltar para projetos</Button>
           </Link>
         </div>
       </div>
@@ -111,28 +147,29 @@ export default function ProjectDetailPage({
 
   return (
     <>
-      <div className="mx-auto flex max-w-5xl items-center justify-end gap-2 px-8 pt-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setDeleteDialogOpen(true)}
-          className="text-muted-foreground hover:text-destructive"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-        <Button size="sm" onClick={() => setUploadModalOpen(true)}>
-          <Upload className="mr-2 h-4 w-4" />
-          Nova Importacao
-        </Button>
-      </div>
+      <div className="mx-auto flex max-w-[1060px] flex-col gap-[18px] px-7 py-6">
+        <ProjectDetailHeader
+          name={project.name}
+          targetEntity={project.targetEntity}
+          urls={project.urls}
+          onNewImport={() => setUploadModalOpen(true)}
+          onFill={() => {}}
+          onEdit={() => setFormOpen(true)}
+          onDelete={() => setDeleteDialogOpen(true)}
+        />
 
-      <div className="mx-auto max-w-5xl px-8 pb-6 space-y-10">
-        {/* Batches Section */}
+        <ProjectConfigBand currentStep={1} visible={bandVisible} />
+
+        {/* Importações zone */}
         <section>
-          <h2 className="text-xl font-semibold mb-2">Importacoes</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Dados importados de arquivos Excel
-          </p>
+          <div className="mb-[11px] flex flex-wrap items-baseline gap-2.5">
+            <h2 className="text-base font-bold text-foreground">Importações</h2>
+            <span className="text-xs text-muted-foreground">
+              {hasBatches
+                ? "clique para abrir o detalhe (e o Significado dos dados)"
+                : "cada planilha vira uma importação"}
+            </span>
+          </div>
           <BatchGrid
             projectId={id}
             batches={batches}
@@ -141,14 +178,14 @@ export default function ProjectDetailPage({
           />
         </section>
 
-        <Separator />
-
-        {/* Mappings Section */}
+        {/* Mapeamentos zone */}
         <section>
-          <h2 className="text-xl font-semibold mb-2">Mappings</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Regras de preenchimento automatico
-          </p>
+          <div className="mb-[11px] flex flex-wrap items-baseline gap-2.5">
+            <h2 className="text-base font-bold text-foreground">Mapeamentos</h2>
+            <span className="text-xs text-muted-foreground">
+              receita reutilizável (feita na extensão)
+            </span>
+          </div>
           <MappingsList projectId={id} />
         </section>
       </div>
@@ -157,6 +194,14 @@ export default function ProjectDetailPage({
         open={uploadModalOpen}
         onOpenChange={setUploadModalOpen}
         projectId={id}
+      />
+
+      <ProjectFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        onSubmit={handleUpdate}
+        project={project}
+        isPending={updateProject.isPending}
       />
 
       <DeleteProjectDialog
